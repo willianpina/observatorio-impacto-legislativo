@@ -1,0 +1,313 @@
+{
+  "get": {
+    "description": "Lista de informações básicas sobre projetos de lei, resoluções, medidas provisórias, emendas, pareceres e todos os outros tipos de proposições na Câmara.\n\nPor padrão, são retornadas todas as proposições que foram apresentadas ou tiveram alguma mudança de situação nos últimos 30 dias. Esse intervalo de tramitação pode ser configurado pelos parâmetros `dataInicio` e `dataFim`.\n\nSe for(em) passado(s) um ou mais dos parâmetros...\n\n  - `id`\n\n  - `ano`\n\n  - `dataApresentacaoInicio`\n\n  - `dataApresentacaoFim`\n\n  - `idAutor`\n\n  - `autor`\n\n...o intervalo de tramitação só será levado em consideração se os parâmetros `dataInicio` e/ou `dataFim` estiverem explicitamente configurados. Se não estiverem, poderão ser listadas proposições que não tiveram tramitação recente (e a resposta pode demorar bastante).",
+    "operationId": "search",
+    "parameters": [
+      {
+        "description": "Número(s) identificador(es) de uma ou mais proposições no **Dados Abertos**, separados por vírgulas.",
+        "explode": false,
+        "in": "query",
+        "name": "id",
+        "required": false,
+        "schema": {
+          "type": "array"
+        },
+        "style": "form"
+      },
+      {
+        "description": "Uma ou mais sigla(s) separadas por vírgulas do(s) tipo(s) das proposições que se deseja obter. A lista de tipos e siglas existentes pode ser obtida em `/referencias/proposicoes/siglaTipo`",
+        "explode": false,
+        "in": "query",
+        "name": "siglaTipo",
+        "required": false,
+        "schema": {
+          "type": "array"
+        },
+        "style": "form"
+      },
+      {
+        "description": "Um ou mais número(s), separados por vírgula, oficialmente atribuídos às proposições segundo o art. 137 do Regimento Interno, como \"PL **1234**/2016\"",
+        "explode": false,
+        "in": "query",
+        "name": "numero",
+        "required": false,
+        "schema": {
+          "type": "array"
+        },
+        "style": "form"
+      },
+      {
+        "description": "Um ou mais ano(s) de apresentação das proposições que serão listadas, separados por vírgulas, no formato `AAAA`",
+        "explode": false,
+        "in": "query",
+        "name": "ano",
+        "required": false,
+        "schema": {
+          "type": "array"
+        },
+        "style": "form"
+      },
+      {
+        "description": "Um ou mais código(s) numérico(s) de tipo específico de proposição, separados por vírgula. A lista de códigos existentes pode ser obtida em `/referencias/proposicoes/siglaTipo`.",
+        "explode": false,
+        "in": "query",
+        "name": "codTipo",
+        "required": false,
+        "schema": {
+          "type": "array"
+        },
+        "style": "form"
+      },
+      {
+        "description": "Um ou mais números identificador(es), separados por vírgula, do(s) deputado(s) autor(es) das proposições que serão listadas. Cada número deve ser o identificador exclusivo de um parlamentar no **Dados Abertos**",
+        "explode": false,
+        "in": "query",
+        "name": "idDeputadoAutor",
+        "required": false,
+        "schema": {
+          "type": "array"
+        },
+        "style": "form"
+      },
+      {
+        "description": "Nome ou parte do nome do(s) autor(es) das proposições que se deseja obter. Deve estar entre aspas",
+        "in": "query",
+        "name": "autor",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "description": "Uma ou mais sigla(s) separadas por vírgulas do(s) partido(s) a que pertençam os autores das proposições a serem listadas",
+        "explode": false,
+        "in": "query",
+        "name": "siglaPartidoAutor",
+        "required": false,
+        "schema": {
+          "type": "array"
+        },
+        "style": "form"
+      },
+      {
+        "description": "Identificador numérico no **Dados Abertos** do partido a que pertençam os autores das proposições que serão listadas. Esses identificadores podem ser obtidos em `/partidos` e são mais precisos do que as siglas, que podem ser usadas por partidos diferentes em épocas diferentes",
+        "in": "query",
+        "name": "idPartidoAutor",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      {
+        "description": "Uma ou mais sigla(s) de unidade(s) da federação (estados e Distrito Federal) pela(s) qual(quais) o(s) autor(es) das proposições selecionadas tenha(m) sido eleito(s)",
+        "explode": false,
+        "in": "query",
+        "name": "siglaUfAutor",
+        "required": false,
+        "schema": {
+          "type": "array"
+        },
+        "style": "form"
+      },
+      {
+        "description": "Uma ou mais palavras chaves sobre o tema a que a proposição se relaciona",
+        "explode": false,
+        "in": "query",
+        "name": "keywords",
+        "required": false,
+        "schema": {
+          "type": "array"
+        },
+        "style": "form"
+      },
+      {
+        "description": "Indicador booleano, com valor `TRUE` ou `FALSE` para trazer apenas proposições que já tenha tramitado no Senado",
+        "in": "query",
+        "name": "tramitacaoSenado",
+        "required": false,
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      {
+        "description": "Data do início do intervalo de tempo em que tenha havido tramitação das proposições a serem listadas, no formato `AAAA-MM-DD`. Se omitido, é assumido como a data de 30 dias anteriores à proposição",
+        "in": "query",
+        "name": "dataInicio",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      {
+        "description": "Data do fim do intervalo de tempo em que tenha havido tramitação das proposições a serem listadas. Se omitido, é considerado ser o dia em que é feita a requisição",
+        "in": "query",
+        "name": "dataFim",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      {
+        "description": "Data do início do intervalo de tempo em que tenham sido apresentadas as proposições a serem listadas, no formato `AAAA-MM-DD`",
+        "in": "query",
+        "name": "dataApresentacaoInicio",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      {
+        "description": "Data do fim do intervalo de tempo em que tenham sido apresentadas as proposições a serem listadas",
+        "in": "query",
+        "name": "dataApresentacaoFim",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      {
+        "description": "Código(s) numérico(s), separados por vírgulas, do tipo de situação em que se encontram as proposições que serão listadas. As situações possíveis podem ser obtidas em `/referencias/proposicoes/codSituacao`. **Atenção:** este parâmetro pode apresentar resultados inesperados, por problemas com o registro dos dados.",
+        "explode": false,
+        "in": "query",
+        "name": "codSituacao",
+        "required": false,
+        "schema": {
+          "type": "array"
+        },
+        "style": "form"
+      },
+      {
+        "description": "Código(s) numérico(s), separados por vírgulas, das áreas temáticas das proposições que serão listadas. Os temas possíveis podem ser obtidos em `/referencias/proposicoes/codTema`",
+        "explode": false,
+        "in": "query",
+        "name": "codTema",
+        "required": false,
+        "schema": {
+          "type": "array"
+        },
+        "style": "form"
+      },
+      {
+        "description": "Número da página de resultados, a partir de 1, que se deseja obter com a requisição, contendo o número de itens definido pelo parâmetro itens. Se omitido, assume o valor 1.",
+        "in": "query",
+        "name": "pagina",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      {
+        "description": "Número máximo de itens na página que se deseja obter com esta requisição.",
+        "in": "query",
+        "name": "itens",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      {
+        "description": "O sentido da ordenação: `asc` para A a Z ou 0 a 9, e `desc` para Z a A ou 9 a 0.",
+        "in": "query",
+        "name": "ordem",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "default": "ASC"
+        }
+      },
+      {
+        "description": "Nome do campo pelo qual a lista deve ser ordenada: `id`, `codTipo`, `siglaTipo`, `numero` ou `ano`",
+        "in": "query",
+        "name": "ordenarPor",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "default": "id"
+        }
+      },
+      {
+        "in": "header",
+        "name": "Accept",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "application/json, application/xml"
+          ]
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ResultadoProposicoes"
+            }
+          },
+          "application/xml": {
+            "schema": {
+              "$ref": "#/components/schemas/ResultadoProposicoes"
+            }
+          },
+          "text/xml": {
+            "schema": {
+              "$ref": "#/components/schemas/ResultadoProposicoes"
+            }
+          }
+        },
+        "description": "Lista retornada com sucesso"
+      },
+      "400": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ResultadoProposicoesObject"
+            }
+          },
+          "application/xml": {
+            "schema": {
+              "$ref": "#/components/schemas/ResultadoProposicoesObject"
+            }
+          },
+          "text/xml": {
+            "schema": {
+              "$ref": "#/components/schemas/ResultadoProposicoesObject"
+            }
+          }
+        },
+        "description": "Requisição inválida"
+      },
+      "404": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ResultadoProposicoesObject"
+            }
+          },
+          "application/xml": {
+            "schema": {
+              "$ref": "#/components/schemas/ResultadoProposicoesObject"
+            }
+          },
+          "text/xml": {
+            "schema": {
+              "$ref": "#/components/schemas/ResultadoProposicoesObject"
+            }
+          }
+        },
+        "description": "Não encontrado"
+      }
+    },
+    "summary": "Lista configurável de proposições na Câmara",
+    "tags": [
+      "Proposições"
+    ]
+  }
+}

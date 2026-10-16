@@ -1,0 +1,46 @@
+{
+  "dados": [
+    {
+      "id": 2648300,
+      "tipo": "PL",
+      "numero": 5587,
+      "ano": 2026,
+      "ementa": "Altera a Lei nº 14.790, de 29 de dezembro de 2023, para assegurar a restituição de valores utilizados em apostas de quota fixa realizadas com operadores não autorizados e disciplinar a responsabilidade das instituições financeiras e de pagamento.",
+      "situacao": null,
+      "origem": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2648300"
+    },
+    {
+      "id": 2648297,
+      "tipo": "PL",
+      "numero": 5586,
+      "ano": 2026,
+      "ementa": "Altera a Lei nº 12.527, de 18 de novembro de 2011, para estabelecer critérios de fundamentação, proporcionalidade, acesso parcial e revisão das restrições de acesso a informações pessoais, assegurando a proteção do interesse público e geral preponderante.",
+      "situacao": null,
+      "origem": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2648297"
+    },
+    {
+      "id": 2648293,
+      "tipo": "PL",
+      "numero": 5585,
+      "ano": 2026,
+      "ementa": "Dispõe sobre as diretrizes para a regularização da ocupação de imóveis de domínio da União situados nas praias do Araçagy, Olho de Porco, Mangue Seco, Vista ao Mar e Pucal, no Estado do Maranhão, e dá outras providências.",
+      "situacao": null,
+      "origem": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2648293"
+    }
+  ],
+  "meta": {
+    "fonte": "Câmara dos Deputados",
+    "coletado_em": "2026-10-16T10:29:44.133904+00:00",
+    "duracao_ms": 406.15,
+    "quantidade": 3,
+    "urls": [
+      "https://dadosabertos.camara.leg.br/api/v2/proposicoes?itens=3&siglaTipo=PL&ano=2026&ordem=DESC&ordenarPor=id",
+      "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2648300",
+      "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2648297",
+      "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2648293"
+    ],
+    "periodicidade": null,
+    "tabela": null,
+    "variavel": null
+  }
+}

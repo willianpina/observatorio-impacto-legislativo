@@ -1,0 +1,5 @@
+[extend]
+useDefault = true
+
+[allowlist]
+paths = ['''poc/evidencias/sha256\.json''']

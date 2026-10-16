@@ -1,0 +1,93 @@
+{
+  "get": {
+    "operationId": "obterPorId",
+    "parameters": [
+      {
+        "description": "Identificador numérico da proposição",
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      {
+        "in": "header",
+        "name": "Accept",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "application/json, application/xml"
+          ]
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object"
+            }
+          },
+          "application/xml": {
+            "schema": {
+              "type": "object"
+            }
+          },
+          "text/xml": {
+            "schema": {
+              "type": "object"
+            }
+          }
+        },
+        "description": "Lista retornada com sucesso"
+      },
+      "400": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object"
+            }
+          },
+          "application/xml": {
+            "schema": {
+              "type": "object"
+            }
+          },
+          "text/xml": {
+            "schema": {
+              "type": "object"
+            }
+          }
+        },
+        "description": "Requisição inválida"
+      },
+      "404": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object"
+            }
+          },
+          "application/xml": {
+            "schema": {
+              "type": "object"
+            }
+          },
+          "text/xml": {
+            "schema": {
+              "type": "object"
+            }
+          }
+        },
+        "description": "Não encontrado"
+      }
+    },
+    "summary": "Informações detalhadas sobre uma proposição específica",
+    "tags": [
+      "Proposições"
+    ]
+  }
+}

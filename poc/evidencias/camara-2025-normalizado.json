@@ -1,0 +1,26 @@
+{
+  "dados": [
+    {
+      "id": 2646600,
+      "tipo": "PL",
+      "numero": 3467,
+      "ano": 2025,
+      "ementa": "Institui o Mapa de Vulnerabilidade Educacional (Mave) como instrumento de priorização do apoio técnico e financeiro da União às redes públicas municipais de educação básica com baixos indicadores de desempenho e alta vulnerabilidade socioeconômica.",
+      "situacao": "Aguardando Despacho do Presidente da Câmara dos Deputados (Chancela)",
+      "origem": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2646600"
+    }
+  ],
+  "meta": {
+    "fonte": "Câmara dos Deputados",
+    "coletado_em": "2026-10-16T10:29:42.956528+00:00",
+    "duracao_ms": 1312.69,
+    "quantidade": 1,
+    "urls": [
+      "https://dadosabertos.camara.leg.br/api/v2/proposicoes?itens=1&siglaTipo=PL&ano=2025&ordem=DESC&ordenarPor=id",
+      "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2646600"
+    ],
+    "periodicidade": null,
+    "tabela": null,
+    "variavel": null
+  }
+}

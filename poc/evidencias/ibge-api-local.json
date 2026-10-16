@@ -1,0 +1,97 @@
+{
+  "dados": [
+    {
+      "periodo": "202403",
+      "rotulo": "3º trimestre 2024",
+      "valor": 6.4,
+      "unidade": "%",
+      "territorio": "Brasil",
+      "status": "disponivel",
+      "valor_original": "6.4",
+      "origem": "https://apisidra.ibge.gov.br/values/t/4099/n1/all/v/4099/p/last%208"
+    },
+    {
+      "periodo": "202404",
+      "rotulo": "4º trimestre 2024",
+      "valor": 6.2,
+      "unidade": "%",
+      "territorio": "Brasil",
+      "status": "disponivel",
+      "valor_original": "6.2",
+      "origem": "https://apisidra.ibge.gov.br/values/t/4099/n1/all/v/4099/p/last%208"
+    },
+    {
+      "periodo": "202501",
+      "rotulo": "1º trimestre 2025",
+      "valor": 7.0,
+      "unidade": "%",
+      "territorio": "Brasil",
+      "status": "disponivel",
+      "valor_original": "7.0",
+      "origem": "https://apisidra.ibge.gov.br/values/t/4099/n1/all/v/4099/p/last%208"
+    },
+    {
+      "periodo": "202502",
+      "rotulo": "2º trimestre 2025",
+      "valor": 5.8,
+      "unidade": "%",
+      "territorio": "Brasil",
+      "status": "disponivel",
+      "valor_original": "5.8",
+      "origem": "https://apisidra.ibge.gov.br/values/t/4099/n1/all/v/4099/p/last%208"
+    },
+    {
+      "periodo": "202503",
+      "rotulo": "3º trimestre 2025",
+      "valor": 5.6,
+      "unidade": "%",
+      "territorio": "Brasil",
+      "status": "disponivel",
+      "valor_original": "5.6",
+      "origem": "https://apisidra.ibge.gov.br/values/t/4099/n1/all/v/4099/p/last%208"
+    },
+    {
+      "periodo": "202504",
+      "rotulo": "4º trimestre 2025",
+      "valor": 5.1,
+      "unidade": "%",
+      "territorio": "Brasil",
+      "status": "disponivel",
+      "valor_original": "5.1",
+      "origem": "https://apisidra.ibge.gov.br/values/t/4099/n1/all/v/4099/p/last%208"
+    },
+    {
+      "periodo": "202601",
+      "rotulo": "1º trimestre 2026",
+      "valor": 6.1,
+      "unidade": "%",
+      "territorio": "Brasil",
+      "status": "disponivel",
+      "valor_original": "6.1",
+      "origem": "https://apisidra.ibge.gov.br/values/t/4099/n1/all/v/4099/p/last%208"
+    },
+    {
+      "periodo": "202602",
+      "rotulo": "2º trimestre 2026",
+      "valor": 5.4,
+      "unidade": "%",
+      "territorio": "Brasil",
+      "status": "disponivel",
+      "valor_original": "5.4",
+      "origem": "https://apisidra.ibge.gov.br/values/t/4099/n1/all/v/4099/p/last%208"
+    }
+  ],
+  "meta": {
+    "fonte": "IBGE / SIDRA / PNAD Contínua",
+    "coletado_em": "2026-10-16T10:29:44.501995+00:00",
+    "duracao_ms": 362.58,
+    "quantidade": 8,
+    "urls": [
+      "https://servicodados.ibge.gov.br/api/v3/agregados/4099/metadados",
+      "https://apisidra.ibge.gov.br/values/t/4099/n1/all/v/4099/p/last%208"
+    ],
+    "periodicidade": "trimestral",
+    "tabela": "4099",
+    "variavel": "4099"
+  }
+}

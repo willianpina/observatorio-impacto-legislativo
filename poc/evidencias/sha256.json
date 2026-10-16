@@ -1,0 +1,13 @@
+{
+  "camara-2025-normalizado.json": "70336ec70932ea92517ee805aaccfbc985681685d0248edd6be918c89345f472",
+  "camara-api-local.json": "08d09773b3e79aa5042d99fb830311c2712bb49b551bcfed32e84fcd6ab28de1",
+  "camara-documentacao-detalhe.json": "a5df397e84734b77df19a24ebb52327b89af8fdc4748c8ec0b67a9af88cecede",
+  "camara-documentacao-listagem.json": "2b6c3b4fb627c50da1a39aca36e13ab049eed2f7e9448ec1ed4b41be45ffa1c2",
+  "camara-normalizado.json": "e9b4bc44a11d6f1b36b2c8e10a7266866bc0db6caa17258536be1fefa020f3a2",
+  "consultas-reais.json": "c7110a70514c920f38df598bb2cd27b03828c461cc4f24cefd0606c364ac630a",
+  "ibge-api-local.json": "bdb4457d31f0b3e2223b292ef61a1e3738e7f8af0be7c59b96349f2fa326dee3",
+  "ibge-normalizado.json": "11b951fe36eb5a058b1db83e9e00bd9e3c7e233f087d6d72bf8d941365e211f5",
+  "resultado.json": "76e19a323d0df42057b569491b3c36f3475ef5831f087be3396eeb1743e77de3",
+  "servidor.log": "7d42c21985c450e2def1d915756b1fbef36350150c72e957402a8f9edbad7225",
+  "testes-simulados.xml": "19adfec2336f755f4bfd06728b8f24c1e27d8ab0bedeb1255a70afd14626755f"
+}

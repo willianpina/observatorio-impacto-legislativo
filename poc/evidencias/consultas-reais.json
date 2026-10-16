@@ -1,0 +1,520 @@
+[
+  {
+    "url": "https://dadosabertos.camara.leg.br/api/v2/proposicoes?itens=3&siglaTipo=PL&ano=2026&ordem=DESC&ordenarPor=id",
+    "tentativa": 1,
+    "coletado_em": "2026-10-16T10:29:40.607449+00:00",
+    "status_http": 200,
+    "payload": {
+      "dados": [
+        {
+          "id": 2648300,
+          "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2648300",
+          "siglaTipo": "PL",
+          "codTipo": 139,
+          "numero": 5587,
+          "ano": 2026,
+          "ementa": "Altera a Lei nº 14.790, de 29 de dezembro de 2023, para assegurar a restituição de valores utilizados em apostas de quota fixa realizadas com operadores não autorizados e disciplinar a responsabilidade das instituições financeiras e de pagamento.",
+          "dataApresentacao": "2026-10-15T16:40"
+        },
+        {
+          "id": 2648297,
+          "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2648297",
+          "siglaTipo": "PL",
+          "codTipo": 139,
+          "numero": 5586,
+          "ano": 2026,
+          "ementa": "Altera a Lei nº 12.527, de 18 de novembro de 2011, para estabelecer critérios de fundamentação, proporcionalidade, acesso parcial e revisão das restrições de acesso a informações pessoais, assegurando a proteção do interesse público e geral preponderante.",
+          "dataApresentacao": "2026-10-15T16:20"
+        },
+        {
+          "id": 2648293,
+          "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2648293",
+          "siglaTipo": "PL",
+          "codTipo": 139,
+          "numero": 5585,
+          "ano": 2026,
+          "ementa": "Dispõe sobre as diretrizes para a regularização da ocupação de imóveis de domínio da União situados nas praias do Araçagy, Olho de Porco, Mangue Seco, Vista ao Mar e Pucal, no Estado do Maranhão, e dá outras providências.",
+          "dataApresentacao": "2026-10-15T15:46"
+        }
+      ],
+      "links": [
+        {
+          "rel": "self",
+          "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes?itens=3&siglaTipo=PL&ano=2026&ordem=DESC&ordenarPor=id"
+        },
+        {
+          "rel": "next",
+          "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes?siglaTipo=PL&ano=2026&ordem=DESC&ordenarPor=id&pagina=2&itens=3"
+        },
+        {
+          "rel": "first",
+          "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes?siglaTipo=PL&ano=2026&ordem=DESC&ordenarPor=id&pagina=1&itens=3"
+        },
+        {
+          "rel": "last",
+          "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes?siglaTipo=PL&ano=2026&ordem=DESC&ordenarPor=id&pagina=1702&itens=3"
+        }
+      ]
+    },
+    "duracao_ms": 234.17
+  },
+  {
+    "url": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2648300",
+    "tentativa": 1,
+    "coletado_em": "2026-10-16T10:29:40.842239+00:00",
+    "status_http": 200,
+    "payload": {
+      "dados": {
+        "id": 2648300,
+        "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2648300",
+        "siglaTipo": "PL",
+        "codTipo": 139,
+        "numero": 5587,
+        "ano": 2026,
+        "ementa": "Altera a Lei nº 14.790, de 29 de dezembro de 2023, para assegurar a restituição de valores utilizados em apostas de quota fixa realizadas com operadores não autorizados e disciplinar a responsabilidade das instituições financeiras e de pagamento.",
+        "dataApresentacao": "2026-10-15T16:40",
+        "uriOrgaoNumerador": null,
+        "statusProposicao": {
+          "dataHora": "2026-10-15T16:40",
+          "sequencia": 1,
+          "siglaOrgao": "MESA",
+          "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+          "uriUltimoRelator": null,
+          "regime": ".",
+          "descricaoTramitacao": "Apresentação de Proposição",
+          "codTipoTramitacao": "100",
+          "descricaoSituacao": null,
+          "codSituacao": null,
+          "despacho": "Apresentação do PL n. 5587/2026 (Projeto de Lei), pelo Deputado Jorge Goetten (REPUBLIC/SC), que \"Altera a Lei nº 14.790, de 29 de dezembro de 2023, para assegurar a restituição de valores utilizados em apostas de quota fixa realizadas com operadores não autorizados e disciplinar a responsabilidade das instituições financeiras e de pagamento\".",
+          "url": null,
+          "ambito": "Regimental",
+          "apreciacao": "Indefinida"
+        },
+        "uriAutores": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2648300/autores",
+        "descricaoTipo": "Projeto de Lei",
+        "ementaDetalhada": null,
+        "keywords": null,
+        "uriPropPrincipal": null,
+        "uriPropAnterior": null,
+        "uriPropPosterior": null,
+        "urlInteiroTeor": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=3184712",
+        "urnFinal": null,
+        "texto": null,
+        "justificativa": null
+      },
+      "links": [
+        {
+          "rel": "self",
+          "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2648300"
+        }
+      ]
+    },
+    "duracao_ms": 197.27
+  },
+  {
+    "url": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2648297",
+    "tentativa": 1,
+    "coletado_em": "2026-10-16T10:29:41.039603+00:00",
+    "status_http": 200,
+    "payload": {
+      "dados": {
+        "id": 2648297,
+        "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2648297",
+        "siglaTipo": "PL",
+        "codTipo": 139,
+        "numero": 5586,
+        "ano": 2026,
+        "ementa": "Altera a Lei nº 12.527, de 18 de novembro de 2011, para estabelecer critérios de fundamentação, proporcionalidade, acesso parcial e revisão das restrições de acesso a informações pessoais, assegurando a proteção do interesse público e geral preponderante.",
+        "dataApresentacao": "2026-10-15T16:20",
+        "uriOrgaoNumerador": null,
+        "statusProposicao": {
+          "dataHora": "2026-10-15T16:20",
+          "sequencia": 1,
+          "siglaOrgao": "MESA",
+          "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+          "uriUltimoRelator": null,
+          "regime": ".",
+          "descricaoTramitacao": "Apresentação de Proposição",
+          "codTipoTramitacao": "100",
+          "descricaoSituacao": null,
+          "codSituacao": null,
+          "despacho": "Apresentação do PL n. 5586/2026 (Projeto de Lei), pelo Deputado Lucas Redecker (PSD/RS -Fdr PSDB-CIDADANIA), que \"Altera a Lei nº 12.527, de 18 de novembro de 2011, para estabelecer critérios de fundamentação, proporcionalidade, acesso parcial e revisão das restrições de acesso a informações pessoais, assegurando a proteção do interesse público e geral preponderante\".",
+          "url": null,
+          "ambito": "Regimental",
+          "apreciacao": "Indefinida"
+        },
+        "uriAutores": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2648297/autores",
+        "descricaoTipo": "Projeto de Lei",
+        "ementaDetalhada": null,
+        "keywords": null,
+        "uriPropPrincipal": null,
+        "uriPropAnterior": null,
+        "uriPropPosterior": null,
+        "urlInteiroTeor": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=3184707",
+        "urnFinal": null,
+        "texto": null,
+        "justificativa": null
+      },
+      "links": [
+        {
+          "rel": "self",
+          "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2648297"
+        }
+      ]
+    },
+    "duracao_ms": 58.78
+  },
+  {
+    "url": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2648293",
+    "tentativa": 1,
+    "coletado_em": "2026-10-16T10:29:41.098532+00:00",
+    "status_http": 200,
+    "payload": {
+      "dados": {
+        "id": 2648293,
+        "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2648293",
+        "siglaTipo": "PL",
+        "codTipo": 139,
+        "numero": 5585,
+        "ano": 2026,
+        "ementa": "Dispõe sobre as diretrizes para a regularização da ocupação de imóveis de domínio da União situados nas praias do Araçagy, Olho de Porco, Mangue Seco, Vista ao Mar e Pucal, no Estado do Maranhão, e dá outras providências.",
+        "dataApresentacao": "2026-10-15T15:46",
+        "uriOrgaoNumerador": null,
+        "statusProposicao": {
+          "dataHora": "2026-10-15T15:46",
+          "sequencia": 1,
+          "siglaOrgao": "MESA",
+          "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+          "uriUltimoRelator": null,
+          "regime": ".",
+          "descricaoTramitacao": "Apresentação de Proposição",
+          "codTipoTramitacao": "100",
+          "descricaoSituacao": null,
+          "codSituacao": null,
+          "despacho": "Apresentação do PL n. 5585/2026 (Projeto de Lei), pelo Deputado Cleber Verde (MDB/MA), que \"Dispõe sobre as diretrizes para a regularização da ocupação de imóveis de domínio da União situados nas praias do Araçagy, Olho de Porco, Mangue Seco, Vista ao Mar e Pucal, no Estado do Maranhão, e dá outras providências\".",
+          "url": null,
+          "ambito": "Regimental",
+          "apreciacao": "Indefinida"
+        },
+        "uriAutores": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2648293/autores",
+        "descricaoTipo": "Projeto de Lei",
+        "ementaDetalhada": null,
+        "keywords": null,
+        "uriPropPrincipal": null,
+        "uriPropAnterior": null,
+        "uriPropPosterior": null,
+        "urlInteiroTeor": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=3184692",
+        "urnFinal": null,
+        "texto": null,
+        "justificativa": null
+      },
+      "links": [
+        {
+          "rel": "self",
+          "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2648293"
+        }
+      ]
+    },
+    "duracao_ms": 196.53
+  },
+  {
+    "url": "https://servicodados.ibge.gov.br/api/v3/agregados/4099/metadados",
+    "tentativa": 1,
+    "coletado_em": "2026-10-16T10:29:41.295926+00:00",
+    "status_http": 200,
+    "payload": {
+      "id": 4099,
+      "nome": "Taxas de desocupação e de subutilização da força de trabalho, na semana de referência, das pessoas de 14 anos ou mais de idade",
+      "URL": "https://sidra.ibge.gov.br/tabela/4099",
+      "pesquisa": "Pesquisa Nacional por Amostra de Domicílios Contínua trimestral",
+      "assunto": "Trabalho",
+      "periodicidade": {
+        "frequencia": "trimestral",
+        "inicio": 201201,
+        "fim": 202602
+      },
+      "nivelTerritorial": {
+        "Administrativo": [
+          "N1",
+          "N2",
+          "N6",
+          "N14",
+          "N7",
+          "N3"
+        ],
+        "Especial": [],
+        "IBGE": []
+      },
+      "variaveis": [
+        {
+          "id": 4099,
+          "nome": "Taxa de desocupação, na semana de referência, das pessoas de 14 anos ou mais de idade",
+          "unidade": "%",
+          "sumarizacao": []
+        },
+        {
+          "id": 4103,
+          "nome": "Coeficiente de variação - Taxa de desocupação, na semana de referência, das pessoas de 14 anos ou mais de idade",
+          "unidade": "%",
+          "sumarizacao": []
+        },
+        {
+          "id": 4114,
+          "nome": "Taxa combinada de desocupação e de subocupação por insuficiência de horas trabalhadas, na semana de referência, das pessoas de 14 anos ou mais de idade",
+          "unidade": "%",
+          "sumarizacao": []
+        },
+        {
+          "id": 4115,
+          "nome": "Coeficiente de variação - Taxa combinada de desocupação e de subocupação por insuficiência de horas trabalhadas, na semana de referência, das pessoas de 14 anos ou mais de idade",
+          "unidade": "%",
+          "sumarizacao": []
+        },
+        {
+          "id": 4116,
+          "nome": "Taxa combinada de desocupação e força de trabalho potencial, na semana de referência, das pessoas de 14 anos ou mais de idade",
+          "unidade": "%",
+          "sumarizacao": []
+        },
+        {
+          "id": 4117,
+          "nome": "Coeficiente de variação - Taxa combinada de desocupação e força de trabalho potencial, na semana de referência, das pessoas de 14 anos ou mais de idade",
+          "unidade": "%",
+          "sumarizacao": []
+        },
+        {
+          "id": 4118,
+          "nome": "Taxa composta de subutilização da força de trabalho, na semana de referência, das pessoas de 14 anos ou mais de idade",
+          "unidade": "%",
+          "sumarizacao": []
+        },
+        {
+          "id": 4119,
+          "nome": "Coeficiente de variação - Taxa composta de subutilização da força de trabalho, na semana de referência, das pessoas de 14 anos ou mais de idade",
+          "unidade": "%",
+          "sumarizacao": []
+        }
+      ],
+      "classificacoes": []
+    },
+    "duracao_ms": 204.02
+  },
+  {
+    "url": "https://apisidra.ibge.gov.br/values/t/4099/n1/all/v/4099/p/last%208",
+    "tentativa": 1,
+    "coletado_em": "2026-10-16T10:29:41.500030+00:00",
+    "status_http": 200,
+    "payload": [
+      {
+        "NC": "Nível Territorial (Código)",
+        "NN": "Nível Territorial",
+        "MC": "Unidade de Medida (Código)",
+        "MN": "Unidade de Medida",
+        "V": "Valor",
+        "D1C": "Brasil (Código)",
+        "D1N": "Brasil",
+        "D2C": "Variável (Código)",
+        "D2N": "Variável",
+        "D3C": "Trimestre (Código)",
+        "D3N": "Trimestre"
+      },
+      {
+        "NC": "1",
+        "NN": "Brasil",
+        "MC": "2",
+        "MN": "%",
+        "V": "6.4",
+        "D1C": "1",
+        "D1N": "Brasil",
+        "D2C": "4099",
+        "D2N": "Taxa de desocupação, na semana de referência, das pessoas de 14 anos ou mais de idade",
+        "D3C": "202403",
+        "D3N": "3º trimestre 2024"
+      },
+      {
+        "NC": "1",
+        "NN": "Brasil",
+        "MC": "2",
+        "MN": "%",
+        "V": "6.2",
+        "D1C": "1",
+        "D1N": "Brasil",
+        "D2C": "4099",
+        "D2N": "Taxa de desocupação, na semana de referência, das pessoas de 14 anos ou mais de idade",
+        "D3C": "202404",
+        "D3N": "4º trimestre 2024"
+      },
+      {
+        "NC": "1",
+        "NN": "Brasil",
+        "MC": "2",
+        "MN": "%",
+        "V": "7.0",
+        "D1C": "1",
+        "D1N": "Brasil",
+        "D2C": "4099",
+        "D2N": "Taxa de desocupação, na semana de referência, das pessoas de 14 anos ou mais de idade",
+        "D3C": "202501",
+        "D3N": "1º trimestre 2025"
+      },
+      {
+        "NC": "1",
+        "NN": "Brasil",
+        "MC": "2",
+        "MN": "%",
+        "V": "5.8",
+        "D1C": "1",
+        "D1N": "Brasil",
+        "D2C": "4099",
+        "D2N": "Taxa de desocupação, na semana de referência, das pessoas de 14 anos ou mais de idade",
+        "D3C": "202502",
+        "D3N": "2º trimestre 2025"
+      },
+      {
+        "NC": "1",
+        "NN": "Brasil",
+        "MC": "2",
+        "MN": "%",
+        "V": "5.6",
+        "D1C": "1",
+        "D1N": "Brasil",
+        "D2C": "4099",
+        "D2N": "Taxa de desocupação, na semana de referência, das pessoas de 14 anos ou mais de idade",
+        "D3C": "202503",
+        "D3N": "3º trimestre 2025"
+      },
+      {
+        "NC": "1",
+        "NN": "Brasil",
+        "MC": "2",
+        "MN": "%",
+        "V": "5.1",
+        "D1C": "1",
+        "D1N": "Brasil",
+        "D2C": "4099",
+        "D2N": "Taxa de desocupação, na semana de referência, das pessoas de 14 anos ou mais de idade",
+        "D3C": "202504",
+        "D3N": "4º trimestre 2025"
+      },
+      {
+        "NC": "1",
+        "NN": "Brasil",
+        "MC": "2",
+        "MN": "%",
+        "V": "6.1",
+        "D1C": "1",
+        "D1N": "Brasil",
+        "D2C": "4099",
+        "D2N": "Taxa de desocupação, na semana de referência, das pessoas de 14 anos ou mais de idade",
+        "D3C": "202601",
+        "D3N": "1º trimestre 2026"
+      },
+      {
+        "NC": "1",
+        "NN": "Brasil",
+        "MC": "2",
+        "MN": "%",
+        "V": "5.4",
+        "D1C": "1",
+        "D1N": "Brasil",
+        "D2C": "4099",
+        "D2N": "Taxa de desocupação, na semana de referência, das pessoas de 14 anos ou mais de idade",
+        "D3C": "202602",
+        "D3N": "2º trimestre 2026"
+      }
+    ],
+    "duracao_ms": 141.82
+  },
+  {
+    "url": "https://dadosabertos.camara.leg.br/api/v2/proposicoes?itens=1&siglaTipo=PL&ano=2025&ordem=DESC&ordenarPor=id",
+    "tentativa": 1,
+    "coletado_em": "2026-10-16T10:29:41.644124+00:00",
+    "status_http": 200,
+    "payload": {
+      "dados": [
+        {
+          "id": 2646600,
+          "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2646600",
+          "siglaTipo": "PL",
+          "codTipo": 139,
+          "numero": 3467,
+          "ano": 2025,
+          "ementa": "Institui o Mapa de Vulnerabilidade Educacional (Mave) como instrumento de priorização do apoio técnico e financeiro da União às redes públicas municipais de educação básica com baixos indicadores de desempenho e alta vulnerabilidade socioeconômica.",
+          "dataApresentacao": "2026-09-16T16:42"
+        }
+      ],
+      "links": [
+        {
+          "rel": "self",
+          "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes?itens=1&siglaTipo=PL&ano=2025&ordem=DESC&ordenarPor=id"
+        },
+        {
+          "rel": "next",
+          "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes?siglaTipo=PL&ano=2025&ordem=DESC&ordenarPor=id&pagina=2&itens=1"
+        },
+        {
+          "rel": "first",
+          "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes?siglaTipo=PL&ano=2025&ordem=DESC&ordenarPor=id&pagina=1&itens=1"
+        },
+        {
+          "rel": "last",
+          "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes?siglaTipo=PL&ano=2025&ordem=DESC&ordenarPor=id&pagina=6540&itens=1"
+        }
+      ]
+    },
+    "duracao_ms": 1206.36
+  },
+  {
+    "url": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2646600",
+    "tentativa": 1,
+    "coletado_em": "2026-10-16T10:29:42.850353+00:00",
+    "status_http": 200,
+    "payload": {
+      "dados": {
+        "id": 2646600,
+        "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2646600",
+        "siglaTipo": "PL",
+        "codTipo": 139,
+        "numero": 3467,
+        "ano": 2025,
+        "ementa": "Institui o Mapa de Vulnerabilidade Educacional (Mave) como instrumento de priorização do apoio técnico e financeiro da União às redes públicas municipais de educação básica com baixos indicadores de desempenho e alta vulnerabilidade socioeconômica.",
+        "dataApresentacao": "2026-09-16T16:42",
+        "uriOrgaoNumerador": null,
+        "statusProposicao": {
+          "dataHora": "2026-09-16T16:42",
+          "sequencia": 2,
+          "siglaOrgao": "MESA",
+          "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+          "uriUltimoRelator": null,
+          "regime": ".",
+          "descricaoTramitacao": "Apresentação de Proposição",
+          "codTipoTramitacao": "100",
+          "descricaoSituacao": "Aguardando Despacho do Presidente da Câmara dos Deputados (Chancela)",
+          "codSituacao": 1201,
+          "despacho": "Apresentação do PL n. 3467/2025 (Projeto de Lei), pelo Senado Federal, que \"Institui o Mapa de Vulnerabilidade Educacional (Mave) como instrumento de priorização do apoio técnico e financeiro da União às redes públicas municipais de educação básica com baixos indicadores de desempenho e alta vulnerabilidade socioeconômica\".",
+          "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=3181335",
+          "ambito": "Regimental",
+          "apreciacao": "Indefinida"
+        },
+        "uriAutores": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2646600/autores",
+        "descricaoTipo": "Projeto de Lei",
+        "ementaDetalhada": null,
+        "keywords": "Mapa estratégico; Rede pública de ensino; Educação básica; Município; Vulnerabilidade social; baixo desempenho; Indicador educacional; Nível socioeconômico; prioridade; Auxílio financeiro; União; critério técnico; Recursos públicos; Transparência pública",
+        "uriPropPrincipal": null,
+        "uriPropAnterior": null,
+        "uriPropPosterior": null,
+        "urlInteiroTeor": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=3180876",
+        "urnFinal": null,
+        "texto": null,
+        "justificativa": null
+      },
+      "links": [
+        {
+          "rel": "self",
+          "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2646600"
+        }
+      ]
+    },
+    "duracao_ms": 106.14
+  }
+]

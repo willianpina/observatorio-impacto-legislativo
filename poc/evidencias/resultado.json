@@ -1,0 +1,32 @@
+{
+  "executado_em": "2026-10-16T10:29:40.513428+00:00",
+  "fontes": {
+    "camara": {
+      "aprovada": true,
+      "quantidade": 3,
+      "duracao_ms": 688.52
+    },
+    "ibge": {
+      "aprovada": true,
+      "quantidade": 8,
+      "duracao_ms": 347.96
+    }
+  },
+  "amostra_adicional_camara": {
+    "id": 2646600,
+    "situacao": "Aguardando Despacho do Presidente da Câmara dos Deputados (Chancela)",
+    "duracao_ms": 1312.69
+  },
+  "api_local": {
+    "camara": {
+      "status_http": 200,
+      "duracao_ms": 410.1,
+      "aprovada": true
+    },
+    "ibge": {
+      "status_http": 200,
+      "duracao_ms": 366.42,
+      "aprovada": true
+    }
+  }
+}
