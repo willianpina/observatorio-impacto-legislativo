@@ -1,5 +1,36 @@
 # Validação O4 — 17/10/2026
 
+## Revisão O4-R — PR #2
+
+Mesma branch `codex/o4-tela-lei`, sobre o commit O4 `e235dfc6bb06f3ea6a739c858a1209d046752373`. Todos os itens 1–16 da revisão foram implementados exclusivamente em `frontend/`, inclusive as melhorias opcionais. Sem alteração em backend, PoC ou O3; sem merge, CI ou deploy.
+
+| Verificação O4-R | Resultado |
+|---|---|
+| Playwright, execução final | 41 passaram; 0 falhas, 0 ignorados, 0 instáveis; 78,733 s |
+| Axe | 12 cenários; zero violações graves/críticas |
+| Axe com detalhes abertos, 360 px | Caged e modo normal: zero violações de qualquer nível |
+| TypeScript (`npm run typecheck`) | Aprovado |
+| Next.js (`npm run build`) | Aprovado |
+| Gitleaks, histórico inteiro anterior ao novo commit | 4 commits examinados; zero ocorrências |
+
+O teste de janela exige 60 pontos no padrão, 24 em dois anos e mais de 60 desde 2020, além da mudança da curva; último valor e comparação continuam iguais. Os novos testes cobrem a separação entre saldo oficial e comparação no resumo do Caged, a vigência literal, metadados e valor principal único por card, os cabeçalhos com a tela funcionando, links recusados, CSV com todos os prefixos solicitados, prazo de erro, marco dentro da série e ausência de setas sem classificação. A varredura inclui os dois novos termos proibidos. No gráfico, a descrição traz valor e classificação; o SVG interno é decorativo e não há elementos na ordem de tabulação dentro do contêiner `role="img"`.
+
+Evidências desta revisão usam o prefixo `o4r-`: `o4r-testes.json` contém os 41 resultados; `o4r-playwright.txt`, `o4r-build.txt` e `o4r-typecheck.txt` guardam as execuções. Os 12 JSONs `o4r-axe-*` e `o4r-security-headers.json` registram os resultados de acessibilidade e os cabeçalhos efetivamente recebidos. As capturas `o4r-*-fixture.png` foram conferidas visualmente e são simulações de teste, inclusive as do modo normal. Elas não substituem as evidências reais da O4 abaixo. A lista da revisão está em `o4r-arquivos.txt`.
+
+Gitleaks também é executado sobre todos os arquivos preparados para o novo commit, com o hook oficial; a evidência é `o4r-gitleaks-staging.txt`. Uma última varredura do histórico incluindo o novo commit é realizada antes do push; seu resultado é informado na entrega. Nenhuma exceção foi acrescentada à configuração existente.
+
+### Limitações explícitas da O4-R
+
+- Cache e limite são locais ao processo: 15 segundos para respostas bem-sucedidas e 60 consultas por minuto. O cache é separado por série e janela; respostas de erro não são armazenadas. Em várias instâncias seria necessário compartilhar o estado.
+- No servidor local, sem proxy confiável, todos os acessos compartilham o limite. `OIL_TRUST_PROXY=1` habilita a separação por IP, somente atrás de um proxy que sobrescreva `X-Forwarded-For`. O padrão é `0`, para impedir que o navegador contorne o limite falsificando esse cabeçalho.
+- A CSP implementa as quatro diretivas solicitadas e restringe origens externas. Permite `unsafe-inline` para bootstrap Next.js e estilos Recharts. Uma CSP baseada em nonces é uma evolução futura, além do solicitado nesta revisão.
+- Os testes O4-R usam respostas gravadas e cenários simulados; não houve nova ingestão real nem nova execução de pytest. Os resultados de backend/PoC e a validação real apresentados abaixo são históricos da O4, preservados. O escopo O3 continua pendente e intocado.
+- A avaliação automatizada e a conferência visual não equivalem a certificação integral de WCAG.
+
+Nenhum item da revisão ficou sem implementação. O PR permanece para aprovação do usuário.
+
+## Histórico da validação O4 inicial
+
 Base `main` em `0e14fa69`, branch `codex/o4-tela-lei`. Alterações restritas a `frontend/`. Backend e PoC preservados, sem alteração de suas rotas, testes ou arquivos. Nenhum deploy ou GitHub Actions.
 
 ## Execuções

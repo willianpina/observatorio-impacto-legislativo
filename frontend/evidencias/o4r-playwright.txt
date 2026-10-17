@@ -1,0 +1,56 @@
+
+> oil-frontend@0.1.0 test:e2e
+> playwright test
+
+[WebServer] (node:30796) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:18728) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 41 tests using 1 worker
+
+(node:28116) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 tests\proxy.spec.ts:6:5 › safeHref aceita só HTTPS das fontes, com fronteiras de domínio e caminho MTE (13ms)
+  ok  2 tests\proxy.spec.ts:11:5 › proxy: cache de 15 segundos, janela isolada, 429 por IP e Retry-After (26ms)
+  ok  3 tests\tela.spec.ts:11:5 › resumo do Caged separa valor oficial e cálculo, como o card (1.9s)
+  ok  4 tests\tela.spec.ts:21:71 › card desocupacao: valor único, fonte, horário e selo (1.8s)
+  ok  5 tests\tela.spec.ts:21:71 › card rendimento-real: valor único, fonte, horário e selo (1.3s)
+  ok  6 tests\tela.spec.ts:21:71 › card caged-saldo: valor único, fonte, horário e selo (1.8s)
+  ok  7 tests\tela.spec.ts:32:5 › cabeçalhos de segurança preservam hidratação e consultas (1.3s)
+  ok  8 tests\tela.spec.ts:43:79 › links inválidos viram texto: javascript:alert(1) (1.7s)
+  ok  9 tests\tela.spec.ts:43:79 › links inválidos viram texto: https://estranho.example/roubo (991ms)
+  ok 10 tests\tela.spec.ts:53:5 › marco dentro da série desenha linha vertical cinza e tracejada (873ms)
+  ok 11 tests\tela.spec.ts:60:5 › CSV preserva e neutraliza todos os prefixos perigosos (1.4s)
+  ok 12 tests\tela.spec.ts:68:5 › erro informa o prazo recebido da API (597ms)
+  ok 13 tests\tela.spec.ts:72:42 › axe 360: detalhes abertos, modo caged (5.0s)
+  ok 14 tests\tela.spec.ts:72:42 › axe 360: detalhes abertos, modo normal (4.0s)
+  ok 15 tests\tela.spec.ts:88:5 › aviso exato, origem e dado de teste; indicador sem tipo monetário (934ms)
+  ok 16 tests\tela.spec.ts:99:5 › modo normal não exibe mock nem aceita dados simulados (546ms)
+  ok 17 tests\tela.spec.ts:108:5 › janela altera só o gráfico; classificação vem da API (2.3s)
+  ok 18 tests\tela.spec.ts:125:73 › estado gap (901ms)
+  ok 19 tests\tela.spec.ts:125:73 › estado error (735ms)
+  ok 20 tests\tela.spec.ts:125:73 › estado stale (664ms)
+  ok 21 tests\tela.spec.ts:125:73 › estado empty (581ms)
+  ok 22 tests\tela.spec.ts:125:73 › estado unclassified (1.2s)
+  ok 23 tests\tela.spec.ts:135:5 › Caged indisponível não tem eixos, números ou gráfico (1.6s)
+  ok 24 tests\tela.spec.ts:141:5 › Caged com ajustes, atribuição e cálculo separados, sem misturar séries (1.4s)
+  ok 25 tests\tela.spec.ts:154:5 › marcos neutros, previsões com artigo e sem estender dados (1.8s)
+  ok 26 tests\tela.spec.ts:166:5 › placar conferido: total 494, obstrução 1 separada (1.7s)
+  ok 27 tests\tela.spec.ts:174:5 › tramitação e votos paginam, sigla ausente não é completada (1.5s)
+  ok 28 tests\tela.spec.ts:183:5 › votação simbólica fica sem números (1.2s)
+  ok 29 tests\tela.spec.ts:191:5 › inconsistência entre partidos e placar não exibe aprovação (1.7s)
+  ok 30 tests\tela.spec.ts:204:5 › frases proibidas em todo texto, dicas, tabelas e rótulos (1.1s)
+  ok 31 tests\tela.spec.ts:213:5 › abas funcionam com teclado e CSV pode ser baixado (1.5s)
+  ok 32 tests\tela.spec.ts:223:97 › axe e captura 360px normal (3.0s)
+  ok 33 tests\tela.spec.ts:223:97 › axe e captura 360px gap (3.2s)
+  ok 34 tests\tela.spec.ts:223:97 › axe e captura 360px error (2.4s)
+  ok 35 tests\tela.spec.ts:223:97 › axe e captura 360px empty (2.1s)
+  ok 36 tests\tela.spec.ts:223:97 › axe e captura 360px stale (2.9s)
+  ok 37 tests\tela.spec.ts:223:97 › axe e captura 1280px normal (3.2s)
+  ok 38 tests\tela.spec.ts:223:97 › axe e captura 1280px gap (3.2s)
+  ok 39 tests\tela.spec.ts:223:97 › axe e captura 1280px error (3.0s)
+  ok 40 tests\tela.spec.ts:223:97 › axe e captura 1280px empty (2.3s)
+  ok 41 tests\tela.spec.ts:223:97 › axe e captura 1280px stale (3.9s)
+
+  41 passed (1.3m)
