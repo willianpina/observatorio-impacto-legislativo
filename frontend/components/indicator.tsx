@@ -6,6 +6,7 @@ import type { Marco } from '../lib/contrato-lei-provisorio';
 import type { DataState, Series, Window } from '../lib/types';
 import { date,  number, period, periodType, valueLabel, TITLES } from '../lib/types';
 import { Chart } from './chart';
+import { csvCell } from '../lib/csv';
 
 export function Source({data}:{data:Series}){ const attribution=data.codigo==='caged-saldo'?`${data.fonte}, ${data.tabela_ou_arquivo??'Tabela não informada'}, arquivo ${data.arquivo_origem??'Não informado'}, licença ${data.licenca??'Não informada'}`:`${data.fonte} · ${data.tabela_ou_arquivo}`;return <p className="source">Fonte: {data.link?<SourceLink href={data.link}>{attribution}</SourceLink>:attribution}<br/>Coletado em {date(data.coletado_em,true)} {data.coletado_em?'(BRT)':''}</p>; }
 export function Classification({data}:{data:Series}){ return data.classificacao?<span className="classification"><span aria-hidden="true">{data.classificacao==='subiu'?'▲':data.classificacao==='caiu'?'▼':'='}</span> {data.classificacao==='estavel'?'estável':data.classificacao}<small>{data.classificacao_origem==='ibge'?'classificação publicada pelo IBGE':'calculado pelo Observatório com a margem de erro do IBGE'}</small></span>:null; }
@@ -39,9 +40,8 @@ export function Indicator({code,window,testMode,marcos,onState,onInvalidWindow}:
   const data=state.status==='ready'?state.data:null;
   function csv(){
     if(!data)return;
-    const cell=(v:unknown)=>`"${String(v??'').replace(/^[=+\-@\t\r]/,"'$&").replaceAll('"','""')}"`;
     const rows=[['periodo','valor','unidade','cv','variacao_anual','variacao_anual_unidade','lacuna','coleta_id','coletado_em','ajuste','competencia_coleta'],...data.pontos.map(p=>[p.periodo,p.valor,p.unidade,p.cv,p.variacao_anual,data.variacao_anual_unidade,p.valor===null,p.coleta_id,p.coletado_em,p.ajuste,p.competencia_coleta])];
-    const url=URL.createObjectURL(new Blob(['\uFEFF'+rows.map(r=>r.map(cell).join(';')).join('\r\n')],{type:'text/csv;charset=utf-8'}));
+    const url=URL.createObjectURL(new Blob(['\uFEFF'+rows.map(r=>r.map(csvCell).join(';')).join('\r\n')],{type:'text/csv;charset=utf-8'}));
     const a=document.createElement('a');a.href=url;a.download=`${code}-${window}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
   }
   return <article className="indicator-card" data-testid={`card-${code}`} aria-labelledby={`heading-${code}`}>

@@ -52,6 +52,14 @@ Sem proxy confiável, todos os acessos pertencem ao cliente local e compartilham
 
 Os cabeçalhos CSP, `nosniff` e política de referência são enviados pelo Next.js. A CSP mantém as origens locais e permite scripts inline para o bootstrap do Next.js e estilos inline para o Recharts; não permite scripts de terceiros, objetos nem incorporação em frames. Uma política sem `unsafe-inline` requer nonces e é uma melhoria futura, além dos cabeçalhos solicitados nesta revisão.
 
+## Revisão O4-R2
+
+O contrato legislativo provisório 0.2 troca `vigencia` textual por publicação, regra geral, etapas e fontes; consulte `referencias/contrato-lei-provisorio-v0.2.md`. O resumo é derivado do dado. Uma etapa só recebe previsão quando sua data é calculada e posterior ao dia corrente em Brasília. A publicação nunca recebe previsão. Datas, artigos e links vêm da estrutura, sem ativar dados legislativos no modo normal.
+
+O CSV distingue números de texto: números negativos continuam numéricos, enquanto texto que começa com caractere de fórmula recebe o prefixo protetor. O proxy valida caminho e janela antes de contar a quota. Localmente, sem `OIL_TRUST_PROXY`, o limite de **60/min é único para todos**; a revisão não modifica essa configuração.
+
+A conferência opt-in de mutações executa `node tests/check-mutations.mjs`, dentro de `frontend/`, com os servidores de teste parados. Ela injeta regressões intencionais, exige falhas de asserção e restaura os bytes dos fontes em `finally`. Depois, é obrigatório recompilar e executar a suíte final: o build intermediário contém as mutações. Os resultados intencionais ficam separados da execução final aprovada.
+
 ## Evidências e limites
 
 Consulte `VALIDACAO.md` e `evidencias/`. Axe automatizado complementa a conferência visual e por teclado; não representa certificação integral de acessibilidade. As capturas simuladas têm faixa de teste. As capturas `real-*` usam coletas reais da API local e não apresentam dados legislativos de teste.

@@ -1,0 +1,117 @@
+{
+  "modo": "regressoes intencionais, nao sao falhas da entrega",
+  "resultados": [
+    {
+      "mutacao": "2: CSV volta a escapar números",
+      "detectada": true,
+      "stats": {
+        "startTime": "2026-10-17T21:53:51.023Z",
+        "duration": 882.667,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      }
+    },
+    {
+      "mutacao": "3: previsão ignora passagem do tempo",
+      "detectada": true,
+      "stats": {
+        "startTime": "2026-10-17T21:53:52.735Z",
+        "duration": 1165.745,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      }
+    },
+    {
+      "mutacao": "4: trimestral volta a mensal",
+      "detectada": true,
+      "stats": {
+        "startTime": "2026-10-17T21:53:54.790Z",
+        "duration": 1159.879,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      }
+    },
+    {
+      "mutacao": "5: guarda de marco e variação removida",
+      "detectada": true,
+      "stats": {
+        "startTime": "2026-10-17T21:53:56.902Z",
+        "duration": 2544.317,
+        "expected": 2,
+        "skipped": 0,
+        "unexpected": 2,
+        "flaky": 0
+      }
+    },
+    {
+      "mutacao": "7: domínio perde fronteira de subdomínio",
+      "detectada": true,
+      "stats": {
+        "startTime": "2026-10-17T21:54:00.366Z",
+        "duration": 952.9680000000001,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      }
+    },
+    {
+      "mutacao": "8: quota contada antes da validação",
+      "detectada": true,
+      "stats": {
+        "startTime": "2026-10-17T21:54:02.173Z",
+        "duration": 1078.1370000000002,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      }
+    },
+    {
+      "mutacao": "1: trava de simulada removida",
+      "detectada": true,
+      "stats": {
+        "testes": 1,
+        "unexpected": 1
+      }
+    },
+    {
+      "mutacao": "3: vigência volta a texto fixo",
+      "detectada": true,
+      "stats": {
+        "testes": 1,
+        "unexpected": 1
+      }
+    },
+    {
+      "mutacao": "6: foco deixa de revelar fonte",
+      "detectada": true,
+      "stats": {
+        "testes": 1,
+        "unexpected": 1
+      }
+    },
+    {
+      "mutacao": "9: resumo diverge do card",
+      "detectada": true,
+      "stats": {
+        "testes": 2,
+        "unexpected": 2
+      }
+    },
+    {
+      "mutacao": "9: imagem sem alternativa nos detalhes desktop",
+      "detectada": true,
+      "stats": {
+        "testes": 1,
+        "unexpected": 1
+      }
+    }
+  ]
+}

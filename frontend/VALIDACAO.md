@@ -1,5 +1,34 @@
 # Validação O4 — 17/10/2026
 
+## Revisão O4-R2 — PR #2
+
+Mesma branch `codex/o4-tela-lei`, base `13b012bf44ea56a31dfb9720357cfeeebeff7309`. Código, testes e evidências alterados somente em `frontend/`; backend, PoC e O3 preservados. O documento de instruções do usuário em `docs/missao-o4-r2-codex.md` permanece intacto e não versionado. Sem merge, outro PR, force push, CI ou deploy.
+
+A cobertura dos itens 1–9, com o nome de cada teste e a regressão que o faz reprovar, está em `evidencias/o4r2-cobertura.md`. A prova executável está em `tests/check-mutations.mjs`: são 11 mutações intencionais, com seis cenários de helpers/proxy e cinco cenários visuais (um deles cobre as duas séries). As falhas intencionais ficam separadas da execução final: `o4r2-mutacoes.json`, `o4r2-mutacoes-ui.json` e `o4r2-mutacoes.txt`.
+
+O contrato legislativo provisório passa à versão **0.2**, documentada em `referencias/contrato-lei-provisorio-v0.2.md`. A vigência vem da estrutura do dado, com fontes, artigos e horários de consulta. Datas calculadas só recebem previsão quando posteriores ao dia corrente em Brasília; datas expressas e publicação não recebem esse rótulo. A fixture continua exclusiva do modo de teste. Os testes congelam o dia de referência para que a passagem real do tempo não invalide as asserções.
+
+O CSV preserva números negativos e protege somente texto. O proxy valida caminho/janela antes de contar consultas; a política de IP e o limite local compartilhado continuam iguais. Os quatro casos extras de domínio já eram recusados/normalizados corretamente pelo `safeHref`, sem necessidade de mudar sua política.
+
+### Resultados e evidências O4-R2
+
+| Verificação | Resultado final |
+|---|---|
+| Playwright | 62 aprovados; 0 falhas, 0 ignorados, 0 instáveis; 109,671 s |
+| Axe | 14 cenários, zero violações graves/críticas |
+| Prova de mutação | 11 regressões detectadas; fontes restaurados antes da execução final |
+| Typecheck e build | Aprovados |
+
+O resumo final com contagens e duração está em `evidencias/o4r2-testes.json`; a execução integral em `o4r2-playwright.txt`. `o4r2-typecheck.txt` e `o4r2-build.txt` registram as verificações dos fontes restaurados após as mutações. As capturas `o4r2-*-fixture.png` e os JSONs `o4r2-axe-*` registram os cenários de 360 e 1280 px, incluindo todos os detalhes abertos. São fixtures, não novas coletas oficiais. Nenhum dado real anterior é substituído por simulação.
+
+**Pytest:** a primeira execução na pasta de trabalho teve **169 aprovados, 1 falha, 2 ignorados e 1 aviso** no backend; a PoC teve **39 aprovados e 1 aviso**. A falha foi `test_no_forbidden_phrases_in_all_docs`: o próprio arquivo de instruções não versionado contém a expressão que o teste proíbe. O log original foi preservado em `o4r2-pytest.txt`. Não se alterou o teste, nem se apagou ou editou a missão para ocultar a falha.
+
+A regressão dos arquivos versionados foi então executada numa cópia isolada obtida com `git archive HEAD backend poc docs`, usando o script de PostgreSQL descartável existente: **170 aprovados, 2 ignorados, 1 aviso em 59,67 s** no backend; **39 aprovados, 1 aviso em 4,33 s** na PoC. Evidência: `o4r2-pytest-versionados.txt`. Os fontes backend/PoC da pasta de trabalho não diferem dessa base. A execução direta continuará encontrando o documento de instruções enquanto ele permanecer em `docs/`; essa é uma ressalva do ambiente local, não um resultado omitido.
+
+**Gitleaks:** a evidência versionada `o4r2-gitleaks-final.json` identifica o SHA do commit final de código e a varredura de todo seu histórico. Ela entra num commit posterior de evidência. O histórico incluindo esse último commit também é examinado antes do push. Um arquivo não pode conter literalmente o SHA do próprio commit, pois adicionar o SHA altera o commit; por isso o SHA do código coberto e o SHA final da branch são distinguidos na entrega. Nenhuma exceção nova é criada.
+
+A relação de arquivos desta revisão está em `evidencias/o4r2-arquivos.txt`. Não houve nova ingestão real nem validação legal independente; a informação legislativa da missão continua identificada como fixture. Permanecem as limitações de CSP e limite/cache em memória descritas na O4-R.
+
 ## Revisão O4-R — PR #2
 
 Mesma branch `codex/o4-tela-lei`, sobre o commit O4 `e235dfc6bb06f3ea6a739c858a1209d046752373`. Todos os itens 1–16 da revisão foram implementados exclusivamente em `frontend/`, inclusive as melhorias opcionais. Sem alteração em backend, PoC ou O3; sem merge, CI ou deploy.

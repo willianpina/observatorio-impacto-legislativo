@@ -12,11 +12,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ pat
   // IP arbitrário do navegador. O proxy habilitado deve sobrescrever este header.
   const ip = process.env.OIL_TRUST_PROXY === '1'
     ? (request.headers.get('x-forwarded-for')?.split(',')[0].trim().slice(0,64) || 'local') : 'local';
-  for (const [key, client] of clients) if (client.expires <= now) clients.delete(key);
-  if (!clients.has(ip) && clients.size >= 1024) return limited(60);
-  const client = clients.get(ip) || { count: 0, expires: now + WINDOW_MS };
-  clients.set(ip, client);
-  if (++client.count > MAX_REQUESTS) return limited(Math.max(1, Math.ceil((client.expires - now) / 1000)));
+
 
   const { path = [] } = await context.params;
   const code = path[0];
@@ -25,6 +21,12 @@ export async function GET(request: NextRequest, context: { params: Promise<{ pat
   const janela = request.nextUrl.searchParams.get('janela') || '5a';
   if (!['2a','5a','desde_2020'].includes(janela))
     return NextResponse.json({ erro: { fonte: 'API local', mensagem: 'Parâmetro janela inválido.' } }, { status: 422 });
+  for (const [key, client] of clients) if (client.expires <= now) clients.delete(key);
+  if (!clients.has(ip) && clients.size >= 1024) return limited(60);
+  const client = clients.get(ip) || { count: 0, expires: now + WINDOW_MS };
+  clients.set(ip, client);
+  if (++client.count > MAX_REQUESTS) return limited(Math.max(1, Math.ceil((client.expires - now) / 1000)));
+
   const base = process.env.OIL_API_URL;
   if (!base) return NextResponse.json({ erro: { fonte: 'API local', mensagem: 'API local ainda não configurada.' } }, { status: 503 });
   const key = `${path.join('/')}?janela=${janela}`;

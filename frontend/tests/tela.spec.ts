@@ -2,11 +2,13 @@ import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { fixture,intercept } from './fixtures';
 import fs from 'node:fs/promises';
+import {languageViolations} from './linguagem';
+import {lei} from '../mocks/lei';
 
 const warning = 'É cedo para afirmar. A emenda começa a valer em etapas, e os dados oficiais saem com atraso. Mudanças nos indicadores podem ter várias causas.';
 const legend = 'Marcos de calendário. Não indicam efeito da lei.';
 
-test.beforeEach(async ({page}) => intercept(page));
+test.beforeEach(async ({page}) => {await intercept(page);await page.clock.setFixedTime(new Date('2026-10-17T15:00:00Z'));});
 
 test('resumo do Caged separa valor oficial e cálculo, como o card',async({page})=>{
   await page.unroute('**/api/oil/indicadores/**');await intercept(page,'caged');await page.goto('/');
@@ -15,7 +17,7 @@ test('resumo do Caged separa valor oficial e cálculo, como o card',async({page}
   await expect(summary.getByTestId('resumo-caged-valor-oficial')).not.toContainText('Cálculo');
   await expect(summary.getByTestId('resumo-caged-comparacao')).toHaveText(await page.getByTestId('card-caged-saldo').getByTestId('caged-comparacao').textContent()||'');
   await expect(summary.getByText('Saldo com ajustes',{exact:true})).toBeVisible();
-  await expect(page.getByText('Promulgada em 16/10/2026. Começa a valer em etapas: 16/12/2026 (prevista) e 16/12/2027 (prevista).',{exact:true})).toBeVisible();
+  await expect(page.getByText('Em vigor desde 16/10/2026, data da publicação, exceto: repouso de 2 dias por semana e limite de 42 h semanais a partir de 16/12/2026 (prevista); limite de 40 h semanais a partir de 16/12/2027 (prevista).',{exact:true})).toBeVisible();
 });
 
 for(const code of ['desocupacao','rendimento-real','caged-saldo'])test(`card ${code}: valor único, fonte, horário e selo`,async({page})=>{
@@ -69,20 +71,20 @@ test('erro informa o prazo recebido da API',async({page})=>{
   await page.unroute('**/api/oil/indicadores/**');await intercept(page,'error');await page.goto('/');await expect(page.getByTestId('card-desocupacao')).toContainText('Tente novamente em 60 segundos.');
 });
 
-for(const mode of ['caged','normal'])test(`axe 360: detalhes abertos, modo ${mode}`,async({page})=>{
-  await page.setViewportSize({width:360,height:1000});await page.unroute('**/api/oil/indicadores/**');await intercept(page,mode==='caged'?'caged':'normal',mode==='normal');
+for(const width of [360,1280])for(const mode of ['caged','normal'])test(`axe ${width}: detalhes abertos, modo ${mode}`,async({page})=>{
+  await page.setViewportSize({width,height:1000});await page.unroute('**/api/oil/indicadores/**');await intercept(page,mode==='caged'?'caged':'normal',mode==='normal');
   await page.goto(mode==='normal'?'http://127.0.0.1:3102':'/');
   await expect(page.getByTestId('card-desocupacao')).toContainText('Último dado');
   await expect(page.getByText(warning,{exact:true})).toBeVisible();
-  for(const more of await page.locator('details.more > summary').all())await more.click();
+  for(const more of await page.locator('details.more > summary,.vigencia details > summary').all())await more.click();
   await expect(page.locator('details.more[open]')).toHaveCount(mode==='caged'?3:2);
   const axe=await new AxeBuilder({page}).analyze();const severe=axe.violations.filter(v=>['serious','critical'].includes(v.impact||''));
   expect(severe).toEqual([]);
-  await fs.writeFile(`test-results/o4r-axe-360-aberto-${mode}.json`,JSON.stringify({fixture:true,modo:mode,width:360,detalhes_abertos:true,graves_criticas:severe.length,violacoes:axe.violations.map(v=>({id:v.id,impacto:v.impact}))},null,2));
+  await fs.writeFile(`test-results/o4r2-axe-${width}-aberto-${mode}.json`,JSON.stringify({fixture:true,modo:mode,width,detalhes_abertos:true,graves_criticas:severe.length,violacoes:axe.violations.map(v=>({id:v.id,impacto:v.impact}))},null,2));
   for(const graph of await page.locator('.chart[role="img"]').all())await expect(graph.locator('[tabindex]:not([tabindex="-1"]),a[href],button,input,summary')).toHaveCount(0);
   await expect(page.getByTestId('card-desocupacao').locator('.chart[role="img"]')).toHaveAttribute('aria-label',/5,3 %.*caiu/);
   await expect(page.locator('figcaption').first()).not.toContainText('trimestre_movel');
-  await page.screenshot({path:`test-results/o4r-360-aberto-${mode}-fixture.png`,fullPage:true});
+  await page.screenshot({path:`test-results/o4r2-${width}-aberto-${mode}-fixture.png`,fullPage:true});
 });
 
 test('aviso exato, origem e dado de teste; indicador sem tipo monetário', async ({page}) => {
@@ -160,7 +162,7 @@ test('marcos neutros, previsões com artigo e sem estender dados', async ({page}
     if(await marker.getAttribute('data-prevista')==='true') await expect(marker).toHaveCSS('border-left-style','dashed');
   }
   await expect(page.getByText('data calculada pelo Observatório a partir da publicação').first()).toBeVisible();
-  await expect(page.getByText('Art. 6º, I',{exact:false}).first()).toBeVisible();
+  await expect(page.locator('.law-milestones').getByText('Art. 6º, I',{exact:false}).first()).toBeVisible();
 });
 
 test('placar conferido: total 494, obstrução 1 separada', async ({page}) => {
@@ -207,7 +209,10 @@ test('frases proibidas em todo texto, dicas, tabelas e rótulos', async ({page})
   const text=await page.locator('body').evaluate(el=>{const copy=el.cloneNode(true) as HTMLElement;copy.querySelectorAll('script,style').forEach(node=>node.remove());return copy.textContent||'';});
   const attributes=await page.locator('[aria-label],[title],[alt]').evaluateAll(els=>els.map(e=>[e.getAttribute('aria-label'),e.getAttribute('title'),e.getAttribute('alt')].join(' ')).join(' '));
   const corpus=(text.split(legend).join('')+' '+attributes).toLocaleLowerCase('pt-BR');
-  for(const phrase of ['causou','graças a','por causa da lei','depois da aprovação','desde a promulgação','efeito da lei','após a vigência','impacto da lei','antes × depois']) expect(corpus).not.toContain(phrase);
+  expect(languageViolations(text+' '+attributes)).toEqual([]);
+  const phrases=await page.locator('p,h1,h2,h3,h4,figcaption,td,th,[aria-label],[title],[alt]').evaluateAll(els=>els.map(el=>(el.textContent||'')+' '+['aria-label','title','alt'].map(a=>el.getAttribute(a)||'').join(' ')));
+  const markers=lei.marcos.flatMap(m=>[m.rotulo,m.data]);
+  for(const phrase of phrases)expect(languageViolations(phrase,markers),phrase).toEqual([]);
 });
 
 test('abas funcionam com teclado e CSV pode ser baixado',async({page})=>{
