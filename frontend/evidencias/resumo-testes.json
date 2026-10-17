@@ -1,0 +1,38 @@
+{
+  "executado_em": "2026-10-17T14:47:05.261Z",
+  "playwright": {
+    "startTime": "2026-10-17T14:47:05.261Z",
+    "duration": 69632.50099999999,
+    "expected": 27,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "pytest_backend": {
+    "duracao_segundos": 58.49,
+    "passaram": 170,
+    "ignorados": 2,
+    "avisos": 1
+  },
+  "pytest_poc": {
+    "duracao_segundos": 4.39,
+    "passaram": 39,
+    "avisos": 1
+  },
+  "axe": {
+    "larguras": [
+      360,
+      1280
+    ],
+    "graves_criticas": 0,
+    "estados": [
+      "normal",
+      "gap",
+      "error",
+      "empty",
+      "stale"
+    ]
+  },
+  "build": "aprovado",
+  "typecheck": "aprovado"
+}
