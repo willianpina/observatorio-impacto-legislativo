@@ -1,0 +1,5 @@
+Gitleaks sobre a revisão preparada para commit e hook oficial.
+6:58PM INF 0 commits scanned.
+6:58PM INF scanned ~74237 bytes (74.24 KB) in 368ms
+6:58PM INF no leaks found
+Detect hardcoded secrets.................................................Passed

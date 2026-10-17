@@ -1,0 +1,345 @@
+{
+  "stats": {
+    "startTime": "2026-10-17T21:55:58.140Z",
+    "duration": 109670.95599999999,
+    "expected": 62,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "testes": [
+    {
+      "arquivo": "proxy.spec.ts",
+      "teste": "R2-2 CSV preserva número negativo e escapa somente texto",
+      "aprovado": true
+    },
+    {
+      "arquivo": "proxy.spec.ts",
+      "teste": "R2-3 vigência é derivada do dado, e prevista exige data calculada futura",
+      "aprovado": true
+    },
+    {
+      "arquivo": "proxy.spec.ts",
+      "teste": "R2-4 periodicidade trimestral não vira mensal",
+      "aprovado": true
+    },
+    {
+      "arquivo": "proxy.spec.ts",
+      "teste": "R2-5 linguagem rejeita: Após a Aprovação no Senado, a desocupação caiu.",
+      "aprovado": true
+    },
+    {
+      "arquivo": "proxy.spec.ts",
+      "teste": "R2-5 linguagem rejeita: antes e depois da lei",
+      "aprovado": true
+    },
+    {
+      "arquivo": "proxy.spec.ts",
+      "teste": "R2-5 linguagem rejeita: Aprovação no Senado: variação anual de -0,3 p.p.",
+      "aprovado": true
+    },
+    {
+      "arquivo": "proxy.spec.ts",
+      "teste": "R2-5 exceção restrita à legenda literal",
+      "aprovado": true
+    },
+    {
+      "arquivo": "proxy.spec.ts",
+      "teste": "R2-7 safeHref testa domínios ambíguos e canonicalização",
+      "aprovado": true
+    },
+    {
+      "arquivo": "proxy.spec.ts",
+      "teste": "R2-8 requisições inválidas não consomem cota",
+      "aprovado": true
+    },
+    {
+      "arquivo": "proxy.spec.ts",
+      "teste": "safeHref aceita só HTTPS das fontes, com fronteiras de domínio e caminho MTE",
+      "aprovado": true
+    },
+    {
+      "arquivo": "proxy.spec.ts",
+      "teste": "proxy: cache de 15 segundos, janela isolada, 429 por IP e Retry-After",
+      "aprovado": true
+    },
+    {
+      "arquivo": "r2.spec.ts",
+      "teste": "R2-1 modo normal recusa série simulada: sem valor nem gráfico",
+      "aprovado": true
+    },
+    {
+      "arquivo": "r2.spec.ts",
+      "teste": "R2-2 CSV conserva -10 numérico e neutraliza =1+1 e -x textuais",
+      "aprovado": true
+    },
+    {
+      "arquivo": "r2.spec.ts",
+      "teste": "R2-3 vigência exata, artigos e fontes nos detalhes",
+      "aprovado": true
+    },
+    {
+      "arquivo": "r2.spec.ts",
+      "teste": "R2-3 vigência sem prevista após a data e no dia exato",
+      "aprovado": true
+    },
+    {
+      "arquivo": "r2.spec.ts",
+      "teste": "R2-3 mudar vigência no dado muda a tela; publicação nunca é prevista",
+      "aprovado": true
+    },
+    {
+      "arquivo": "r2.spec.ts",
+      "teste": "R2-4 fixture trimestral mostra Trimestral e trimestre de calendário",
+      "aprovado": true
+    },
+    {
+      "arquivo": "r2.spec.ts",
+      "teste": "R2-6 foco por Tab no marco revela fonte e link sem clique",
+      "aprovado": true
+    },
+    {
+      "arquivo": "r2.spec.ts",
+      "teste": "marco continua expansível e recolhível por clique",
+      "aprovado": true
+    },
+    {
+      "arquivo": "r2.spec.ts",
+      "teste": "R2-9 card e resumo têm o mesmo valor: desocupacao",
+      "aprovado": true
+    },
+    {
+      "arquivo": "r2.spec.ts",
+      "teste": "R2-9 card e resumo têm o mesmo valor: rendimento-real",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "resumo do Caged separa valor oficial e cálculo, como o card",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "card desocupacao: valor único, fonte, horário e selo",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "card rendimento-real: valor único, fonte, horário e selo",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "card caged-saldo: valor único, fonte, horário e selo",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "cabeçalhos de segurança preservam hidratação e consultas",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "links inválidos viram texto: javascript:alert(1)",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "links inválidos viram texto: https://estranho.example/roubo",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "marco dentro da série desenha linha vertical cinza e tracejada",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "CSV preserva e neutraliza todos os prefixos perigosos",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "erro informa o prazo recebido da API",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "axe 360: detalhes abertos, modo caged",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "axe 360: detalhes abertos, modo normal",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "axe 1280: detalhes abertos, modo caged",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "axe 1280: detalhes abertos, modo normal",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "aviso exato, origem e dado de teste; indicador sem tipo monetário",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "modo normal não exibe mock nem aceita dados simulados",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "janela altera só o gráfico; classificação vem da API",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "estado gap",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "estado error",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "estado stale",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "estado empty",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "estado unclassified",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "Caged indisponível não tem eixos, números ou gráfico",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "Caged com ajustes, atribuição e cálculo separados, sem misturar séries",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "marcos neutros, previsões com artigo e sem estender dados",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "placar conferido: total 494, obstrução 1 separada",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "tramitação e votos paginam, sigla ausente não é completada",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "votação simbólica fica sem números",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "inconsistência entre partidos e placar não exibe aprovação",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "frases proibidas em todo texto, dicas, tabelas e rótulos",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "abas funcionam com teclado e CSV pode ser baixado",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "axe e captura 360px normal",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "axe e captura 360px gap",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "axe e captura 360px error",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "axe e captura 360px empty",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "axe e captura 360px stale",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "axe e captura 1280px normal",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "axe e captura 1280px gap",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "axe e captura 1280px error",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "axe e captura 1280px empty",
+      "aprovado": true
+    },
+    {
+      "arquivo": "tela.spec.ts",
+      "teste": "axe e captura 1280px stale",
+      "aprovado": true
+    }
+  ],
+  "axe": {
+    "cenarios": 14,
+    "graves_criticas": 0
+  },
+  "mutacoes_detectadas": 11,
+  "pytest_versionados": {
+    "backend": {
+      "aprovados": 170,
+      "ignorados": 2,
+      "avisos": 1,
+      "segundos": 59.67
+    },
+    "poc": {
+      "aprovados": 39,
+      "avisos": 1,
+      "segundos": 4.33
+    }
+  },
+  "pytest_pasta_com_instrucao_nao_versionada": {
+    "backend_aprovados": 169,
+    "backend_falhas": 1,
+    "motivo": "Instruções em docs/missao-o4-r2-codex.md contêm expressão proibida pelo teste de documentos."
+  }
+}

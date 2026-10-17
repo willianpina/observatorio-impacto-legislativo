@@ -1,0 +1,13 @@
+DETECTADA: 2: CSV volta a escapar números (1 teste(s) falhou/falharam como esperado)
+DETECTADA: 3: previsão ignora passagem do tempo (1 teste(s) falhou/falharam como esperado)
+DETECTADA: 4: trimestral volta a mensal (1 teste(s) falhou/falharam como esperado)
+DETECTADA: 5: guarda de marco e variação removida (2 teste(s) falhou/falharam como esperado)
+DETECTADA: 7: domínio perde fronteira de subdomínio (1 teste(s) falhou/falharam como esperado)
+DETECTADA: 8: quota contada antes da validação (1 teste(s) falhou/falharam como esperado)
+Compilando as mutações de interface...
+DETECTADA: 1: trava de simulada removida (1 teste(s) falhou/falharam como esperado)
+DETECTADA: 3: vigência volta a texto fixo (1 teste(s) falhou/falharam como esperado)
+DETECTADA: 6: foco deixa de revelar fonte (1 teste(s) falhou/falharam como esperado)
+DETECTADA: 9: resumo diverge do card (2 teste(s) falhou/falharam como esperado)
+DETECTADA: 9: imagem sem alternativa nos detalhes desktop (1 teste(s) falhou/falharam como esperado)
+Todas as regressões foram detectadas. Os fontes serão restaurados; recompile e rode a suíte final.
