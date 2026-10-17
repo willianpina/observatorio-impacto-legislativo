@@ -1,0 +1,37 @@
+{
+  "simulada": true,
+  "respostas": [
+    {
+      "arquivo": "sidra-6381.json",
+      "url": "https://apisidra.ibge.gov.br/values/t/6381/n1/all/v/4099,4103,8816/p/all",
+      "codigo_http": 200,
+      "gravado_em": "2026-10-16T17:40:48.753094+00:00",
+      "sha256": "a5526f05e5231aa67f260e5700cadf1be50b6de47d917d3f5b4773d9d376f685",
+      "uso": "simulada: replay somente em testes; conteúdo gravado de resposta real"
+    },
+    {
+      "arquivo": "metadados-6381.json",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/6381/metadados",
+      "codigo_http": 200,
+      "gravado_em": "2026-10-16T17:40:48.755685+00:00",
+      "sha256": "6d1f3602c89d9fa6dcdc3e38422964a91e61af9d2ee243694db78dc68580edef",
+      "uso": "simulada: replay somente em testes; conteúdo gravado de resposta real"
+    },
+    {
+      "arquivo": "sidra-6390.json",
+      "url": "https://apisidra.ibge.gov.br/values/t/6390/n1/all/v/5933,5941,8837,8838/p/all",
+      "codigo_http": 200,
+      "gravado_em": "2026-10-16T17:40:48.757582+00:00",
+      "sha256": "4f10d93c6788ea59777f719b9db62f9f0b2f3d74abccb00d73ad146be818e1eb",
+      "uso": "simulada: replay somente em testes; conteúdo gravado de resposta real"
+    },
+    {
+      "arquivo": "metadados-6390.json",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/6390/metadados",
+      "codigo_http": 200,
+      "gravado_em": "2026-10-16T17:40:48.759860+00:00",
+      "sha256": "1e121ac94001a551fe53ea75368a7a7086e334c96a3c32f004448edfed01622b",
+      "uso": "simulada: replay somente em testes; conteúdo gravado de resposta real"
+    }
+  ]
+}
