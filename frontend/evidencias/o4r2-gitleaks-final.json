@@ -1,0 +1,10 @@
+{
+  "sha_coberto": "8b946d42732a58c8f96036aee026da1c0df651d8",
+  "escopo": "Histórico completo da branch até o commit final de código O4-R2",
+  "gitleaks_versao": "8.30.1",
+  "ocorrencias": 0,
+  "codigo_saida": 0,
+  "redacao": "100%",
+  "comando": "gitleaks git . --config .gitleaks.toml --redact=100 --no-banner",
+  "registro": "Esta evidência é adicionada em commit posterior. O histórico incluindo o commit de evidência é examinado novamente antes do push."
+}
