@@ -3,13 +3,15 @@ import hashlib
 import os
 import ssl
 from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
+import re
 
 import httpx
 import truststore
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 
-from .catalog import SPECS
+from .catalog import CAGED, SPECS
 from .classification import classify
 from .models import Coleta, Fonte, Observacao, Serie
 from .sidra import parse, previous_year, validate_metadata
@@ -24,7 +26,27 @@ class SourceFailure(Exception):
 def make_client():
     return httpx.AsyncClient(verify=truststore.SSLContext(ssl.PROTOCOL_TLS_CLIENT),
         timeout=httpx.Timeout(20, connect=5), follow_redirects=False,
+        limits=httpx.Limits(max_connections=5, max_keepalive_connections=5),
         headers={'Accept': 'application/json', 'User-Agent': 'OIL-O2/1.0'})
+
+
+def retry_delay(response, attempt, *, now=None):
+    fallback = 0.25 * 2 ** attempt
+    if response is None or response.status_code not in {429,503}:
+        return fallback
+    header = response.headers.get('Retry-After','').strip()
+    if re.fullmatch(r'[0-9]+',header):
+        header = header.lstrip('0') or '0'
+        # Evita conversão de inteiros com milhares de dígitos fornecidos pela fonte.
+        return min(int(header),60) if len(header) <= 3 else 60
+    try:
+        instant = parsedate_to_datetime(header)
+        if instant.tzinfo is None:
+            return fallback
+        delay = (instant-(now or datetime.now(timezone.utc))).total_seconds()
+        return min(max(delay,0),60)
+    except (TypeError,ValueError,OverflowError):
+        return fallback
 
 
 def ensure_catalog(session, spec):
@@ -38,6 +60,14 @@ def ensure_catalog(session, spec):
         medida=spec.medida, tipo_valor=spec.tipo_valor, tipo_periodo='trimestre_movel',
         base_precos=None).on_conflict_do_nothing(index_elements=['codigo']))
     return source.id
+
+
+def ensure_unavailable_catalog(session):
+    session.execute(insert(Fonte).values(codigo='mte-caged',nome='MTE / Novo Caged',link=None)
+                    .on_conflict_do_nothing(index_elements=['codigo']))
+    source_id = session.scalar(select(Fonte.id).where(Fonte.codigo=='mte-caged'))
+    session.execute(insert(Serie).values(fonte_id=source_id,**CAGED)
+                    .on_conflict_do_nothing(index_elements=['codigo']))
 
 
 class Collector:
@@ -60,6 +90,7 @@ class Collector:
 
     async def fetch(self, spec, url, kind):
         for attempt in range(3):
+            response = None
             try:
                 response = await self.client.get(url)
             except httpx.TimeoutException:
@@ -77,7 +108,7 @@ class Collector:
                 if error.status != 503:
                     raise error
             if attempt < 2:
-                await self.sleep(0.25 * 2 ** attempt)
+                await self.sleep(retry_delay(response,attempt))
         raise error
 
     def invalidate(self, collection_id):

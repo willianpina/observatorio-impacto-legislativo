@@ -4,7 +4,6 @@ from datetime import datetime, timedelta, timezone
 
 import httpx
 import pytest
-from fastapi.testclient import TestClient
 from sqlalchemy import select
 
 from backend.oil.main import app
@@ -12,13 +11,6 @@ from backend.oil.ingest import SourceFailure
 from backend.oil.models import Divulgacao, Serie
 from backend.oil.read import read_series
 from .conftest import ROOT, collect
-
-
-@pytest.fixture
-def client(sf):
-    with TestClient(app) as client:
-        app.state.sessions=sf
-        yield client
 
 
 @pytest.mark.parametrize('codigo', ['desocupacao','rendimento-real'])
@@ -38,13 +30,16 @@ def test_routes_contract(populated, client, codigo):
     assert datetime.fromisoformat(data['coletado_em']).tzinfo is not None
     assert data['classificacao_origem']=='calculada'
     assert data['variaveis']['variacao_anual']==('8816' if codigo=='desocupacao' else '8837')
-    assert client.get(f'/api/v1/indicadores/{codigo}').json()==data
+    assert client.get(f'/api/v1/indicadores/{codigo}').status_code==404
+    assert data['tipo_valor'] == (None if codigo=='desocupacao' else 'real')
+    assert data['variacao_anual_unidade'] == ('p.p.' if codigo=='desocupacao' else '%')
+    assert all(p['variacao_anual_unidade']==data['variacao_anual_unidade'] for p in data['pontos'])
 
 
 def test_index(populated, client):
     data=client.get('/api/v1/indicadores').json()
     assert {'fonte','coletado_em','atrasado_calendario'}<=set(data)
-    assert {s['codigo'] for s in data['indicadores']}=={'desocupacao','rendimento-real'}
+    assert {s['codigo'] for s in data['indicadores']}=={'desocupacao','rendimento-real','caged-saldo'}
 
 
 @pytest.mark.parametrize('janela,count,first',[('2a',24,'202409'),('5a',60,'202109'),('desde_2020',80,'202001')])
@@ -136,6 +131,7 @@ def test_source_error_without_previous_data(sf,replay,client,kind,status):
     response=client.get('/api/v1/indicadores/desocupacao/serie')
     assert response.status_code==status
     assert set(response.json()['erro'])=={'codigo','mensagem','fonte','tentar_novamente_em','ultima_coleta_id'}
+    assert response.json()['erro']['ultima_coleta_id'] is None
     if status==503:
         assert response.headers['Retry-After']=='60'
 

@@ -10,9 +10,9 @@ class Common(BaseModel):
     lacuna: bool
     unidade: str
     periodo: str | None
-    tipo_periodo: Literal['trimestre_movel'] = 'trimestre_movel'
-    tipo_valor: Literal['real', 'nominal']
-    medida: Literal['taxa', 'valor']
+    tipo_periodo: Literal['mensal', 'trimestre_movel'] = 'trimestre_movel'
+    tipo_valor: Literal['real', 'nominal'] | None
+    medida: Literal['taxa', 'saldo', 'valor']
     base_precos: None = None
     cv: float | None
     variacao_anual: float | None
@@ -20,8 +20,8 @@ class Common(BaseModel):
     classificacao: Literal['subiu', 'caiu', 'estavel'] | None
     classificacao_origem: Literal['calculada'] = 'calculada'
     fonte: str
-    tabela_ou_arquivo: str
-    link: str
+    tabela_ou_arquivo: str | None
+    link: str | None
     coleta_id: int | None
     coletado_em: datetime | None
     desatualizado: bool
@@ -35,7 +35,7 @@ class Common(BaseModel):
 
 
 class PointResponse(Common):
-    versao: int
+    versao: int | None
 
 
 class SeriesResponse(Common):

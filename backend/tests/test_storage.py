@@ -38,9 +38,9 @@ def test_collections_keep_raw_hash_and_lineage(sf, replay):
             assert item.codigo_http == 200
             assert hashlib.sha256(item.resposta_bruta).hexdigest() == item.hash_sha256
         assert collections[1].valida is True
-        serie = session.scalar(select(Serie))
+        serie = session.scalar(select(Serie).where(Serie.codigo=='desocupacao'))
         assert (serie.tabela,serie.variavel,serie.tipo_periodo,serie.base_precos)==('6381','4099','trimestre_movel',None)
-        assert session.scalar(select(Fonte.nome)) == 'IBGE / PNAD Contínua / SIDRA'
+        assert session.scalar(select(Fonte.nome).where(Fonte.codigo=='ibge-sidra')) == 'IBGE / PNAD Contínua / SIDRA'
         observation = session.scalar(select(Observacao).where(Observacao.periodo=='202608'))
         assert observation.coleta_id == result['coleta_id']
         assert observation.classificacao_origem == 'calculada'

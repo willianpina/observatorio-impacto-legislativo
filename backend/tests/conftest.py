@@ -6,11 +6,13 @@ import httpx
 import pytest
 from alembic import command
 from alembic.config import Config
+from fastapi.testclient import TestClient
 from sqlalchemy import text
 
 from backend.oil.catalog import SPECS
 from backend.oil.db import make_engine, sessions
-from backend.oil.ingest import Collector
+from backend.oil.ingest import Collector, ensure_unavailable_catalog
+from backend.oil.main import app
 
 FIXTURES = Path(__file__).parent / 'fixtures'
 ROOT = Path(__file__).resolve().parents[2]
@@ -34,7 +36,10 @@ def engine():
 def sf(engine):
     with engine.begin() as connection:
         connection.execute(text('TRUNCATE divulgacao, observacao, coleta, serie, fonte RESTART IDENTITY CASCADE'))
-    return sessions(engine)
+    factory = sessions(engine)
+    with factory.begin() as session:
+        ensure_unavailable_catalog(session)
+    return factory
 
 
 @pytest.fixture
@@ -65,3 +70,10 @@ def populated(sf, replay):
     for code in SPECS:
         collect(sf, replay, code)
     return sf
+
+
+@pytest.fixture
+def client(sf):
+    with TestClient(app) as client:
+        app.state.sessions=sf
+        yield client

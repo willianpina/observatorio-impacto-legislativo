@@ -5,15 +5,18 @@ from typing import Literal
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
-from fastapi.exception_handlers import request_validation_exception_handler
+from fastapi.exception_handlers import http_exception_handler, request_validation_exception_handler
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import select
 
 from poc import app as legacy
-from .catalog import SPECS
+from .catalog import INDICATOR_CODES
 from .db import make_engine, sessions
 from .read import read_index, read_series
 from .ingest import SourceFailure
 from .schemas import IndexResponse, SeriesResponse
+from .models import Coleta
 
 
 @asynccontextmanager
@@ -29,7 +32,7 @@ async def lifespan(app):
         engine.dispose()
 
 
-app = FastAPI(title='OIL — séries IBGE', version='1.3', lifespan=lifespan)
+app = FastAPI(title='OIL — séries IBGE', version='1.3.1', lifespan=lifespan)
 # Mesmo código, caminho e tratamento de erros; nenhuma mudança em poc/.
 app.add_exception_handler(legacy.SourceError, legacy.source_error)
 for route in legacy.app.routes:
@@ -45,18 +48,33 @@ def get_session(request: Request):
 @app.exception_handler(SourceFailure)
 async def source_failure(request, exc):
     headers = {'Retry-After': '60'} if exc.status == 503 else None
+    last_valid_id = None
+    # O ID de auditoria da tentativa não é prova de coleta boa. Valida a referência
+    # antes de expô-la, incluindo isolamento das respostas simuladas.
+    if isinstance(exc.collection_id,int):
+        try:
+            with request.app.state.sessions() as session:
+                query = select(Coleta.id).where(Coleta.id==exc.collection_id,
+                    Coleta.valida.is_(True),Coleta.simulada==request.app.state.test_mode)
+                codigo = request.path_params.get('codigo')
+                if codigo is not None:
+                    query = query.where(Coleta.serie_codigo==codigo)
+                last_valid_id = session.scalar(query)
+        except SQLAlchemyError:
+            last_valid_id = None
     return JSONResponse(status_code=exc.status, headers=headers, content={
         'erro': {'codigo': exc.code, 'mensagem': 'A fonte não forneceu uma coleta válida.',
                  'fonte': 'IBGE / SIDRA', 'tentar_novamente_em': 60 if exc.status == 503 else None,
-                 'ultima_coleta_id': exc.collection_id}})
+                 'ultima_coleta_id': last_valid_id}})
 
 
 @app.exception_handler(RequestValidationError)
 async def invalid_parameters(request, exc):
-    if not request.url.path.startswith('/api/v1/'):
+    if not indicator_path(request.url.path):
         return await request_validation_exception_handler(request, exc)
+    parameters = ', '.join(sorted({'.'.join(map(str,item['loc'])) for item in exc.errors()}))
     return JSONResponse(status_code=422, content={
-        'erro': {'codigo': 'parametro_invalido', 'mensagem': 'Use janela=2a, 5a ou desde_2020.',
+        'erro': {'codigo': 'parametro_invalido', 'mensagem': f'Parâmetro inválido: {parameters}.',
                  'fonte': 'api_local', 'tentar_novamente_em': None, 'ultima_coleta_id': None}})
 
 
@@ -68,10 +86,21 @@ async def database_failure(request, exc):
                  'fonte': 'banco_local', 'tentar_novamente_em': 60, 'ultima_coleta_id': None}})
 
 
-@app.exception_handler(HTTPException)
+def indicator_path(path):
+    return path == '/api/v1/indicadores' or path.startswith('/api/v1/indicadores/')
+
+
+@app.exception_handler(StarletteHTTPException)
 async def http_failure(request, exc):
-    return JSONResponse(status_code=exc.status_code, content={
-        'erro': {'codigo': 'indicador_inexistente', 'mensagem': str(exc.detail),
+    if not indicator_path(request.url.path):
+        return await http_exception_handler(request,exc)
+    codes = {400:'requisicao_invalida',401:'nao_autorizado',403:'acesso_negado',
+             404:'indicador_inexistente',405:'metodo_nao_permitido',503:'fonte_indisponivel'}
+    headers = dict(exc.headers or {})
+    if exc.status_code == 503:
+        headers.setdefault('Retry-After','60')
+    return JSONResponse(status_code=exc.status_code, headers=headers, content={
+        'erro': {'codigo': codes.get(exc.status_code,f'http_{exc.status_code}'), 'mensagem': str(exc.detail),
                  'fonte': 'catalogo_local', 'tentar_novamente_em': None, 'ultima_coleta_id': None}})
 
 
@@ -84,8 +113,12 @@ def indicators(request: Request, janela: Window = Query('5a'), session=Depends(g
 
 
 @app.get('/api/v1/indicadores/{codigo}/serie', response_model=SeriesResponse)
-@app.get('/api/v1/indicadores/{codigo}', response_model=SeriesResponse)
 def series(codigo: str, request: Request, janela: Window = Query('5a'), session=Depends(get_session)):
-    if codigo not in SPECS:
+    if codigo not in INDICATOR_CODES:
         raise HTTPException(404, 'Indicador não cadastrado na O2.')
     return read_series(session, codigo, janela, test_mode=request.app.state.test_mode)
+
+
+@app.get('/api/v1/indicadores/caged-saldo', response_model=SeriesResponse)
+def unavailable_caged(request: Request,janela: Window = Query('5a'),session=Depends(get_session)):
+    return read_series(session,'caged-saldo',janela,test_mode=request.app.state.test_mode)

@@ -15,7 +15,7 @@ class Fonte(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     codigo: Mapped[str] = mapped_column(String(40), unique=True)
     nome: Mapped[str] = mapped_column(String(200))
-    link: Mapped[str] = mapped_column(Text)
+    link: Mapped[str | None] = mapped_column(Text)
 
 
 class Coleta(Base):
@@ -45,22 +45,25 @@ class Serie(Base):
         CheckConstraint("tipo_periodo IN ('mensal', 'trimestral', 'trimestre_movel')", name='ck_serie_periodo'),
         CheckConstraint("tipo_valor IN ('real', 'nominal')", name='ck_serie_tipo_valor'),
         CheckConstraint("medida IN ('taxa', 'saldo', 'valor')", name='ck_serie_medida'),
+        CheckConstraint("medida <> 'taxa' OR tipo_valor IS NULL", name='ck_serie_taxa_tipo_valor'),
     )
     id: Mapped[int] = mapped_column(primary_key=True)
     fonte_id: Mapped[int] = mapped_column(ForeignKey('fonte.id'))
     codigo: Mapped[str] = mapped_column(String(50), unique=True)
     nome: Mapped[str] = mapped_column(Text)
-    tabela: Mapped[str] = mapped_column(String(20))
-    variavel: Mapped[str] = mapped_column(String(20))
-    variavel_cv: Mapped[str] = mapped_column(String(20))
-    variavel_variacao: Mapped[str] = mapped_column(String(20))
-    variavel_diferenca: Mapped[str] = mapped_column(String(20))
+    tabela: Mapped[str | None] = mapped_column(String(20))
+    variavel: Mapped[str | None] = mapped_column(String(20))
+    variavel_cv: Mapped[str | None] = mapped_column(String(20))
+    variavel_variacao: Mapped[str | None] = mapped_column(String(20))
+    variavel_diferenca: Mapped[str | None] = mapped_column(String(20))
     unidade: Mapped[str] = mapped_column(String(30))
     unidade_variacao: Mapped[str] = mapped_column(String(30))
     medida: Mapped[str] = mapped_column(String(20))
     tipo_periodo: Mapped[str] = mapped_column(String(30))
-    tipo_valor: Mapped[str] = mapped_column(String(20))
+    tipo_valor: Mapped[str | None] = mapped_column(String(20))
     base_precos: Mapped[str | None] = mapped_column(String(7))
+    disponivel: Mapped[bool] = mapped_column(Boolean, default=True, server_default='true')
+    motivo: Mapped[str | None] = mapped_column(Text)
 
 
 class Observacao(Base):
