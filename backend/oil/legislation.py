@@ -44,6 +44,32 @@ def minimized_deputy(raw):
         return b'{}'
 
 
+def minimized_history(raw):
+    try:
+        rows=json.loads(raw)['dados']
+        if not isinstance(rows,list):return b'{"dados":[]}'
+        keys={'id','nome','siglaPartido','siglaUf','dataHora'}
+        return json.dumps({'dados':[{k:v for k,v in row.items() if k in keys and
+            (v is None or (k=='id' and type(v) is int) or (k!='id' and isinstance(v,str)))}
+            for row in rows if isinstance(row,dict)]},ensure_ascii=False).encode('utf-8')
+    except (ValueError,KeyError,TypeError):return b'{"dados":[]}'
+
+
+def historical_party(rows,presented_at):
+    if not isinstance(rows,list) or not presented_at:return None
+    try:
+        when=instant(presented_at)
+        candidates=[(instant(r['dataHora']),r) for r in rows if isinstance(r,dict) and r.get('dataHora')]
+        candidates=[(date,row) for date,row in candidates if date<=when]
+        if not candidates:return None
+        latest=max(date for date,row in candidates)
+        values={(row.get('siglaPartido'),row.get('siglaUf')) for date,row in candidates if date==latest}
+        if len(values)!=1:return None
+        party,uf=values.pop()
+        return (party,uf,latest) if isinstance(party,str) and party and isinstance(uf,str) and uf else None
+    except (ValueError,TypeError,KeyError):return None
+
+
 def endpoints(identifier):
     senate = PROPOSICOES[identifier]['id_senado']
     return {'camara': f'https://dadosabertos.camara.leg.br/api/v2/proposicoes/{identifier}',
@@ -84,6 +110,8 @@ class LawCollector:
             digest=hashlib.sha256(raw).hexdigest() if raw is not None else None
             if raw is not None and re.fullmatch(r'https://dadosabertos\.camara\.leg\.br/api/v2/deputados/[0-9]+',url):
                 raw=minimized_deputy(raw)
+            elif raw is not None and re.fullmatch(r'https://dadosabertos\.camara\.leg\.br/api/v2/deputados/[0-9]+/historico',url):
+                raw=minimized_history(raw)
             collection = Coleta(fonte_id=session.scalar(select(Fonte.id).where(Fonte.codigo == code)),
                 serie_codigo=f'proposicao:{identifier}:{house}', url_consultada=url,
                 coletado_em=datetime.now(timezone.utc),codigo_http=response.status_code if response is not None else status_code,
@@ -132,7 +160,7 @@ class LawCollector:
                 await self.sleep(retry_delay(response,attempt))
         raise failure
 
-    async def authors(self, identifier, url):
+    async def authors(self, identifier, url, presented_at=None):
         missing = dict(autor=None,partido=None,uf=None,partido_referencia=None,coautores=None,
                        autoria_motivo='Autoria não informada pela fonte.',_coletas_autoria=[])
         try:
@@ -146,6 +174,17 @@ class LawCollector:
             uri = principal.get('uri','')
             # Não segue URIs arbitrárias recebidas da fonte.
             if re.fullmatch(r'https://dadosabertos\.camara\.leg\.br/api/v2/deputados/[0-9]+',uri):
+                try:
+                    history,history_id=await self.fetch(identifier,'camara',uri+'/historico',kind='autoria')
+                    historical=historical_party(history.get('dados'),presented_at)
+                    result['_coletas_autoria'].append(history_id)
+                    if historical:
+                        party,uf,date=historical
+                        result.update(partido=party,uf=uf,partido_referencia='apresentacao',
+                            autoria_motivo=f'Partido e UF do histórico oficial da Câmara: registro de {date.date().isoformat()} vigente na data da apresentação.')
+                        return result
+                except (SourceFailure,ValueError,TypeError,KeyError,AttributeError):
+                    pass
                 deputy,deputy_id = await self.fetch(identifier,'camara',uri,kind='autoria')
                 result['_coletas_autoria'].append(deputy_id)
                 status = deputy['dados'].get('ultimoStatus',{})
@@ -171,7 +210,7 @@ class LawCollector:
                     int(data['numero']);int(data['ano'])
                     normalized = dict(ementa=data['ementa'],situacao_texto=status['descricaoSituacao'],
                         situacao_data=instant(status['dataHora']),norma_json=None,
-                        autor_json=dict(await self.authors(identifier,url),data_apresentacao=data['dataApresentacao'],
+                        autor_json=dict(await self.authors(identifier,url,data['dataApresentacao']),data_apresentacao=data['dataApresentacao'],
                             _identificacao={'sigla_tipo':data['siglaTipo'],'numero':int(data['numero']),'ano':int(data['ano'])}))
                 else:
                     if payload['id'] != PROPOSICOES[identifier]['id_senado']: raise ValueError('Identificador divergente.')
