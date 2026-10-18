@@ -1,0 +1,72 @@
+[
+  {
+    "teste": "R2-1 modo normal recusa série simulada: sem valor nem gráfico",
+    "aprovado": false,
+    "resultados": [
+      {
+        "status": "failed",
+        "asserção": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: getByTestId('card-desocupacao')\nExpected substring: \u001b[32m\"Resposta de teste recusada no modo normal.\"\u001b[39m\nReceived string:    \u001b[31m\"Taxa de desocupação EntendaParcela das pessoas na força de trabalho que estão desocupadas.Último dado: 5,3 % (jun.–ago. de 2026). Variação em relação ao mesmo período do ano anterior: -0,3 p.p.▼ caiucalculado pelo Observatório com a margem de erro do IBGETaxa (%) · Trimestre móvelDescritivoTaxa de desocupação, Trimestre móvel, de jul.–set. de 2021 a jun.–ago. de 2026. Unidade: %. A tabela de dados está em Saiba mais.%jan. de 23ago. de 260481216Marcos de calendário. Não indicam efeito da lei.Fonte: IBGE / PNAD Contínua / SIDRA · 6381Coletado em 17/10/2026, 11:22 (BRT)Saiba maisComparação: mesmo período do ano anterior. CV: 1,3%. Coleta: 1.Consultar metodologiaDados de Taxa de desocupaçãoPeríodoValorUnidadeCV (%)Variação anualLacunaAjuste / competênciaMarcojul.–set. de 202112,7%1,1-2,2 p.p.nãoNão se aplica—ago.–out. de 202112,1%1,1-2,5 p.p.nãoNão se aplica—set.–nov. de 202111,6%1-2,8 p.p.nãoNão se aplica—out.–dez. de 202111,1%1-3 p.p.nãoNão se aplica—nov. de 2021–jan. de 202211,2%1,1-3,2 p.p.nãoNão se aplica—dez. de 2021–fev. de 202211,2%1,1-3,4 p.p.nãoNão se aplica—jan.–mar. de 202211,1%1-3,8 p.p.nãoNão se aplica—fev.–abr. de 202210,5%1,1-4,3 p.p.nãoNão se aplica—mar.–mai. de 20229,8%1,1-4,9 p.p.nãoNão se aplica—abr.–jun. de 20229,3%1,1-4,9 p.p.nãoNão se aplica—mai.–jul. de 20229,1%1,1-4,6 p.p.nãoNão se aplica—jun.–ago. de 20228,9%1,1-4,2 p.p.nãoNão se aplica—jul.–set. de 20228,7%1,1-4 p.p.nãoNão se aplica—ago.–out. de 20228,3%1,2-3,8 p.p.nãoNão se aplica—set.–nov. de 20228,1%1,2-3,5 p.p.nãoNão se aplica—out.–dez. de 20227"
+      }
+    ]
+  },
+  {
+    "teste": "R2-3 mudar vigência no dado muda a tela; publicação nunca é prevista",
+    "aprovado": false,
+    "resultados": [
+      {
+        "status": "failed",
+        "asserção": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: getByTestId('vigencia-resumo')\nExpected substring: \u001b[32m\"Em vigor desde \u001b[7m0\u001b[27m1/1\u001b[7m1\u001b[27m/2026, data da publicação\"\u001b[39m\nReceived string:    \u001b[31m\"Em vigor desde 1\u001b[7m6\u001b[27m/1\u001b[7m0\u001b[27m/2026, data da publicação\u001b[7m, exceto: repouso de 2 dias por semana e limite de 42 h semanais a partir de 16/12/2026 (prevista); limite de 40 h semanais a partir de 16/12/2027 (prevista).\u001b[27m\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" getByTestId('vigencia-resumo') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('vigencia-resumo')\u001b[22m\n\u001b[2m    11 × locator resolved to <strong data-testid=\"vigencia-resumo\">Em vigor desde 16/10/2026, data da publicação, ex…</strong>\u001b[22m\n\u001b[2m       - unexpected value \"Em vigor desde 16/10/2026, data da publicação, exceto: repouso de 2 dias por semana e limite de 42 h semanais a partir de 16/12/2026 (prevista); limite de 40 h semanais a partir de 16/12/2027 (prevista).\"\u001b[22m\n"
+      }
+    ]
+  },
+  {
+    "teste": "R2-6 foco por Tab no marco revela fonte e link sem clique",
+    "aprovado": false,
+    "resultados": [
+      {
+        "status": "failed",
+        "asserção": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  getByTestId('card-desocupacao').locator('.marker-list details').first()\nExpected: \u001b[32m\"\"\u001b[39m\nReceived: serializes to the same string\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" getByTestId('card-desocupacao').locator('.marker-list details').first() with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('card-desocupacao').locator('.marker-list details').first()\u001b[22m\n\u001b[2m    13 × locator resolved to <details>…</details>\u001b[22m\n\u001b[2m       - unexpected value \"null\"\u001b[22m\n"
+      }
+    ]
+  },
+  {
+    "teste": "R2-9 card e resumo têm o mesmo valor: desocupacao",
+    "aprovado": false,
+    "resultados": [
+      {
+        "status": "failed",
+        "asserção": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  getByTestId('resumo-valor-atual-desocupacao')\nExpected: \u001b[32m\"\u001b[7m5,3\u001b[27m %\"\u001b[39m\nReceived: \u001b[31m\"\u001b[7m0\u001b[27m %\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveText\" getByTestId('resumo-valor-atual-desocupacao') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('resumo-valor-atual-desocupacao')\u001b[22m\n\u001b[2m    13 × locator resolved to <span data-testid=\"resumo-valor-atual-desocupacao\">0 %</span>\u001b[22m\n\u001b[2m       - unexpected value \"0 %\"\u001b[22m\n"
+      }
+    ]
+  },
+  {
+    "teste": "R2-9 card e resumo têm o mesmo valor: rendimento-real",
+    "aprovado": false,
+    "resultados": [
+      {
+        "status": "failed",
+        "asserção": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  getByTestId('resumo-valor-atual-rendimento-real')\nExpected: \u001b[32m\"R$ \u001b[7m3.777\u001b[27m\"\u001b[39m\nReceived: \u001b[31m\"R$ \u001b[7m0\u001b[27m\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveText\" getByTestId('resumo-valor-atual-rendimento-real') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('resumo-valor-atual-rendimento-real')\u001b[22m\n\u001b[2m    14 × locator resolved to <span data-testid=\"resumo-valor-atual-rendimento-real\">R$ 0</span>\u001b[22m\n\u001b[2m       - unexpected value \"R$ 0\"\u001b[22m\n"
+      }
+    ]
+  },
+  {
+    "teste": "axe 1280: detalhes abertos, modo normal",
+    "aprovado": false,
+    "resultados": [
+      {
+        "status": "failed",
+        "asserção": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  -   1\u001b[39m\n\u001b[31m+ Received  + 121\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   Object {\u001b[39m\n\u001b[31m+     \"description\": \"Ensure <svg> elements with an img, image, graphics-document or graphics-symbol role have accessible text\",\u001b[39m\n\u001b[31m+     \"help\": \"<svg> elements with an img or image role must have alternative text\",\u001b[39m\n\u001b[31m+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/svg-img-alt?application=playwright\",\u001b[39m\n\u001b[31m+     \"id\": \"svg-img-alt\",\u001b[39m\n\u001b[31m+     \"impact\": \"serious\",\u001b[39m\n\u001b[31m+     \"nodes\": Array [\u001b[39m\n\u001b[31m+       Object {\u001b[39m\n\u001b[31m+         \"all\": Array [],\u001b[39m\n\u001b[31m+         \"any\": Array [\u001b[39m\n\u001b[31m+           Object {\u001b[39m\n\u001b[31m+             \"data\": Object {\u001b[39m\n\u001b[31m+               \"messageKey\": \"noTitle\",\u001b[39m\n\u001b[31m+             },\u001b[39m\n\u001b[31m+             \"id\": \"svg-non-empty-title\",\u001b[39m\n\u001b[31m+             \"impact\": \"serious\",\u001b[39m\n\u001b[31m+             \"message\": \"Element has no child that is a title\",\u001b[39m\n\u001b[31m+             \"relatedNodes\": Array [],\u001b[39m\n\u001b[31m+           },\u001b[39m\n\u001b[31m+           Object {\u001b[39m\n\u001b[31m+             \"data\": null,\u001b[39m\n\u001b[31m+             \"id\": \"aria-label\",\u001b[39m\n\u001b[31m+             \"impact\": \"serious\",\u001b[39m\n\u001b[31m+             \"message\": \"aria-label attribute does not exist or is empty\",\u001b[39m\n\u001b[31m+             \"relatedNodes\": Array [],\u001b[39m\n\u001b[31m+           },\u001b[39m\n\u001b[31m+           Object {\u001b[39m\n\u001b[31m+             \"data\": null,\u001b[39m\n\u001b[31m+             \"id\": \"aria-labelledby\",\u001b[39m\n\u001b[31m+             \"impact\": \"serious\",\u001b[39m\n\u001b[31m+             \"message\": \"aria-labelledby attribute does not exist, references elements that do not exist or references elements t"
+      }
+    ]
+  },
+  {
+    "teste": "frases proibidas em todo texto, dicas, tabelas e rótulos",
+    "aprovado": false,
+    "resultados": [
+      {
+        "status": "failed",
+        "asserção": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 3\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   \"marco e variação na mesma frase\",\u001b[39m\n\u001b[31m+ ]\u001b[39m"
+      }
+    ]
+  }
+]

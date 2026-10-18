@@ -43,12 +43,13 @@ SPECS = {
                            '6390', '5933', '5941', '8837', '8838', 'R$', 'Reais', '%', 'valor', 'real'),
 }
 
-# Cadastro sem observações nem URL/arquivo presumidos. Não participa do coletor SIDRA.
+# Cadastro sem observações; disponibilidade depende de uma coleta válida.
 CAGED = {
     'codigo': 'caged-saldo', 'nome': 'Saldo do Novo Caged — Brasil',
-    'unidade': 'vínculos', 'unidade_variacao': 'vínculos',
-    'medida': 'saldo', 'tipo_periodo': 'mensal', 'tipo_valor': 'nominal',
+    'unidade': 'postos de trabalho', 'unidade_variacao': 'postos de trabalho',
+    'medida': 'saldo', 'tipo_periodo': 'mensal', 'tipo_valor': None,
     'disponivel': False,
-    'motivo': 'Fonte de acesso e arquivo do Novo Caged ainda não confirmados.',
+    'motivo': 'Nenhuma coleta válida do Novo Caged disponível.',
 }
 INDICATOR_CODES = (*SPECS, CAGED['codigo'])
+PROPOSICOES = {2233802: {'id_senado': 9056435}}

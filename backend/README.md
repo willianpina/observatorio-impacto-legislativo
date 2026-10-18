@@ -82,6 +82,6 @@ Argumentos: `codigo --periodo AAAAMM --prevista-em INSTANTE_COM_FUSO --fonte NOM
 - A leitura também materializa períodos intermediários ausentes do banco com valor/CV/classificação nulos, `lacuna=true` e sem inventar um ID de coleta ou versão para o ponto ausente.
 - Timeout por requisição: 20 s, conexão: 5 s, até 5 conexões HTTP e no máximo 3 tentativas. Para HTTP 429/503, respeita Retry-After em segundos ou data HTTP, limitado a 60 s. Sem cabeçalho válido, aplica pausas de 0,25/0,5 s. HTTP 500/502/504 também são transitórios. Ainda não há prazo global do job, scheduler ou autenticação pública. A API é destinada ao loopback local.
 - A guarda parametrizada de linguagem verifica todas as strings das respostas exercitadas (inclusive nomes, motivos, erros e rotas legadas) e todos os arquivos de `docs/`.
-- Não há ingestão de Caged, dashboard, votação, dado legislativo novo, IA, deploy, serviço pago ou GitHub Actions.
+- A O3 acrescenta ingestão do Caged e detalhe legislativo: consulte [operação O3](../docs/o3/operacao.md). Votações, IA, deploy, serviços pagos e GitHub Actions continuam fora do escopo.
 
 Referências e regras: [contrato para indicadores](../docs/contrato-api-v1.3-indicadores.md), [metodologia O2](../docs/metodologia-o2.md).

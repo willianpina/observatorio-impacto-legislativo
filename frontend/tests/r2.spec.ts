@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 import fs from 'node:fs/promises';
-import {intercept} from './fixtures';
+import {fixture,intercept} from './fixtures';
 
 const summary='Em vigor desde 16/10/2026, data da publicação, exceto: repouso de 2 dias por semana e limite de 42 h semanais a partir de 16/12/2026 (prevista); limite de 40 h semanais a partir de 16/12/2027 (prevista).';
 test.beforeEach(async({page})=>{await intercept(page);await page.clock.setFixedTime(new Date('2026-10-17T15:00:00Z'));});
@@ -66,6 +66,17 @@ test('R2-6 foco por Tab no marco revela fonte e link sem clique',async({page})=>
   await expect(marker.locator('summary')).toBeFocused();await expect(marker).toHaveAttribute('open','');
   const link=marker.getByRole('link',{name:'Fonte do marco: Senado',exact:true});await expect(link).toBeVisible();
   await page.keyboard.press('Tab');await expect(link).toBeFocused();await expect(link).toHaveAttribute('href',/^https:\/\/legis\.senado\.leg\.br/);
+  await page.keyboard.press('Tab');await expect(marker).not.toHaveAttribute('open');
+});
+
+test('O3 card e resumo preservam rendimento não inteiro',async({page})=>{
+  await page.route('**/api/oil/indicadores/rendimento-real/serie?*',async route=>{
+    const body={...fixture('rendimento-real'),valor:3777.25};
+    await route.fulfill({json:body});
+  });
+  await page.goto('/');
+  await expect(page.getByTestId('valor-atual-rendimento-real')).toHaveText('R$ 3.777,25');
+  await expect(page.getByTestId('resumo-valor-atual-rendimento-real')).toHaveText('R$ 3.777,25');
 });
 
 test('marco continua expansível e recolhível por clique',async({page})=>{

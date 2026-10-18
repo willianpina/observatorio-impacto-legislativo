@@ -1,0 +1,182 @@
+[
+  {
+    "arquivo": "o4r-axe-1280-empty.json",
+    "fixture": true,
+    "width": 1280,
+    "estado": "empty",
+    "detalhes_abertos": false,
+    "graves_criticas": 0,
+    "violacoes": []
+  },
+  {
+    "arquivo": "o4r-axe-1280-error.json",
+    "fixture": true,
+    "width": 1280,
+    "estado": "error",
+    "detalhes_abertos": false,
+    "graves_criticas": 0,
+    "violacoes": []
+  },
+  {
+    "arquivo": "o4r-axe-1280-gap.json",
+    "fixture": true,
+    "width": 1280,
+    "estado": "gap",
+    "detalhes_abertos": false,
+    "graves_criticas": 0,
+    "violacoes": []
+  },
+  {
+    "arquivo": "o4r-axe-1280-normal.json",
+    "fixture": true,
+    "width": 1280,
+    "estado": "normal",
+    "detalhes_abertos": false,
+    "graves_criticas": 0,
+    "violacoes": []
+  },
+  {
+    "arquivo": "o4r-axe-1280-stale.json",
+    "fixture": true,
+    "width": 1280,
+    "estado": "stale",
+    "detalhes_abertos": false,
+    "graves_criticas": 0,
+    "violacoes": []
+  },
+  {
+    "arquivo": "o4r-axe-360-empty.json",
+    "fixture": true,
+    "width": 360,
+    "estado": "empty",
+    "detalhes_abertos": false,
+    "graves_criticas": 0,
+    "violacoes": []
+  },
+  {
+    "arquivo": "o4r-axe-360-error.json",
+    "fixture": true,
+    "width": 360,
+    "estado": "error",
+    "detalhes_abertos": false,
+    "graves_criticas": 0,
+    "violacoes": []
+  },
+  {
+    "arquivo": "o4r-axe-360-gap.json",
+    "fixture": true,
+    "width": 360,
+    "estado": "gap",
+    "detalhes_abertos": false,
+    "graves_criticas": 0,
+    "violacoes": []
+  },
+  {
+    "arquivo": "o4r-axe-360-normal.json",
+    "fixture": true,
+    "width": 360,
+    "estado": "normal",
+    "detalhes_abertos": false,
+    "graves_criticas": 0,
+    "violacoes": []
+  },
+  {
+    "arquivo": "o4r-axe-360-stale.json",
+    "fixture": true,
+    "width": 360,
+    "estado": "stale",
+    "detalhes_abertos": false,
+    "graves_criticas": 0,
+    "violacoes": []
+  },
+  {
+    "arquivo": "o4r2-axe-1280-aberto-caged.json",
+    "fixture": true,
+    "modo": "caged",
+    "width": 1280,
+    "detalhes_abertos": true,
+    "graves_criticas": 0,
+    "violacoes": []
+  },
+  {
+    "arquivo": "o4r2-axe-1280-aberto-gap.json",
+    "fixture": true,
+    "modo": "gap",
+    "width": 1280,
+    "detalhes_abertos": true,
+    "graves_criticas": 0,
+    "violacoes": []
+  },
+  {
+    "arquivo": "o4r2-axe-1280-aberto-normal.json",
+    "fixture": true,
+    "modo": "normal",
+    "width": 1280,
+    "detalhes_abertos": true,
+    "graves_criticas": 0,
+    "violacoes": []
+  },
+  {
+    "arquivo": "o4r2-axe-1280-aberto-stale.json",
+    "fixture": true,
+    "modo": "stale",
+    "width": 1280,
+    "detalhes_abertos": true,
+    "graves_criticas": 0,
+    "violacoes": []
+  },
+  {
+    "arquivo": "o4r2-axe-1280-aberto-unclassified.json",
+    "fixture": true,
+    "modo": "unclassified",
+    "width": 1280,
+    "detalhes_abertos": true,
+    "graves_criticas": 0,
+    "violacoes": []
+  },
+  {
+    "arquivo": "o4r2-axe-360-aberto-caged.json",
+    "fixture": true,
+    "modo": "caged",
+    "width": 360,
+    "detalhes_abertos": true,
+    "graves_criticas": 0,
+    "violacoes": []
+  },
+  {
+    "arquivo": "o4r2-axe-360-aberto-gap.json",
+    "fixture": true,
+    "modo": "gap",
+    "width": 360,
+    "detalhes_abertos": true,
+    "graves_criticas": 0,
+    "violacoes": []
+  },
+  {
+    "arquivo": "o4r2-axe-360-aberto-normal.json",
+    "fixture": true,
+    "modo": "normal",
+    "width": 360,
+    "detalhes_abertos": true,
+    "graves_criticas": 0,
+    "violacoes": []
+  },
+  {
+    "arquivo": "o4r2-axe-360-aberto-stale.json",
+    "fixture": true,
+    "modo": "stale",
+    "width": 360,
+    "detalhes_abertos": true,
+    "graves_criticas": 0,
+    "violacoes": []
+  },
+  {
+    "arquivo": "o4r2-axe-360-aberto-unclassified.json",
+    "fixture": true,
+    "modo": "unclassified",
+    "width": 360,
+    "detalhes_abertos": true,
+    "graves_criticas": 0,
+    "violacoes": []
+  }
+]

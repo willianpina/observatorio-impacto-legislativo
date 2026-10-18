@@ -1,0 +1,163 @@
+{
+  "modo": "regressoes intencionais, nao sao falhas da entrega",
+  "isolamento": "worktree descartável",
+  "restauracao_git_exit_code": 0,
+  "resultados": [
+    {
+      "mutacao": "2: CSV volta a escapar números",
+      "detectada": true,
+      "stats": {
+        "startTime": "2026-10-18T12:53:34.416Z",
+        "duration": 1369.5200000000002,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      }
+    },
+    {
+      "mutacao": "3: previsão ignora passagem do tempo",
+      "detectada": true,
+      "stats": {
+        "startTime": "2026-10-18T12:53:37.032Z",
+        "duration": 1246.3809999999999,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      }
+    },
+    {
+      "mutacao": "4: trimestral volta a mensal",
+      "detectada": true,
+      "stats": {
+        "startTime": "2026-10-18T12:53:39.487Z",
+        "duration": 1117.581,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      }
+    },
+    {
+      "mutacao": "5: guarda de marco e variação removida",
+      "detectada": true,
+      "stats": {
+        "startTime": "2026-10-18T12:53:41.464Z",
+        "duration": 4185.35,
+        "expected": 3,
+        "skipped": 0,
+        "unexpected": 4,
+        "flaky": 0
+      }
+    },
+    {
+      "mutacao": "7: domínio perde fronteira de subdomínio",
+      "detectada": true,
+      "stats": {
+        "startTime": "2026-10-18T12:53:46.541Z",
+        "duration": 920.9750000000001,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      }
+    },
+    {
+      "mutacao": "8: quota contada antes da validação",
+      "detectada": true,
+      "stats": {
+        "startTime": "2026-10-18T12:53:48.332Z",
+        "duration": 982.108,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      }
+    },
+    {
+      "mutacao": "FC4: evento genérico não é verificado",
+      "detectada": true,
+      "stats": {
+        "startTime": "2026-10-18T12:53:50.395Z",
+        "duration": 940.779,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      }
+    },
+    {
+      "mutacao": "FC5: data sem ano não é verificada",
+      "detectada": true,
+      "stats": {
+        "startTime": "2026-10-18T12:53:52.211Z",
+        "duration": 790.2520000000001,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      }
+    },
+    {
+      "mutacao": "FD3: comparação com data não é verificada",
+      "detectada": true,
+      "stats": {
+        "startTime": "2026-10-18T12:53:53.907Z",
+        "duration": 840.332,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      }
+    },
+    {
+      "mutacao": "1: trava de simulada removida",
+      "detectada": true,
+      "stats": {
+        "testes": 1,
+        "unexpected": 1
+      }
+    },
+    {
+      "mutacao": "3: vigência volta a texto fixo",
+      "detectada": true,
+      "stats": {
+        "testes": 1,
+        "unexpected": 1
+      }
+    },
+    {
+      "mutacao": "6: foco deixa de revelar fonte",
+      "detectada": true,
+      "stats": {
+        "testes": 1,
+        "unexpected": 1
+      }
+    },
+    {
+      "mutacao": "9: resumo diverge do card",
+      "detectada": true,
+      "stats": {
+        "testes": 2,
+        "unexpected": 2
+      }
+    },
+    {
+      "mutacao": "9: imagem sem alternativa nos detalhes desktop",
+      "detectada": true,
+      "stats": {
+        "testes": 1,
+        "unexpected": 1
+      }
+    },
+    {
+      "mutacao": "Q2: data e variação dentro do summary",
+      "detectada": true,
+      "stats": {
+        "testes": 1,
+        "unexpected": 1
+      }
+    }
+  ]
+}

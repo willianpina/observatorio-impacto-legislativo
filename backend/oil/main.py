@@ -17,6 +17,7 @@ from .read import read_index, read_series
 from .ingest import SourceFailure
 from .schemas import IndexResponse, SeriesResponse
 from .models import Coleta
+from .law_schemas import LawResponse
 
 
 @asynccontextmanager
@@ -32,7 +33,7 @@ async def lifespan(app):
         engine.dispose()
 
 
-app = FastAPI(title='OIL — séries IBGE', version='1.3.1', lifespan=lifespan)
+app = FastAPI(title='OIL — indicadores e legislação', version='1.4', lifespan=lifespan)
 # Mesmo código, caminho e tratamento de erros; nenhuma mudança em poc/.
 app.add_exception_handler(legacy.SourceError, legacy.source_error)
 for route in legacy.app.routes:
@@ -64,7 +65,7 @@ async def source_failure(request, exc):
             last_valid_id = None
     return JSONResponse(status_code=exc.status, headers=headers, content={
         'erro': {'codigo': exc.code, 'mensagem': 'A fonte não forneceu uma coleta válida.',
-                 'fonte': 'IBGE / SIDRA', 'tentar_novamente_em': 60 if exc.status == 503 else None,
+                 'fonte': 'Câmara / Senado' if request.url.path.startswith('/api/v1/proposicoes/') else 'IBGE / SIDRA', 'tentar_novamente_em': 60 if exc.status == 503 else None,
                  'ultima_coleta_id': last_valid_id}})
 
 
@@ -87,7 +88,7 @@ async def database_failure(request, exc):
 
 
 def indicator_path(path):
-    return path == '/api/v1/indicadores' or path.startswith('/api/v1/indicadores/')
+    return path == '/api/v1/indicadores' or path.startswith(('/api/v1/indicadores/', '/api/v1/proposicoes/'))
 
 
 @app.exception_handler(StarletteHTTPException)
@@ -96,6 +97,8 @@ async def http_failure(request, exc):
         return await http_exception_handler(request,exc)
     codes = {400:'requisicao_invalida',401:'nao_autorizado',403:'acesso_negado',
              404:'indicador_inexistente',405:'metodo_nao_permitido',503:'fonte_indisponivel'}
+    if request.url.path.startswith('/api/v1/proposicoes/'):
+        codes[404]='proposicao_nao_acompanhada'
     headers = dict(exc.headers or {})
     if exc.status_code == 503:
         headers.setdefault('Retry-After','60')
@@ -122,3 +125,9 @@ def series(codigo: str, request: Request, janela: Window = Query('5a'), session=
 @app.get('/api/v1/indicadores/caged-saldo', response_model=SeriesResponse)
 def unavailable_caged(request: Request,janela: Window = Query('5a'),session=Depends(get_session)):
     return read_series(session,'caged-saldo',janela,test_mode=request.app.state.test_mode)
+
+
+@app.get('/api/v1/proposicoes/{id_camara}',response_model=LawResponse)
+def proposition(id_camara: int,request: Request,session=Depends(get_session)):
+    from .legislation import read_law
+    return read_law(session,id_camara,test_mode=request.app.state.test_mode)

@@ -15,7 +15,7 @@ from backend.oil.models import Base, Coleta, Fonte, Observacao, Serie
 from .conftest import FIXTURES, alembic_config, collect
 
 
-def test_migration_up_down_up(engine):
+def test_migration_up_down_up(engine, sf):
     expected = {'fonte','coleta','serie','observacao','divulgacao'}
     assert expected <= set(inspect(engine).get_table_names())
     command.downgrade(alembic_config(), 'base')

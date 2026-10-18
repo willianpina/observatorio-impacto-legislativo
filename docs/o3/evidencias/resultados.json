@@ -1,0 +1,48 @@
+{
+  "base": "345af8638ed997daf6dd1ac88dad02cd7eeb5b82",
+  "backend": {
+    "total": 225,
+    "aprovados": 223,
+    "falhas": 0,
+    "pulados": 2,
+    "segundos": 55.99
+  },
+  "O2": {
+    "total": 172,
+    "aprovados": 170,
+    "falhas": 0,
+    "pulados": 2
+  },
+  "O3": {
+    "total": 53,
+    "aprovados": 53,
+    "falhas": 0,
+    "pulados": 0
+  },
+  "PoC": {
+    "total": 39,
+    "aprovados": 39,
+    "falhas": 0,
+    "pulados": 0,
+    "segundos": 4.12
+  },
+  "playwright": {
+    "startTime": "2026-10-18T02:38:51.095Z",
+    "duration": 121088.719,
+    "expected": 72,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "axe": {
+    "cenarios": 20,
+    "graves_criticas": 0
+  },
+  "mutacoes": {
+    "detectadas": 11,
+    "restauracao_git_exit_code": 0
+  },
+  "typecheck": "aprovado",
+  "build": "aprovado",
+  "rede_nos_testes_novos": false
+}

@@ -20,7 +20,8 @@ def window_start(latest, janela):
 
 def read_series(session, codigo, janela, *, test_mode=False, now=None):
     if codigo == CAGED['codigo']:
-        return read_unavailable(session,janela)
+        from .caged import read_caged
+        return read_caged(session,janela,test_mode=test_mode,now=now)
     spec = SPECS[codigo]
     now = now or datetime.now(timezone.utc)
     serie = session.scalar(select(Serie).where(Serie.codigo == codigo))
@@ -82,7 +83,7 @@ def read_series(session, codigo, janela, *, test_mode=False, now=None):
 def read_index(session, janela, **kwargs):
     indicators = [read_series(session, code, janela, **kwargs) for code in INDICATOR_CODES]
     times = [x.coletado_em for x in indicators if x.coletado_em is not None]
-    return IndexResponse(fonte='IBGE / PNAD Contínua / SIDRA',
+    return IndexResponse(fonte='IBGE / PNAD Contínua / SIDRA; MTE / Novo Caged',
         coletado_em=max(times) if times else None,
         atrasado_calendario=any(x.atrasado_calendario for x in indicators),
         desatualizado=any(x.desatualizado for x in indicators), indicadores=indicators)
@@ -101,10 +102,11 @@ def read_unavailable(session,janela):
     serie = session.scalar(select(Serie).where(Serie.codigo==CAGED['codigo']))
     source = session.get(Fonte,serie.fonte_id) if serie else None
     return SeriesResponse(codigo=CAGED['codigo'],nome=serie.nome if serie else CAGED['nome'],
-        tipo_periodo='mensal',tipo_valor='nominal',medida='saldo',unidade=CAGED['unidade'],
+        tipo_periodo='mensal',tipo_valor=None,medida='saldo',unidade='postos de trabalho',
         fonte=source.nome if source else 'MTE / Novo Caged',tabela_ou_arquivo=None,link=None,
         valor=None,lacuna=True,periodo=None,cv=None,variacao_anual=None,
-        variacao_anual_unidade=CAGED['unidade_variacao'],classificacao=None,
+        variacao_anual_unidade='postos de trabalho',classificacao=None,classificacao_origem=None,
+        variacao_anual_origem='calculo_observatorio',ajuste='com_ajuste',
         coleta_id=None,coletado_em=None,desatualizado=False,atrasado_calendario=False,
         disponivel=False,motivo=serie.motivo if serie else CAGED['motivo'],
         janela=janela,pontos=[],simulada=False,variaveis={})

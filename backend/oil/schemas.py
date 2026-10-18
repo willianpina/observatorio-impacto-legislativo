@@ -18,7 +18,12 @@ class Common(BaseModel):
     variacao_anual: float | None
     variacao_anual_unidade: str
     classificacao: Literal['subiu', 'caiu', 'estavel'] | None
-    classificacao_origem: Literal['calculada'] = 'calculada'
+    classificacao_origem: Literal['calculada'] | None = 'calculada'
+    variacao_anual_origem: Literal['fonte','calculo_observatorio'] = 'fonte'
+    ajuste: Literal['com_ajuste','sem_ajuste'] | None = None
+    competencia_coleta: str | None = None
+    atribuicao: dict[str,str] | None = None
+    nota_revisao: str | None = None
     fonte: str
     tabela_ou_arquivo: str | None
     link: str | None

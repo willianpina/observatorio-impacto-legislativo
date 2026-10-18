@@ -101,3 +101,43 @@ Estados normal, lacuna, vazio, erro independente, última coleta válida, classi
 - A conferência visual cobre celular e desktop; axe não substitui revisão humana completa de WCAG.
 
 A relação exata de arquivos acompanha `evidencias/arquivos.txt`. A aprovação do PR e qualquer próxima fase permanecem a cargo do usuário.
+
+
+## Rodada O3 — preservação da O4
+
+Somente as sobras autorizadas no adendo O3: guarda de linguagem com datas brasileiras, eventos e comparação antes/depois; marco recolhe ao sair do foco; rendimento fracionário é idêntico no card e no resumo; axe cobre mais estados com detalhes abertos. Artigos 3º e 9º permanecem iguais.
+
+Resultado final: 72 testes Playwright aprovados (zero falhas, pulados ou instáveis), em 121,089 s; 20 cenários axe sem violações graves/críticas; typecheck e build aprovados. As 11 mutações de tela (O4 e sobras) foram detectadas; a comparação com o staging foi manual. Houve nova compilação e suíte completa após restaurar os fontes. Evidências desta rodada: `evidencias/o3-*`; evidências O4 anteriores preservadas.
+
+Retificação O3: backend O2/O3 isolado com 184 aprovados e 2 testes ao vivo pulados (O2: 131 + 2; O3: 53); PoC: 39 aprovados, código intocado. Relatório detalhado em ../docs/o3/VALIDACAO.md. Sem CI, deploy ou merge do PR.
+
+
+## O3-R
+
+Os totais de backend nos registros históricos da O4 acima incluem os 39 testes da PoC. Esses registros foram preservados; a tabela corrigida abaixo separa as suítes. A partir da O3-R, as restaurações dos scripts de mutação são verificadas automaticamente com `git diff --exit-code` em worktrees descartáveis. As 11 mutações antigas eram somente de tela; as novas evidências incluem também o backend.
+
+| Suíte | Aprovados | Pulados | Falhas |
+|---|---:|---:|---:|
+| O2 | 131 | 2 | 0 |
+| O3 | 53 | 0 | 0 |
+| O3-R backend | 33 | 0 | 0 |
+| Backend total (`backend/tests`) | 217 | 2 | 0 |
+| PoC, separada | 39 | 0 | 0 |
+| Playwright | 86 | 0 | 0 |
+| Axe | 20 cenários | — | 0 graves/críticas |
+| Typecheck | aprovado | — | — |
+| Build | aprovado | — | — |
+
+Mutações de backend: 27 executadas, 26 detectadas; sobreviventes: BM. Mutações de frontend: 15 executadas e detectadas, sem sobreviventes. As duas execuções do backend preservam os 13 casos anteriores e os 14 restantes, sem duplicação. Bases sem mutação passaram; erros de infraestrutura não foram contados. Evidências: `evidencias/o3r-mutacoes-backend.json`, `frontend/evidencias/o3r-mutacoes.json` e `frontend/evidencias/o3r-mutacoes-ui.json`.
+
+Resumos literais das execuções:
+
+```text
+217 passed, 2 skipped, 1 warning in 59.49s
+39 passed, 1 warning in 4.18s
+  86 passed (2.8m)
+```
+
+Evidências: `evidencias/o3r-pytest.txt`, `evidencias/o3r-testes.json`, `evidencias/o3r-tdd.json` e `frontend/evidencias/o3r-resumo-testes.json`.
+
+Relatório de Segurança, TDD e pendências P1–P3 em `../docs/o3/VALIDACAO.md`. PoC e textos dos artigos 3º e 9º preservados.
