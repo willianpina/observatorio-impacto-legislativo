@@ -1,0 +1,164 @@
+{
+  "backend": {
+    "O2": {
+      "total": 133,
+      "aprovados": 131,
+      "pulados": 2,
+      "falhas": 0
+    },
+    "O3": {
+      "total": 53,
+      "aprovados": 53,
+      "pulados": 0,
+      "falhas": 0
+    },
+    "O3-R": {
+      "total": 33,
+      "aprovados": 33,
+      "pulados": 0,
+      "falhas": 0
+    },
+    "O3-C": {
+      "total": 19,
+      "aprovados": 19,
+      "pulados": 0,
+      "falhas": 0
+    }
+  },
+  "backend_total": {
+    "aprovados": 236,
+    "pulados": 2,
+    "falhas": 0
+  },
+  "poc": {
+    "aprovados": 39,
+    "falhas": 0
+  },
+  "playwright": {
+    "startTime": "2026-10-18T21:46:04.265Z",
+    "duration": 237987.15199999997,
+    "expected": 126,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "axe": [
+    {
+      "arquivo": "o3c-axe-1280-error.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o3c-axe-1280-normal.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o3c-axe-1280-unavailable.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o3c-axe-360-error.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o3c-axe-360-normal.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o3c-axe-360-unavailable.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-1280-empty.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-1280-error.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-1280-gap.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-1280-normal.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-1280-stale.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-360-empty.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-360-error.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-360-gap.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-360-normal.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-360-stale.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-1280-aberto-caged.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-1280-aberto-gap.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-1280-aberto-normal.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-1280-aberto-stale.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-1280-aberto-unclassified.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-360-aberto-caged.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-360-aberto-gap.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-360-aberto-normal.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-360-aberto-stale.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-360-aberto-unclassified.json",
+      "graves_criticas": 0
+    }
+  ],
+  "typecheck": "aprovado",
+  "build": "aprovado",
+  "mutacoes_backend": {
+    "total": 27,
+    "detectadas": 27,
+    "sobreviventes": []
+  },
+  "mutacoes_frontend": {
+    "total": 17,
+    "detectadas": 17,
+    "sobreviventes": []
+  },
+  "validacao_real": "parcial: Caged indisponível"
+}

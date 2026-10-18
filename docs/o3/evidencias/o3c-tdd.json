@@ -1,0 +1,55 @@
+{
+  "base": "cb8f9b23c6776fd84d5d05a08a6e3a8836bc352d",
+  "execucoes": [
+    {
+      "commit": "3cd9673",
+      "grupo": "A backend inicial",
+      "resultado": "3 falhas, 0 aprovações"
+    },
+    {
+      "commit": "7554ddd",
+      "grupo": "A backend e sonda adicional",
+      "resultado": "3 falhas, 1 aprovação"
+    },
+    {
+      "commit": "3cd9673",
+      "grupo": "A frontend",
+      "resultado": "1 falha"
+    },
+    {
+      "commit": "865ba43 / a6619dd",
+      "grupo": "B backend, setup final",
+      "resultado": "6 falhas, 1 aprovação"
+    },
+    {
+      "commit": "865ba43",
+      "grupo": "B frontend",
+      "resultado": "1 falha, 1 aprovação"
+    },
+    {
+      "commit": "09a6d6a",
+      "grupo": "F histórico",
+      "resultado": "2 falhas"
+    },
+    {
+      "commit": "85f459a",
+      "grupo": "D evidência ausente",
+      "resultado": "7 falhas"
+    },
+    {
+      "commit": "c629f88",
+      "grupo": "C proxy e tela",
+      "resultado": "17 falhas, 1 aprovação"
+    },
+    {
+      "commit": "f3832bf",
+      "grupo": "C detalhes adicionais",
+      "resultado": "4 falhas"
+    },
+    {
+      "commit": "a7c3c7e / 7dbc527",
+      "grupo": "C matriz de estados e selo, fixture final",
+      "resultado": "4 falhas, 12 aprovações"
+    }
+  ]
+}
