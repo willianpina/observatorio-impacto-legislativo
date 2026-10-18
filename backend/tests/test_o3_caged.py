@@ -5,6 +5,7 @@ import importlib
 import io
 import json
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
 import httpx
 import pytest
@@ -52,10 +53,13 @@ def test_o3_caged_real_values_attribution_and_annual_difference(sf,client):
     assert data['medida']=='saldo' and data['tipo_periodo']=='mensal' and data['unidade']=='postos de trabalho'
     assert data['variacao_anual_origem']=='calculo_observatorio'
     assert data['ajuste']=='com_ajuste' and data['competencia_coleta']=='2026-08'
-    assert 'Tabela 5.1 (com ajustes)' in data['atribuicao']['texto'] and 'agosto/2026' in data['atribuicao']['texto']
-    assert data['atribuicao']['licenca']=='CC BY-ND 3.0' and data['nota_revisao']
+    assert data['atribuicao']['licenca'] is None and data['nota_revisao']
+    assert data['atribuicao']['base_legal']['texto']=='Uso livre e gratuito, com citação da fonte (Decreto nº 8.777/2016, art. 4º e §1º, com a redação do Decreto nº 9.903/2019). O MTE não publica licença própria para estes dados.'
+    assert data['atribuicao']['base_legal']['link']=='https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2016/decreto/d8777.htm'
     with sf() as session:
         collection=session.get(Coleta,data['coleta_id']);assert collection.resposta_bruta is None and collection.hash_sha256
+        day=collection.coletado_em.astimezone(ZoneInfo('America/Sao_Paulo')).strftime('%d/%m/%Y')
+        assert data['atribuicao']['texto']==f'Fonte: Novo Caged – MTE, Tabela 5.1 (com ajustes), arquivo agosto/2026, coletado em {day}. Elaboração: OIL.'
 
 
 @pytest.mark.parametrize('order',[('2026-07','2026-08'),('2026-08','2026-07')])

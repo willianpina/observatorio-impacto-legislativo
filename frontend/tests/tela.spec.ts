@@ -144,7 +144,11 @@ test('Caged com ajustes, atribuição e cálculo separados, sem misturar séries
   await page.unroute('**/api/oil/indicadores/**'); await intercept(page,'caged'); await page.goto('/');
   const card=page.getByTestId('card-caged-saldo');
   await expect(card.getByText('Saldo com ajustes',{exact:true})).toBeVisible();
-  await expect(card).toContainText('arquivo 08/2026, licença CC BY-ND 3.0');
+  await expect(card).toContainText('Fonte: Novo Caged – MTE, Tabela 5.1 (com ajustes), arquivo agosto/2026, coletado em');
+  await card.getByText('Saiba mais',{exact:true}).click();
+  await expect(card).toContainText('Uso livre e gratuito, com citação da fonte');
+  await expect(card.getByRole('link',{name:/Decreto nº 8.777/})).toHaveAttribute('href','https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2016/decreto/d8777.htm');
+  await card.getByText('Saiba mais',{exact:true}).click();
   await expect(card.getByTestId('caged-comparacao')).toContainText('Cálculo do Observatório a partir de dados do MTE');
   await expect(card.getByTestId('caged-valor-oficial')).not.toContainText('Variação');
   await expect(card.locator('.recharts-bar-rectangle')).toHaveCount(1);
