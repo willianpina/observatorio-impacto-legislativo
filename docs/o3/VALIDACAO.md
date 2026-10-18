@@ -103,6 +103,8 @@ A API e a tela usam o contrato v1.4.1, com ementa literal, autoria histórica, s
 
 **Validação real parcial:** IBGE e lei disponíveis, não simulados. Os dois arquivos do Caged responderam HTTP 200 e tiveram hashes idênticos aos do manifesto, mas foram recusados como `arquivo_invalido`, sem observações. O motivo interno detalhado não foi preservado pelo erro genérico do parser e fica a confirmar. Não se repetiu o job nem o download, não se mudou o manifesto e não se relaxaram as proteções. A captura real retorna código 1 e registra essa pendência; não se declara a integração real do Caged aprovada.
 
+Medição do xlsx real do Novo Caged: 269.003.821 bytes expandidos, com sheet13.xml ~111 MB e sheet14.xml ~88 MB; 200 MiB recusava esse perfil e o teto passou a 512 MiB porque 269.003.821 já excede 256 MiB (268.435.456), e 512 MiB é o degrau seguinte que cobre o arquivo medido com margem.
+
 A coleta manual foi executada uma vez em banco novo, com porta aleatória diferente de 5432 e credenciais somente na memória. API e contêiner foram encerrados. Para a captura final, restaurou-se o backup privado desse mesmo banco em outro contêiner próprio, sem executar jobs; ele também foi encerrado. O backup não foi versionado. Não foi inspecionado banco persistente antigo, nem arquivo de ambiente.
 
 ### Testes anteriores ao código
