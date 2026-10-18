@@ -2,7 +2,6 @@
 // Não lê ambientes nem altera backend/poc; execute diretamente com servidores parados.
 import fs from 'node:fs';
 import path from 'node:path';
-import os from 'node:os';
 import {spawnSync} from 'node:child_process';
 
 const root=process.cwd();
@@ -15,7 +14,10 @@ function clean(cwd){git(cwd,['diff','--quiet','--exit-code']);git(cwd,['diff','-
 if(!process.argv.includes('--isolated')) {
   clean(repo);
   const head=git(repo,['rev-parse','HEAD']);
-  const scratch=fs.mkdtempSync(path.join(os.tmpdir(),'oil-o3r-frontend-'));
+  // Mesmo volume das dependências: evita caminhos relativos entre unidades no webpack.
+  const temporaryParent=path.join(path.dirname(repo),'work-o3r');
+  fs.mkdirSync(temporaryParent,{recursive:true});
+  const scratch=fs.mkdtempSync(path.join(temporaryParent,'frontend-worktree-'));
   const checkout=path.join(scratch,'checkout'),copyFrontend=path.join(checkout,'frontend');
   const output=path.join(path.dirname(repo),'work-o3r',`frontend-mutacoes-${head.slice(0,8)}`);
   fs.mkdirSync(output,{recursive:true});
