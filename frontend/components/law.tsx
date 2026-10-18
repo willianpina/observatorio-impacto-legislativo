@@ -42,7 +42,7 @@ export function Law({testMode,example,onData}:{testMode:boolean;example:ExampleL
         <h3>Marcos de calendário</h3>{data.marcos.map(marker=><div key={marker.tipo}><strong>{marker.rotulo}</strong><p>{date(marker.data)}{marker.prevista?' (prevista)':''} · Origem: {marker.origem}</p><p><SourceLink href={marker.link}>{marker.fonte}</SourceLink> · Coletado em {date(data.coletado_em,true)} (BRT)</p></div>)}
         <h3>Fontes da norma</h3>{data.fontes_norma.map(reference=><p key={reference.link}><SourceLink href={reference.link}>{reference.rotulo}</SourceLink> · Coletado em {date(reference.coletado_em,true)} (BRT)</p>)}
       </details>
-      <div className="law-meta"><h3>Vigência</h3>{testMode&&data.simulada&&example?<Vigencia vigencia={example.vigencia}/>:<div className="unavailable"><strong>Dado ainda não disponível</strong><p>A fonte integrada não fornece as regras de vigência neste contrato.</p></div>}</div>
+      <div className="law-vigencia"><h3>Vigência</h3>{testMode&&data.simulada&&example?<Vigencia vigencia={example.vigencia}/>:<div className="unavailable"><strong>Dado ainda não disponível</strong><p>A fonte integrada não fornece as regras de vigência neste contrato.</p></div>}</div>
       {testMode&&data.simulada&&example&&<div className="law-milestones">{example.marcos.filter(m=>m.prevista).map(m=><div key={m.tipo}><strong>{m.rotulo}</strong><p>{date(m.data)} · {m.artigo}</p><span>{m.nota}</span> · <SourceLink href={m.link}>{m.fonte}</SourceLink></div>)}</div>}
     </>}
   </section>;
