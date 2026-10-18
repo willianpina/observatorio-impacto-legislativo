@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { fixture,intercept } from './fixtures';
 import fs from 'node:fs/promises';
-import {languageViolations} from './linguagem';
+import {languageViolations,scanLanguageBlocks} from './linguagem';
 import {lei} from '../mocks/lei';
 
 const warning = 'É cedo para afirmar. A emenda começa a valer em etapas, e os dados oficiais saem com atraso. Mudanças nos indicadores podem ter várias causas.';
@@ -212,9 +212,8 @@ test('frases proibidas em todo texto, dicas, tabelas e rótulos', async ({page})
   // O corpus concatena blocos independentes sem separadores de frase. Nele,
   // verifica literais; relações entre datas e variação são verificadas por bloco abaixo.
   expect(languageViolations(text+' '+attributes,[],false)).toEqual([]);
-  const phrases=await page.locator('p,h1,h2,h3,h4,figcaption,td,th,[aria-label],[title],[alt]').evaluateAll(els=>els.map(el=>(el.textContent||'')+' '+['aria-label','title','alt'].map(a=>el.getAttribute(a)||'').join(' ')));
   const markers=lei.marcos.flatMap(m=>[m.rotulo,m.data]);
-  for(const phrase of phrases)expect(languageViolations(phrase,markers),phrase).toEqual([]);
+  expect(await scanLanguageBlocks(page,markers)).toEqual([]);
 });
 
 test('abas funcionam com teclado e CSV pode ser baixado',async({page})=>{

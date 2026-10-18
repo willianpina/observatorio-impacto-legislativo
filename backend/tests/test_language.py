@@ -2,6 +2,7 @@
 import asyncio
 import json
 import unicodedata
+import subprocess
 
 import httpx
 import pytest
@@ -16,6 +17,20 @@ from .conftest import ROOT, collect
 
 FORBIDDEN = ('causou','graças a','por causa da lei','depois da aprovação',
              'desde a promulgação','efeito da lei')
+
+
+def versioned_docs():
+    try:
+        result=subprocess.run(['git','ls-files','-z','--','docs'],cwd=ROOT,
+                              capture_output=True,check=True)
+    except (OSError,subprocess.CalledProcessError) as exc:
+        raise RuntimeError('Git é obrigatório para conferir a documentação versionada.') from exc
+    if result.returncode!=0:raise RuntimeError('Inventário Git indisponível.')
+    names=set(filter(None,result.stdout.decode('utf-8').split('\0')))
+    required={'docs/o3/VALIDACAO.md','docs/o3/spec-b2-proposicao.md',
+              'docs/o3/spec-b4-caged.md','docs/o3/contrato-api-v1.4-delta.md'}
+    assert required<=names,'Documentos conhecidos ausentes do inventário Git.'
+    return [ROOT/name for name in sorted(names)]
 
 
 def normalized(text):
@@ -116,13 +131,9 @@ def test_no_forbidden_phrases_in_api(response_texts,phrase):
 
 @pytest.mark.parametrize('phrase',FORBIDDEN)
 def test_no_forbidden_phrases_in_all_docs(phrase):
-    documents=[p for p in (ROOT/'docs').rglob('*') if p.is_file()]
+    documents=versioned_docs()
     assert documents
     for document in documents:
         assert not (document.name=='.env' or document.name.startswith('.env.')), 'Arquivo de ambiente não permitido em docs/.'
-        # Planilhas são fixtures binárias documentadas; seus textos são verificados
-        # após leitura pelo coletor. Todos os demais arquivos continuam cobertos.
-        if document.suffix == '.xlsx':
-            assert document.parent == ROOT/'docs/o3/fixtures'
-            continue
+        assert document.suffix.lower()!='.xlsx','Planilha não permitida em docs/.'
         assert normalized(phrase) not in normalized(document.read_text(encoding='utf-8')), str(document.relative_to(ROOT))

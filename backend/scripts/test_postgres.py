@@ -40,8 +40,11 @@ def main():
         environment['PYTEST_DISABLE_PLUGIN_AUTOLOAD'] = '1'
         environment['PYTHONDONTWRITEBYTECODE'] = '1'
         # Em duas invocações para manter o import legado `from app import ...` intacto.
+        arguments=list(sys.argv[1:])
+        if not any(arg.replace('\\','/').startswith('backend/tests') for arg in arguments):
+            arguments.insert(0,'backend/tests')
         new = subprocess.run([sys.executable, '-m', 'pytest', '-c', 'backend/pytest.ini',
-                              '-q', '-p', 'no:cacheprovider', *sys.argv[1:]], cwd=ROOT, env=environment)
+                              '-q', '-p', 'no:cacheprovider', *arguments], cwd=ROOT, env=environment)
         old = subprocess.run([sys.executable, '-m', 'pytest', '-q', '-p', 'no:cacheprovider'],
                              cwd=ROOT/'poc', env=environment)
         return 0 if new.returncode == old.returncode == 0 else 1

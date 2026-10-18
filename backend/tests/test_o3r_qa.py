@@ -6,6 +6,7 @@ import json
 import subprocess
 import sys
 from types import SimpleNamespace
+from urllib.parse import urlsplit,parse_qs
 
 import httpx
 import openpyxl
@@ -30,6 +31,7 @@ def test_marker_dates_and_labels_are_literal_source_fields(sf,client):
 @pytest.mark.parametrize('simulada,mode',[(False,'1'),(True,None)])
 def test_cutout_cannot_bypass_explicit_test_mode(sf,monkeypatch,simulada,mode):
     metadata,raw=entry('2026-08')
+    metadata['drive_file_id']=parse_qs(urlsplit(metadata['url_download']).query)['id'][0]
     async def run():
         async with httpx.AsyncClient(transport=httpx.MockTransport(lambda r:httpx.Response(200,content=raw))) as client:
             collector=CagedCollector(sf,client,simulada=simulada,sleep=no_sleep)

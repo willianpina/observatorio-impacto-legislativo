@@ -13,7 +13,8 @@ for(const [id,sentence] of [
 for(const tag of ['summary','li','strong','span','small','dd','dt','label','button','caption'])test(`O3R bloco ${tag}: data e variação são detectadas`,async({page})=>{
   const scan=(language as unknown as {scanLanguageBlocks?:(page:Page)=>Promise<string[]>}).scanLanguageBlocks;
   expect(typeof scan).toBe('function');
-  await page.setContent(`<${tag}>Em 14/10/2026, a desocupação caiu</${tag}>`);
+  const block=`<${tag}>Em 14/10/2026, a desocupação caiu</${tag}>`;
+  await page.setContent(tag==='caption'?`<table>${block}</table>`:block);
   expect(await scan!(page)).not.toEqual([]);
 });
 
