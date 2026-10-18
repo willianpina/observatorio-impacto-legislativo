@@ -4,6 +4,7 @@ import copy
 import hashlib
 import io
 import json
+import logging
 import re
 import subprocess
 import zipfile
@@ -76,6 +77,57 @@ def test_measured_expanded_profile_is_accepted(monkeypatch):
         return original(archive)
     monkeypatch.setattr(zipfile.ZipFile,'infolist',metadata)
     assert parse_workbook(raw,'2026-08',allow_recorte=True)['202608']==165827
+
+
+async def public_caged_error(exc):
+    from starlette.requests import Request
+    from backend.oil.main import app, source_failure
+    scope={'type':'http','asgi':{'version':'3.0'},'http_version':'1.1','method':'GET','scheme':'http',
+        'path':'/api/v1/indicadores/caged-saldo','raw_path':b'/api/v1/indicadores/caged-saldo',
+        'query_string':b'','headers':[],'client':('127.0.0.1',9),'server':('test',80),'app':app}
+    return await source_failure(Request(scope),exc)
+
+
+@pytest.mark.parametrize('subcode',['zip_total','zip_razao','aba','cabecalho','rodape','inicio'])
+def test_invalid_file_subcode_is_stored_and_hidden_from_api(sf,client,monkeypatch,caplog,subcode):
+    raw=entry('2026-08')[1];override={}
+    if subcode=='zip_total':
+        def metadata(archive):
+            item=zipfile.ZipInfo('xl/worksheets/sheet13.xml')
+            item.file_size=MAX_EXPANDED_BYTES+1
+            item.compress_size=item.file_size
+            return [item]
+        monkeypatch.setattr(zipfile.ZipFile,'infolist',metadata)
+    elif subcode=='zip_razao':
+        stream=io.BytesIO(raw)
+        with zipfile.ZipFile(stream,'a',compression=zipfile.ZIP_DEFLATED) as archive:
+            archive.writestr('synthetic-ratio.bin',b'x'*20000)
+        raw=stream.getvalue()
+    elif subcode=='inicio':
+        override['fixture_recorte']=False
+    else:
+        workbook=openpyxl.load_workbook(io.BytesIO(raw));sheet=workbook['Tabela 5.1']
+        if subcode=='aba':sheet.title='Tabela 5'
+        if subcode=='cabecalho':sheet.cell(5,6,'Saldo diferente')
+        if subcode=='rodape':sheet.cell(22,2,'Nota fora do rodapé')
+        stream=io.BytesIO();workbook.save(stream);workbook.close();raw=stream.getvalue()
+    override['sha256']=hashlib.sha256(raw).hexdigest()
+    with caplog.at_level(logging.WARNING,'backend.oil.caged'):
+        with pytest.raises(SourceFailure) as failure:
+            ingest_caged(sf,raw=raw,override=override)
+    assert failure.value.code=='arquivo_invalido'
+    with sf() as session:
+        failed=session.scalar(select(Coleta).order_by(Coleta.id.desc()))
+        assert failed.erro==subcode and failed.valida is False
+        assert session.scalar(select(func.count()).select_from(Observacao))==0
+    response=client.get('/api/v1/indicadores/caged-saldo')
+    assert response.status_code==200 and subcode not in response.text
+    rendered=asyncio.run(public_caged_error(failure.value))
+    payload=json.loads(rendered.body)
+    assert payload=={'erro':{'codigo':'arquivo_invalido','mensagem':'A fonte não forneceu uma coleta válida.',
+        'fonte':'IBGE / SIDRA','tentar_novamente_em':None,'ultima_coleta_id':None}}
+    assert subcode not in rendered.body.decode()
+    assert f'subcodigo={subcode}' in caplog.text
 
 
 def test_small_high_ratio_zip_is_invalid_without_observations(sf):
