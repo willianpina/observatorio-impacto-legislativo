@@ -60,3 +60,7 @@ node tests/check-mutations.mjs
 ```
 
 Os scripts usam worktrees descartáveis fora do repositório e conferem `git diff --exit-code` após cada restauração. A execução do backend usa somente PostgreSQL descartável em porta aleatória de loopback. O argumento `--only` permite retomar casos específicos, preservando a evidência anterior para consolidação por identificador.
+
+## Navegador e evidência de mutações
+No Windows, use `$env:OIL_BROWSER_CHANNEL='msedge'`; no Linux, `OIL_BROWSER_CHANNEL=chromium`. O Playwright principal usa Chromium quando a variável não é definida; `check-mutations.mjs` e `capture-real.mjs` usam msedge como fallback. Defina a variável explicitamente para manter as execuções consistentes.
+As mutações gravam por padrão somente fora do Git e exigem checkout limpo. `--publicar-evidencia` copia o resultado para a evidência versionada, somente no passo explícito de documentação.

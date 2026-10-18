@@ -20,5 +20,6 @@ export function languageViolations(text:string,marcos:string[]=[],checkSentences
 /** Cada bloco é avaliado isoladamente; não relaciona frases de blocos distintos. */
 export async function scanLanguageBlocks(page:Page,marcos:string[]=[]):Promise<string[]> {
   const blocks=await page.locator('p,h1,h2,h3,h4,figcaption,td,th,summary,li,strong,span,small,dd,dt,label,button,caption,[aria-label],[title],[alt]').evaluateAll(elements=>elements.map(element=>(element.textContent||'')+' '+['aria-label','title','alt'].map(attribute=>element.getAttribute(attribute)||'').join(' ')));
-  return blocks.flatMap(block=>languageViolations(block,marcos));
+  const ownDivText=await page.locator('div').evaluateAll(elements=>elements.map(element=>Array.from(element.childNodes).filter(node=>node.nodeType===Node.TEXT_NODE).map(node=>node.textContent||'').join(' ')));
+  return [...blocks,...ownDivText].flatMap(block=>languageViolations(block,marcos));
 }

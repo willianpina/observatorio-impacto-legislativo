@@ -210,12 +210,10 @@ test('inconsistência entre partidos e placar não exibe aprovação', async ({p
 test('frases proibidas em todo texto, dicas, tabelas e rótulos', async ({page}) => {
   await page.unroute('**/api/oil/indicadores/**');await intercept(page,'caged');
   await page.goto('/'); await expect(page.getByTestId('card-desocupacao')).toContainText('Último dado');
-  const text=await page.locator('body').evaluate(el=>{const copy=el.cloneNode(true) as HTMLElement;copy.querySelectorAll('script,style').forEach(node=>node.remove());return copy.textContent||'';});
+  const text=await page.locator('body').innerText();
   const attributes=await page.locator('[aria-label],[title],[alt]').evaluateAll(els=>els.map(e=>[e.getAttribute('aria-label'),e.getAttribute('title'),e.getAttribute('alt')].join(' ')).join(' '));
   const corpus=(text.split(legend).join('')+' '+attributes).toLocaleLowerCase('pt-BR');
-  // O corpus concatena blocos independentes sem separadores de frase. Nele,
-  // verifica literais; relações entre datas e variação são verificadas por bloco abaixo.
-  expect(languageViolations(text+' '+attributes,[],false)).toEqual([]);
+  expect(languageViolations(text+'\n'+attributes)).toEqual([]);
   const markers=lei.marcos.flatMap(m=>[m.rotulo,m.data]);
   expect(await scanLanguageBlocks(page,markers)).toEqual([]);
 });

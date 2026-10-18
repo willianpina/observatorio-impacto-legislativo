@@ -7,7 +7,7 @@ import {spawnSync} from 'node:child_process';
 const root=process.cwd();
 if(!fs.existsSync(path.join(root,'components/indicator.tsx')))throw Error('Execute dentro de frontend/.');
 const repo=path.resolve(root,'..');
-const prefix=process.env.OIL_MUTATION_EVIDENCE_PREFIX||'o3r';
+const prefix=process.env.OIL_MUTATION_EVIDENCE_PREFIX||'o3c';
 if(!/^[a-z0-9-]+$/.test(prefix))throw Error('Prefixo de evidência inválido.');
 function git(cwd,args){const result=spawnSync('git',['-C',cwd,...args],{encoding:'utf8',windowsHide:true});if(result.status!==0)throw Error('Verificação Git falhou: '+args.join(' '));return result.stdout.trim();}
 function clean(cwd){git(cwd,['diff','--quiet','--exit-code']);git(cwd,['diff','--cached','--quiet','--exit-code']);}
@@ -37,7 +37,9 @@ if(!process.argv.includes('--isolated')) {
     fs.rmdirSync(scratch);
   }
   // Primeiro prova a integridade do repo principal; só depois copia os relatórios.
-  for(const name of fs.readdirSync(output).filter(name=>name.startsWith(prefix+'-')&&name.endsWith('.json')))fs.copyFileSync(path.join(output,name),path.join(root,'evidencias',name));
+  if(git(repo,['status','--porcelain']))throw Error('O checkout principal deve terminar limpo.');
+  if(process.argv.includes('--publicar-evidencia'))for(const name of fs.readdirSync(output).filter(name=>name.startsWith(prefix+'-')&&name.endsWith('.json')))fs.copyFileSync(path.join(output,name),path.join(root,'evidencias',name));
+  console.log('Evidência: '+path.relative(repo,output));
   console.log('Worktree removido; git diff --exit-code retornou zero no repo principal.');
   process.exit(status);
 }
@@ -81,7 +83,8 @@ try {
     },'R2-8'],
     ['FC4: evento genérico não é verificado','tests/linguagem.ts',s=>s.replace('a partir d[ao]','início d[ao]'),'O3R FC4'],
     ['FC5: data sem ano não é verificada','tests/linguagem.ts',s=>s.replace(String.raw`(?:\/\d{4})?`,String.raw`\/\d{4}`),'O3R FC5'],
-    ['FD3: comparação com data não é verificada','tests/linguagem.ts',s=>s.replace('d[aoe]','d[ao]'),'O3R FD3']
+    ['FD3: comparação com data não é verificada','tests/linguagem.ts',s=>s.replace('d[aoe]','d[ao]'),'O3R FD3'],
+    ['B1: div próprio deixa de ser verificado','tests/linguagem.ts',s=>s.replace('[...blocks,...ownDivText]','blocks'),'O3C div próprio']
   ];
   for(const [name,file,replace,grep] of units){
     try{patch(file,replace);record(name,testResult(run(['node_modules/@playwright/test/cli.js','test','-c','playwright.unit.config.ts','--grep',grep])));}

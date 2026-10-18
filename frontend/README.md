@@ -63,3 +63,7 @@ A conferência opt-in de mutações executa `node tests/check-mutations.mjs`, de
 ## Evidências e limites
 
 Consulte `VALIDACAO.md` e `evidencias/`. Axe automatizado complementa a conferência visual e por teclado; não representa certificação integral de acessibilidade. As capturas simuladas têm faixa de teste. As capturas `real-*` usam coletas reais da API local e não apresentam dados legislativos de teste.
+
+## Navegador e evidência de mutações
+No Windows, use `$env:OIL_BROWSER_CHANNEL='msedge'`; no Linux, `OIL_BROWSER_CHANNEL=chromium`. O Playwright principal usa Chromium quando a variável não é definida; `check-mutations.mjs` e `capture-real.mjs` usam msedge como fallback. Defina a variável explicitamente para manter as execuções consistentes.
+As mutações gravam por padrão somente fora do Git e exigem checkout limpo. `--publicar-evidencia` copia o resultado para a evidência versionada, somente no passo explícito de documentação.

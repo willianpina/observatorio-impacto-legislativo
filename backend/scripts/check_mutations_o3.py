@@ -94,12 +94,12 @@ def run_suite(checkout,output,label):
         pytest_resumo=summaries,codigo_saida=result.returncode)
 
 
-def execute(only=None):
+def execute(only=None,publicar_evidencia=False):
     clean(ROOT)
     revision=git(ROOT,'rev-parse','HEAD')
     scratch=Path(tempfile.mkdtemp(prefix='oil-o3r-backend-'))
     checkout=scratch/'checkout'
-    output=ROOT.parent/'work-o3r'/('backend-mutacoes-'+revision[:8])
+    output=ROOT.parent/'work-o3c'/('backend-mutacoes-'+revision[:8])
     output.mkdir(parents=True,exist_ok=True)
     report=dict(head=revision,isolamento='worktree descartável e PostgreSQL em porta aleatória de loopback',resultados=[])
     git(ROOT,'worktree','add','--detach',str(checkout),'HEAD')
@@ -132,9 +132,11 @@ def execute(only=None):
     report['detectadas']=sum(r['resultado']=='DETECTADA' for r in report['resultados'])
     report['sobreviventes']=[r['id'] for r in report['resultados'] if r['resultado']=='SOBREVIVENTE']
     report['restauracao_repo_principal_exit_code']=0
-    target=ROOT/'docs/o3/evidencias/o3r-mutacoes-backend.json'
+    if git(ROOT,'status','--porcelain'):raise RuntimeError('O checkout principal deve terminar limpo.')
+    target=(ROOT/'docs/o3/evidencias/o3c-mutacoes-backend.json') if publicar_evidencia else output/'resultado.json'
     target.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-    if set(report['sobreviventes'])-{'BM'}:raise RuntimeError('Sobrevivente não autorizado; consulte o relatório.')
+    if report['sobreviventes']:raise RuntimeError('Nenhum sobrevivente é aceito; consulte o relatório.')
+    print('Evidência: '+os.path.relpath(target,ROOT))
     print(json.dumps({key:report[key] for key in ('total','detectadas','sobreviventes')},ensure_ascii=False))
 
 
@@ -143,6 +145,7 @@ def main():
     parser.add_argument('--list',action='store_true')
     parser.add_argument('--check',action='store_true',help='Confere alvos e sintaxe sem executar Docker.')
     parser.add_argument('--only',nargs='+')
+    parser.add_argument('--publicar-evidencia',action='store_true',help='Copia explicitamente o resultado para a documentação versionada.')
     args=parser.parse_args()
     if args.list:
         print(json.dumps([dict(id=i,arquivo=f,nome=n) for i,f,n,t in MUTATIONS],ensure_ascii=False));return
@@ -150,7 +153,7 @@ def main():
         for identifier,file,name,transform in MUTATIONS:
             source=(ROOT/file).read_text(encoding='utf-8');compile(transform(source),file,'exec')
         print('27 alvos válidos, sintaxe conferida.');return
-    execute(set(args.only) if args.only else None)
+    execute(set(args.only) if args.only else None,args.publicar_evidencia)
 
 
 if __name__=='__main__':main()
