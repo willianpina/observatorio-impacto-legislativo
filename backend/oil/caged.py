@@ -24,7 +24,7 @@ from .schemas import SeriesResponse
 MTE='https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/acoes-e-programas/programas-projetos-acoes-obras-e-atividades/estatisticas-trabalho'
 MONTHS=('Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro')
 MAX_BYTES=100*1024*1024
-MAX_EXPANDED_BYTES=200*1024*1024
+MAX_EXPANDED_BYTES=512*1024*1024
 MAX_COMPRESSION_RATIO=100
 MAX_DATA_ROWS=1000
 
