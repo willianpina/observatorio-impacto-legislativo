@@ -7,6 +7,7 @@ import re
 import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import urlsplit
 
 import httpx
 from fastapi import HTTPException
@@ -17,6 +18,30 @@ from .catalog import PROPOSICOES
 from .ingest import SourceFailure, retry_delay
 from .models import Coleta, Fonte, Marco, Proposicao, ProposicaoSnapshot
 from .law_schemas import GeneratedNorm
+
+MAX_RESPONSE_BYTES=5*1024*1024
+NORM_DOMAINS=('planalto.gov.br','in.gov.br','senado.leg.br','camara.leg.br')
+
+
+def official_norm_link(value):
+    try:
+        url=urlsplit(value)
+        host=(url.hostname or '').lower()
+        return (url.scheme=='https' and not url.username and not url.password and url.port in {None,443}
+            and any(host==domain or host.endswith('.'+domain) for domain in NORM_DOMAINS))
+    except (ValueError,TypeError):
+        return False
+
+
+def minimized_deputy(raw):
+    try:
+        data=json.loads(raw)['dados'];status=data.get('ultimoStatus',{})
+        fields={'id':data.get('id'),'nome':status.get('nome') or data.get('nomeCivil'),
+                'siglaPartido':status.get('siglaPartido'),'siglaUf':status.get('siglaUf')}
+        return json.dumps({key:value for key,value in fields.items() if value is None or
+            (key=='id' and type(value) is int) or (key!='id' and isinstance(value,str))},ensure_ascii=False).encode('utf-8')
+    except (ValueError,KeyError,TypeError,AttributeError):
+        return b'{}'
 
 
 def endpoints(identifier):
@@ -49,17 +74,20 @@ class LawCollector:
             raise ValueError('Coleta simulada exige modo de teste explícito.')
         self.sessions, self.client, self.simulada, self.sleep = sessions, client, simulada, sleep
 
-    def record(self, identifier, house, url, response=None, error=None, kind='legislacao'):
+    def record(self, identifier, house, url, response=None, error=None, kind='legislacao',status_code=None):
         with self.sessions.begin() as session:
             code = house + '-dados-abertos'
             session.execute(insert(Fonte).values(codigo=code,
                 nome='Câmara dos Deputados' if house == 'camara' else 'Senado Federal',link=url)
                 .on_conflict_do_nothing(index_elements=['codigo']))
             raw = response.content if response is not None else None
+            digest=hashlib.sha256(raw).hexdigest() if raw is not None else None
+            if raw is not None and re.fullmatch(r'https://dadosabertos\.camara\.leg\.br/api/v2/deputados/[0-9]+',url):
+                raw=minimized_deputy(raw)
             collection = Coleta(fonte_id=session.scalar(select(Fonte.id).where(Fonte.codigo == code)),
                 serie_codigo=f'proposicao:{identifier}:{house}', url_consultada=url,
-                coletado_em=datetime.now(timezone.utc),codigo_http=response.status_code if response is not None else None,
-                resposta_bruta=raw,hash_sha256=hashlib.sha256(raw).hexdigest() if raw is not None else None,
+                coletado_em=datetime.now(timezone.utc),codigo_http=response.status_code if response is not None else status_code,
+                resposta_bruta=raw,hash_sha256=digest,
                 simulada=self.simulada,erro=error,tipo=kind,valida=False)
             session.add(collection); session.flush()
             return collection.id
@@ -68,7 +96,19 @@ class LawCollector:
         for attempt in range(3):
             response = None
             try:
-                response = await self.client.get(url)
+                async with self.client.stream('GET',url) as upstream:
+                    length=upstream.headers.get('Content-Length')
+                    if length and (not length.isdecimal() or int(length)>MAX_RESPONSE_BYTES):
+                        self.record(identifier,house,url,error='resposta_invalida',kind=kind,status_code=upstream.status_code)
+                        raise SourceFailure('resposta_invalida')
+                    raw=bytearray()
+                    async for chunk in upstream.aiter_bytes():
+                        if len(raw)+len(chunk)>MAX_RESPONSE_BYTES:
+                            self.record(identifier,house,url,error='resposta_invalida',kind=kind,status_code=upstream.status_code)
+                            raise SourceFailure('resposta_invalida')
+                        raw.extend(chunk)
+                    response=httpx.Response(upstream.status_code,content=bytes(raw),
+                        headers={key:value for key,value in upstream.headers.items() if key.lower()!='content-encoding'})
             except httpx.TimeoutException:
                 failure = SourceFailure('timeout_fonte',504)
                 self.record(identifier,house,url,error=failure.code,kind=kind)
@@ -136,11 +176,14 @@ class LawCollector:
                 else:
                     if payload['id'] != PROPOSICOES[identifier]['id_senado']: raise ValueError('Identificador divergente.')
                     norm=payload.get('normaGerada') or None
+                    norm_reason=None
                     if norm:
                         GeneratedNorm.model_validate(dict(norm,fonte=url))
+                        if not official_norm_link(norm['link']):
+                            norm=None;norm_reason='O link estava fora das fontes oficiais.'
                     normalized = dict(ementa=payload.get('conteudo',{}).get('ementa'),
                         situacao_texto=payload['situacaoAtual'],situacao_data=instant(payload['dataSituacaoAtual']),
-                        norma_json=norm,autor_json={})
+                        norma_json=norm,autor_json={'_norma_gerada_motivo':norm_reason})
                 if not isinstance(normalized['situacao_texto'],str) or not normalized['situacao_texto'].strip():
                     raise ValueError('Situação ausente.')
                 self.persist(identifier,house,payload,normalized,cid)
@@ -206,7 +249,7 @@ def read_law(session, identifier, *, test_mode=False):
         snap=session.scalar(select(ProposicaoSnapshot).join(Coleta).where(
             ProposicaoSnapshot.proposicao_id==prop.id,ProposicaoSnapshot.casa==house,
             Coleta.simulada==test_mode,Coleta.valida.is_(True)).order_by(ProposicaoSnapshot.versao.desc()).limit(1)) if prop else None
-        available=good is not None and (failed is None or failed.id<good.id)
+        available=snap is not None and good is not None and (failed is None or failed.id<good.id)
         stale=stale or (good is not None and not available)
         if good: latest_good.append(good)
         if snap: snapshots[house]=snap
@@ -218,7 +261,9 @@ def read_law(session, identifier, *, test_mode=False):
         failure=max(failures,key=lambda c:c.id) if failures else None
         status=504 if failure and failure.erro=='timeout_fonte' else 503 if failure is None or failure.erro=='erro_conexao' or failure.codigo_http in {429,500,502,503,504} else 502
         raise SourceFailure(failure.erro if failure else 'sem_coleta_valida',status)
-    candidates=[s for s in statuses if s['disponivel']] or [s for s in statuses if s['coleta_id']]
+    candidates=[s for s in statuses if s['disponivel'] and s['casa'] in snapshots] or [s for s in statuses if s['coleta_id'] and s['casa'] in snapshots]
+    if not candidates:
+        raise SourceFailure('sem_coleta_valida',503)
     chosen=max(candidates,key=lambda s:(snapshots[s['casa']].situacao_data,s['casa']=='senado'))
     divergent=len(snapshots)==2 and len({stage(s.situacao_texto) for s in snapshots.values()})>1
     current=dict(chosen,regra='mais_recente' if len(candidates)==2 else 'unica_disponivel',divergencia=divergent)
@@ -234,7 +279,7 @@ def read_law(session, identifier, *, test_mode=False):
     return dict(id_camara=identifier,id_senado=PROPOSICOES[identifier]['id_senado'],**identity,
         ementa=chamber.ementa if chamber else None,**authors,
         situacao=statuses,situacao_atual=current,norma_gerada=norm,
-        norma_gerada_motivo=None if norm else 'normaGerada vazio ou não disponível na fonte do Senado',
+        norma_gerada_motivo=None if norm else (senate.autor_json.get('_norma_gerada_motivo') if senate else None) or 'normaGerada vazio ou não disponível na fonte do Senado',
         marcos=[{key:getattr(m,key) for key in ('tipo','rotulo','data','prevista','fonte','link','origem','artigo')} for m in markers],
         fontes_norma=sources,nivel_evidencia='descritivo',desatualizado=stale,simulada=test_mode,
         fonte='Câmara dos Deputados / Senado Federal',coleta_id=last.id,coletado_em=last.coletado_em.isoformat())

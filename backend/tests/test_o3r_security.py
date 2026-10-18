@@ -98,8 +98,13 @@ def test_no_workbook_or_caged_cutout_in_docs():
 
 def test_versioned_evidence_contains_no_absolute_local_paths():
     names=subprocess.check_output(['git','ls-files','-z','--','docs','frontend/evidencias'],cwd=ROOT).decode().split('\0')
-    pattern=re.compile(rb'[A-Za-z]:\\|/Users/|/home/')
-    assert not [name for name in names if name and pattern.search((ROOT/name).read_bytes())]
+    pattern=re.compile(r'(?<![A-Za-z0-9])[A-Za-z]:\\|/Users/|/home/')
+    leaked=[]
+    for name in filter(None,names):
+        try:text=(ROOT/name).read_text(encoding='utf-8')
+        except UnicodeDecodeError:continue  # Bytes comprimidos de PNG não são caminhos de texto.
+        if pattern.search(text):leaked.append(name)
+    assert not leaked
 
 
 def test_deputy_storage_is_minimized_but_hash_tracks_original(sf,client):

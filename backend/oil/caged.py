@@ -7,7 +7,9 @@ import re
 import tempfile
 from urllib.parse import urlsplit, parse_qs
 from datetime import datetime, timezone
-from zipfile import BadZipFile
+from zipfile import BadZipFile, ZipFile
+from xml.etree.ElementTree import ParseError
+from defusedxml.common import DefusedXmlException
 
 import httpx
 import openpyxl
@@ -21,12 +23,24 @@ from .schemas import SeriesResponse
 MTE='https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/acoes-e-programas/programas-projetos-acoes-obras-e-atividades/estatisticas-trabalho'
 MONTHS=('Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro')
 MAX_BYTES=100*1024*1024
+MAX_EXPANDED_BYTES=200*1024*1024
+MAX_COMPRESSION_RATIO=100
+MAX_DATA_ROWS=1000
 
 
 def parse_workbook(source, competencia, *, allow_recorte=False):
     if not re.fullmatch(r'[0-9]{4}-(0[1-9]|1[0-2])',competencia):
         raise ValueError('Competência inválida.')
-    workbook=openpyxl.load_workbook(io.BytesIO(source) if isinstance(source,bytes) else source,read_only=True,data_only=True)
+    stream=io.BytesIO(source) if isinstance(source,bytes) else source
+    with ZipFile(stream) as archive:
+        members=archive.infolist()
+        if sum(member.file_size for member in members)>MAX_EXPANDED_BYTES:
+            raise ValueError('Conteúdo descompactado acima do limite.')
+        for member in members:
+            if member.file_size and (member.compress_size==0 or member.file_size/member.compress_size>MAX_COMPRESSION_RATIO):
+                raise ValueError('Razão de compactação acima do limite.')
+    if hasattr(stream,'seek'):stream.seek(0)
+    workbook=openpyxl.load_workbook(stream,read_only=True,data_only=True)
     try:
         if 'Tabela 5.1' not in workbook.sheetnames: raise ValueError('Aba esperada ausente.')
         sheet=workbook['Tabela 5.1']
@@ -37,13 +51,15 @@ def parse_workbook(source, competencia, *, allow_recorte=False):
         if header!=('Mês','Estoque','Admissões','Desligamentos','Saldos','Variação Relativa (%)'):
             raise ValueError('Cabeçalho inesperado.')
         points={};ended=False
-        for row in sheet.iter_rows(min_row=6,min_col=2,max_col=6,values_only=True):
+        for index,row in enumerate(sheet.iter_rows(min_row=6,max_row=6+MAX_DATA_ROWS,min_col=2,max_col=6,values_only=True)):
             name,value=row[0],row[4]
             if name is None:
                 ended=True;continue
             if ended:
                 if not isinstance(name,str) or not name.startswith(('Fonte','*')): raise ValueError('Rodapé inesperado.')
                 continue
+            if index>=MAX_DATA_ROWS:
+                raise ValueError('Tabela acima do limite de linhas.')
             if not isinstance(name,str) or not re.fullmatch(r'[^/]+/[0-9]{4}',name): raise ValueError('Mês inválido.')
             month,year=name.split('/')
             if month not in MONTHS: raise ValueError('Mês inválido.')
@@ -102,6 +118,10 @@ class CagedCollector:
         recorte=bool(entry.get('fixture_recorte'))
         if recorte and not (self.simulada and os.environ.get('OIL_TEST_MODE')=='1'):
             raise ValueError('Recorte permitido somente em teste explícito.')
+        expected_hash=entry.get('sha256')
+        if not isinstance(expected_hash,str) or re.fullmatch(r'[0-9a-fA-F]{64}',expected_hash) is None:
+            self.record(entry,error='arquivo_invalido')
+            raise SourceFailure('arquivo_invalido')
         if not re.fullmatch(r'[0-9]{4}-(0[1-9]|1[0-2])',entry['competencia']):
             raise ValueError('Competência inválida no manifesto.')
         page=urlsplit(entry['pagina_oficial'])
@@ -130,7 +150,7 @@ class CagedCollector:
                                 if size>MAX_BYTES: raise ValueError('Arquivo acima do limite.')
                                 digest.update(chunk);stream.write(chunk)
                             cid=self.record(entry,status=200,digest=digest.hexdigest(),size=size)
-                            if entry.get('sha256') and digest.hexdigest()!=entry['sha256']:
+                            if digest.hexdigest()!=expected_hash.lower():
                                 raise ValueError('Hash divergente do manifesto.')
                             stream.seek(0)
                             points=parse_workbook(stream,entry['competencia'],allow_recorte=recorte)
@@ -142,7 +162,7 @@ class CagedCollector:
                 except httpx.TransportError:
                     failure=SourceFailure('erro_conexao',503)
                     self.record(entry,error=failure.code)
-                except (ValueError,KeyError,TypeError,BadZipFile,openpyxl.utils.exceptions.InvalidFileException):
+                except (ValueError,KeyError,TypeError,BadZipFile,ParseError,DefusedXmlException,openpyxl.utils.exceptions.InvalidFileException):
                     if cid is None: cid=self.record(entry,status=response.status_code if response is not None else None,
                         error='arquivo_invalido',digest=digest.hexdigest() if size else None,size=size)
                     else:

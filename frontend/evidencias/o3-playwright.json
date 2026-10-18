@@ -1,12 +1,12 @@
 {
   "config": {
     "argv": [
-      "C:\\Program Files\\nodejs\\node.exe",
-      "D:\\WILLIAN\\OneDrive\\Documentos\\ChatGPT\\Dashboard Legislativo\\observatorio-impacto-legislativo-o3\\frontend\\node_modules\\@playwright\\test\\cli.js",
+      "<local>",
+      "<local>",
       "test"
     ],
-    "configFile": "D:\\WILLIAN\\OneDrive\\Documentos\\ChatGPT\\Dashboard Legislativo\\observatorio-impacto-legislativo-o3\\frontend\\playwright.config.ts",
-    "rootDir": "D:/WILLIAN/OneDrive/Documentos/ChatGPT/Dashboard Legislativo/observatorio-impacto-legislativo-o3/frontend/tests",
+    "configFile": "<local>",
+    "rootDir": "<local>",
     "failOnFlakyTests": false,
     "forbidOnly": false,
     "fullyParallel": false,
@@ -22,7 +22,7 @@
     "preserveOutput": "always",
     "projects": [
       {
-        "outputDir": "D:/WILLIAN/OneDrive/Documentos/ChatGPT/Dashboard Legislativo/observatorio-impacto-legislativo-o3/frontend/test-results",
+        "outputDir": "<local>",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
@@ -30,7 +30,7 @@
         },
         "id": "",
         "name": "",
-        "testDir": "D:/WILLIAN/OneDrive/Documentos/ChatGPT/Dashboard Legislativo/observatorio-impacto-legislativo-o3/frontend/tests",
+        "testDir": "<local>",
         "testIgnore": [],
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
@@ -42,15 +42,15 @@
       {
         "grep": {},
         "grepInvert": null,
-        "outputDir": "D:\\WILLIAN\\OneDrive\\Documentos\\ChatGPT\\Dashboard Legislativo\\observatorio-impacto-legislativo-o3\\frontend\\test-results",
+        "outputDir": "<local>",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
           "actualWorkers": 1
         },
         "name": "",
-        "testDir": "D:\\WILLIAN\\OneDrive\\Documentos\\ChatGPT\\Dashboard Legislativo\\observatorio-impacto-legislativo-o3\\frontend\\tests",
-        "snapshotDir": "D:\\WILLIAN\\OneDrive\\Documentos\\ChatGPT\\Dashboard Legislativo\\observatorio-impacto-legislativo-o3\\frontend\\tests",
+        "testDir": "<local>",
+        "snapshotDir": "<local>",
         "testIgnore": [],
         "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
         "timeout": 45000,

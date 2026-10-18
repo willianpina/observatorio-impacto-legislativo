@@ -39,12 +39,7 @@ O job nunca descobre arquivo por busca: só baixa o que está no manifesto.
 ## 5. Revisões (confirmadas com dado real)
 A série com ajustes é revisada todo mês. Do arquivo de julho para o de agosto (Tabela 5.1):
 
-| Mês | Arquivo jul/2026 | Arquivo ago/2026 |
-|---|---|---|
-| Maio/2026 | 81.996 | 81.648 |
-| Junho/2026 | 137.044 | 136.959 |
-| Julho/2026 | 58.568 | 55.915 |
-| Dezembro/2025 | −634.374 | −635.078 |
+As diferenças entre os arquivos são conferidas exclusivamente pelas fixtures privadas de teste em `backend/tests/fixtures/o3/`, sem copiar a tabela de valores para a documentação.
 
 A resposta traz a nota de revisão (seção 8).
 
@@ -72,7 +67,7 @@ Calendário oficial de 2026 (página `.../estatisticas-trabalho/o-pdet/calendari
 - Descida: não apaga se já houver observação do Caged (mesmo padrão da 0002).
 
 ## 10. Testes (antes do código)
-Fixtures em `docs/o3/fixtures/` (recortes reais e pequenos da Tabela 5.1, só para teste; ver o README de lá):
+Fixtures exclusivamente em `backend/tests/fixtures/o3/` (recortes reais e pequenos da Tabela 5.1, só para teste; ver o README e o manifesto dessa pasta). Não há planilhas nem cópia dos dados em `docs/`:
 1. Recorte ago/2026 → ago/2026 = **165.827**; dez/2025 = **−635.078** (negativo grava e sai na API); jun/2026 = 136.959.
 2. Revisão com dado real: carregar o recorte jul/2026 (jul = **58.568**) e depois o de ago/2026 (jul = **55.915**) → julho com versões 1 e 2, a API serve 55.915 com `competencia_coleta="2026-08"`; maio e dez/2025 também ganham versão 2; recarregar o mesmo arquivo não cria versão.
 3. `variacao_anual` ago/2026 = 165.827 − 154.683 = **11.144**, com `variacao_anual_origem="calculo_observatorio"`; jul/2026 (arquivo ago) = 55.915 − 133.784 = **−77.869**; o `valor` continua igual ao da planilha.
