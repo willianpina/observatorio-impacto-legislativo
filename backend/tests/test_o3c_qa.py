@@ -54,7 +54,7 @@ def test_o3c_backend_mutations_do_not_publish_by_default(tmp_path,monkeypatch):
     monkeypatch.setattr(module,'clean',lambda root:None)
     monkeypatch.setattr(module,'MUTATIONS',[('X','probe.py','sonda sintética',lambda text:text.replace('1','2'))])
     def git(root,*args):
-        if args[0]=='rev-parse':return 'a'*40
+        if args==('rev-parse','HEAD'):return 'a'*40
         if args[:2]==('worktree','add'):
             checkout=__import__('pathlib').Path(args[3]);checkout.mkdir(parents=True);(checkout/'probe.py').write_text('x=1')
         if args[:2]==('worktree','remove'):shutil.rmtree(args[2])
