@@ -49,7 +49,7 @@ def test_o3c_invalid_collection_observation_is_ignored(sf,client):
 
 def test_o3c_backend_mutations_do_not_publish_by_default(tmp_path,monkeypatch):
     module=importlib.import_module('backend.scripts.check_mutations_o3')
-    repo=tmp_path/'repo';repo.mkdir()
+    repo=tmp_path/'repo';(repo/'docs/o3/evidencias').mkdir(parents=True)
     monkeypatch.setattr(module,'ROOT',repo)
     monkeypatch.setattr(module,'clean',lambda root:None)
     monkeypatch.setattr(module,'MUTATIONS',[('X','probe.py','sonda sintética',lambda text:text.replace('1','2'))])
@@ -62,4 +62,4 @@ def test_o3c_backend_mutations_do_not_publish_by_default(tmp_path,monkeypatch):
     monkeypatch.setattr(module,'git',git)
     monkeypatch.setattr(module,'run_suite',lambda *a:dict(resultado='DETECTADA' if a[-1]!='baseline' else 'SOBREVIVENTE',pytest_resumo=[],teste=[],codigo_saida=0))
     module.execute({'X'})
-    assert not list(repo.rglob('*'))
+    assert not [p for p in repo.rglob('*') if p.is_file()]
