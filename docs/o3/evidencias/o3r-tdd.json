@@ -1,0 +1,26 @@
+{
+  "head_base": "491220808dd4bd89011c075ad479667fa17fcc36",
+  "commit_testes": "2899f1dc5c2b72fc5d50bdd8d3f6763d900ce086",
+  "grupos": {
+    "Seguranca": {
+      "total": 24,
+      "falhas": 21,
+      "aprovados": 3
+    },
+    "QA": {
+      "total": 9,
+      "falhas": 5,
+      "aprovados": 4
+    }
+  },
+  "frontend": {
+    "total": 14,
+    "falhas": 14,
+    "aprovados": 0
+  },
+  "PoC": {
+    "total": 39,
+    "falhas": 0,
+    "aprovados": 39
+  }
+}

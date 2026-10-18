@@ -34,9 +34,9 @@ O script de PostgreSQL cria um banco descartável exclusivo, aplica todas as mig
 
 ## Linhagem e revisões
 
-Cada tentativa tem URL, HTTP quando recebido, instante UTC e hash quando há corpo. JSON legislativo é guardado integralmente; XLSX é baixado por streaming para arquivo temporário, com limite de 100 MB e sem guardar o corpo no banco. O metadado do manifesto fica imutável em cada coleta, além do cadastro do arquivo por competência. Assim uma coleta histórica ou simulada não substitui a atribuição de outra coleta.
+Cada tentativa tem URL, HTTP quando recebido, instante UTC e hash quando há corpo. JSON legislativo é guardado integralmente, exceto o de deputado, reduzido a id, nome, partido e UF; nesse caso, o hash continua sendo o do corpo original recebido; XLSX é baixado por streaming para arquivo temporário, com limite de 100 MB e sem guardar o corpo no banco. O metadado do manifesto fica imutável em cada coleta, além do cadastro do arquivo por competência. Assim uma coleta histórica ou simulada não substitui a atribuição de outra coleta.
 
-A Tabela 5.1 é validada antes de qualquer observação. Cabeçalho, título, continuidade, inteiro, competência e hash divergentes invalidam a coleta. Falhas posteriores à última coleta boa fazem a API sinalizar desatualização. Ausência de Caged válido retorna 200, indisponível, sem pontos.
+A Tabela 5.1 é validada antes de qualquer observação. SHA-256 é obrigatório antes do download. Cabeçalho, título, continuidade, inteiro, competência e hash divergentes invalidam a coleta. ZIP admite no máximo 200 MiB expandidos e razão 100 por membro; a leitura fica limitada a 1000 linhas de dados, com defusedxml ativo. Respostas legislativas têm teto de 5 MiB. Falhas posteriores à última coleta boa fazem a API sinalizar desatualização. Ausência de Caged válido retorna 200, indisponível, sem pontos.
 
 As versões registram a ordem de ingestão, enquanto a precedência dos dados usa o mês de referência da fonte. Reconstrução exclui coletas inválidas e seleciona versões até a competência pedida. Ao receber um arquivo intermediário tarde, materializam-se as fronteiras necessárias para preservar arquivos futuros já validados. Repetição idêntica não duplica observações. Variação anual usa dois valores da mesma reconstrução e é identificada como cálculo do Observatório; os saldos do MTE são preservados.
 
@@ -47,3 +47,16 @@ Migrações recusam descida quando isso apagaria observações do Caged ou snaps
 ## Limitações
 
 Não há descoberta automática de arquivo, agendamento do job, autenticação pública, nova conferência de artigos da norma, tramitação paginada ou votos nesta missão. A integração da tela com o novo contrato legislativo fica para uma rodada própria; a tela O4 é preservada com as pequenas correções autorizadas no adendo. As coletas reais novas não foram executadas para validar disponibilidade externa: esta entrega valida ingestão e rotas por replay rastreável em banco PostgreSQL real.
+
+
+## Regressões intencionais O3-R
+
+Com o código rastreado sem alterações, execute separadamente:
+
+```powershell
+.\.venv\Scripts\python.exe backend/scripts/check_mutations_o3.py
+Set-Location frontend
+node tests/check-mutations.mjs
+```
+
+Os scripts usam worktrees descartáveis fora do repositório e conferem `git diff --exit-code` após cada restauração. A execução do backend usa somente PostgreSQL descartável em porta aleatória de loopback. O argumento `--only` permite retomar casos específicos, preservando a evidência anterior para consolidação por identificador.

@@ -1,38 +1,94 @@
-# Validação O3
+# Validação O3 e correção O3-R
 
-Base: main `345af8638ed997daf6dd1ac88dad02cd7eeb5b82`, com O4 incorporada. Branch: `codex/o3-lei-caged`. Entrega em rascunho, sem merge, CI ou deploy.
+PR #3, branch `codex/o3-lei-caged`, sempre em rascunho. Base da revisão: `491220808dd4bd89011c075ad479667fa17fcc36`. Sem merge, rebase, force push, GitHub Actions, publicação ou serviço pago.
 
-## Backend e PoC
+## Retificação do registro O3
 
-| Suíte | Total | Aprovados | Falhas | Pulados |
-|---|---:|---:|---:|---:|
-| O2 | 172 | 170 | 0 | 2 |
-| O3 | 53 | 53 | 0 | 0 |
-| Backend completo | 225 | 223 | 0 | 2 |
-| PoC, executada separadamente | 39 | 39 | 0 | 0 |
+A contagem original da O2 incluía indevidamente os 39 testes da PoC na invocação do backend. A O2 isolada tem 131 aprovações e 2 testes ao vivo pulados; a O3 acrescentou 53 aprovações. Portanto, o backend da O3 tinha 184 aprovações e 2 pulados. A PoC, com 39 aprovações, deve ser apresentada separadamente. A duração antiga de 55,99 s correspondia à invocação que também coletava a PoC e não é uma medição isolada do backend.
 
-Execução final: backend em 55,99 s; PoC em 4,12 s. Os dois testes ao vivo do IBGE foram pulados por padrão. Há um aviso de depreciação da integração Starlette/HTTPX em cada invocação. Não houve execução do validador ao vivo da PoC.
+Causa confirmada no pytest 9.0.3 instalado: `_decide_args` usa `testpaths` somente quando o diretório de invocação coincide com `rootdir`. O script era invocado da raiz com configuração em `backend/`; sem argumentos de caminhos, havia fallback para a raiz e coleta recursiva de `poc/`. O script agora passa explicitamente `backend/tests`. A conferência usou coleta detalhada e o código da biblioteca instalada, além de um teste da invocação do script.
 
-O commit `57a81b1ec5983f1967565ff38c10a66ba1b0be79` contém os testes anteriores à implementação: 35 falhas esperadas e 4 aprovações na O3. O teste sintético de setembro foi corrigido para manter a linha em branco antes do rodapé, sem relaxar a validação da planilha. O teste antigo de migração passou a solicitar o isolamento já usado pelas outras funções: evita herdar snapshots do teste anterior e mantém a recusa de descida quando há dados.
+As 11 mutações anteriores da O3 eram somente de tela (O4 e sobras autorizadas), não uma matriz de backend. A comparação contra o staging naquela rodada foi manual. A partir da O3-R, os scripts criam worktrees descartáveis e executam `git diff --exit-code` automaticamente após cada restauração e no repositório principal antes de copiar as evidências.
 
-As migrações 0003 e 0004 foram testadas em PostgreSQL 17 descartável, com uma única cabeça 0004 e comparação do esquema com os modelos. Foram conferidos convergência e divergência entre casas, desempate por data, autoria e referência do partido atual, norma ausente, falhas parciais e totais, JSON inválido, versões e isolamento por modo.
+## Testes anteriores às correções
 
-No Caged, o replay validou saldos negativos, revisão entre arquivos, ingestão nas duas ordens, repetição sem versão extra, retorno a um valor antigo, reconstrução de arquivo intermediário tardio sem alterar o futuro, layout e hash inválidos, limite do streaming, calendário e variação anual calculada na mesma reconstrução. Nenhuma coleta inválida entra na série. Os valores são dos recortes fornecidos, servidos exclusivamente com identificação de simulação nos testes.
+Commit exclusivamente de testes: `2899f1dc5c2b72fc5d50bdd8d3f6763d900ce086`, executado sobre a implementação `49122080`.
 
-## Tela preservada
+| Grupo novo | Total | Falhas esperadas | Aprovados |
+|---|---:|---:|---:|
+| Segurança | 24 | 21 | 3 |
+| QA backend | 9 | 5 | 4 |
+| Backend novo, total | 33 | 26 | 7 |
+| Frontend novo | 14 | 14 | 0 |
+| PoC, controle separado | 39 | 0 | 39 |
 
-Somente as pequenas alterações autorizadas no adendo: guarda de linguagem com datas brasileiras e eventos, recolhimento do marco ao sair do foco, mais cenários de acessibilidade, rendimento fracionário igual no card e no resumo e proteção da restauração das mutações. Textos dos artigos 3º e 9º não foram alterados.
+Os testes que já passavam conferem comportamento correto existente e são usados pelas mutações. Foram ajustadas duas fixtures de teste sem relaxar regras: `caption` passou a estar dentro de uma tabela válida, e o identificador de download no teste da trava de recorte passou a corresponder à URL sintética. A checagem de caminhos não confunde bytes comprimidos de PNG ou sequências de escape JSON com caminhos de arquivos.
 
-As 11 regressões intencionais foram detectadas. Após cada mutação os bytes foram restaurados, e a comparação Git contra o staging retornou zero. A tela foi recompilada depois da restauração. As evidências desta rodada usam prefixo O3 e preservam os arquivos históricos da O4.
+## Resultado final O3-R
 
-Resultado final da tela: **72 aprovados, zero falhas, pulados ou instáveis, em 121,089 s**. Axe: **20 cenários**, sem violações graves ou críticas, incluindo detalhes abertos em 360 e 1280 px nos estados normal, Caged disponível, lacuna, desatualizado e sem classificação. Typecheck e build aprovados. Resultados estruturados em `evidencias/resultados.json` e evidências completas da tela em `frontend/evidencias/o3-*`.
+| Suíte | Aprovados | Pulados | Falhas |
+|---|---:|---:|---:|
+| O2 | 131 | 2 | 0 |
+| O3 | 53 | 0 | 0 |
+| O3-R backend | 33 | 0 | 0 |
+| Backend total (`backend/tests`) | 217 | 2 | 0 |
+| PoC, separada | 39 | 0 | 0 |
+| Playwright | 86 | 0 | 0 |
+| Axe | 20 cenários | — | 0 graves/críticas |
+| Typecheck | aprovado | — | — |
+| Build | aprovado | — | — |
 
-Gitleaks: zero ocorrências no histórico completo disponível antes do commit e no staging; nova conferência do histórico após o commit é exigida antes do push. Os relatórios JSON vazios ficam em `evidencias/`. A main consultada continua na base informada; o merge com `origin/main` foi executado e retornou já atualizado, sem conflitos.
+Resumos literais das execuções:
 
-## Segurança, origem e limites
+```text
+217 passed, 2 skipped, 1 warning in 59.49s
+39 passed, 1 warning in 4.18s
+  86 passed (2.8m)
+```
 
-A PoC permanece sem alterações. Nenhum arquivo de ambiente foi lido ou enviado. Nenhuma exceção foi adicionada ao gitleaks. Não há serviço pago, chave nova, workflow ou publicação.
+Evidências: `evidencias/o3r-pytest.txt`, `evidencias/o3r-testes.json`, `evidencias/o3r-tdd.json` e `frontend/evidencias/o3r-resumo-testes.json`.
 
-As consultas novas foram reproduzidas por MockTransport a partir do pacote fornecido; esta execução não confirma disponibilidade externa nem refaz a conferência jurídica dos links. Os comandos de coleta real estão documentados, separados da API. Os links de norma são referências manuais com os horários informados pelo usuário. As versões anteriores permanecem no banco e há proteção de descida com dados existentes.
+Mutações de backend: 27 executadas, 26 detectadas; sobreviventes: BM. Mutações de frontend: 15 executadas e detectadas, sem sobreviventes. As duas execuções do backend preservam os 13 casos anteriores e os 14 restantes, sem duplicação. Bases sem mutação passaram; erros de infraestrutura não foram contados. Evidências: `evidencias/o3r-mutacoes-backend.json`, `frontend/evidencias/o3r-mutacoes.json` e `frontend/evidencias/o3r-mutacoes-ui.json`.
 
-A tela legislativa da O4 mantém seu contrato provisório. Sua futura adaptação ao contrato legislativo v1.4, tramitação/votos paginados e revisão de artigos ficam fora da O3. O manifesto e o calendário dependem de atualização humana a cada nova divulgação. A licença e a restrição de redistribuição dos recortes estão nos READMEs de fixtures; nenhum artefato foi publicado.
+## Segurança S1–S7
+
+Limitação operacional da execução: o Git removeu o checkout temporário do backend, mas encontrou permissão negada nos metadados ReadOnly do OneDrive. Os dois resíduos órfãos, sem registro ativo, foram inspecionados e removidos individualmente; a lista final contém apenas os três worktrees permanentes. As restaurações por caso e o diff final retornaram zero. Essa falha de limpeza não foi contada como detecção de mutação.
+
+- Hash obrigatório e hexadecimal de 64 caracteres antes do download. ZIP limitado a 200 MiB descompactados, razão máxima de 100 por membro e proibição de membro não vazio com tamanho comprimido zero. A tabela aceita no máximo 1000 linhas de dados, com leitura limitada por `max_row`. `defusedxml==0.7.1` fixado e ativo no openpyxl. Conferência no [PyPI oficial](https://pypi.org/project/defusedxml/): versão estável 0.7.1; versões 0.8.0 existentes são de pré-lançamento.
+- Removidos os seis arquivos de `docs/o3/fixtures/` e o manifesto duplicado. As duas planilhas, os dois JSON e o gerador foram conferidos byte a byte contra os arquivos preservados em `backend/tests/fixtures/o3/`. O manifesto também era idêntico. O README não tinha texto exclusivo: diferia somente na referência relativa ao manifesto, já correta no backend. A restrição de não redistribuição permanece no README dos testes.
+- Removida a tabela de valores de revisão da seção 5 da spec B4. Restam apenas citações de valores esperados de teste na seção 2, seção 10 e regra de versionamento da mesma spec; precisam da confirmação final da Segurança. A tabela de arquivos da seção 1 contém metadados de download e hashes, não observações da série. As demais ocorrências do Caged em contrato, operação, validação e OpenAPI descrevem campos e procedimentos. Não há planilha, recorte ou CSV em `docs/`.
+- Deputados: o corpo persistido contém somente id, nome, partido e UF; CPF, nascimento, email e endereço sintéticos foram excluídos e não aparecem na API. O hash SHA-256 escolhido continua sendo o do corpo original recebido, anterior à minimização; portanto não é o hash do JSON reduzido persistido. Essa escolha precisa de confirmação da Segurança. Não houve consulta ao banco persistente de desenvolvimento nem leitura de arquivos de ambiente: só bancos descartáveis dos testes, encerrados pelo script. Eventuais dados antigos de outro banco não foram verificados e não há migração de limpeza nesta missão.
+- Evidências com caminhos locais foram sanitizadas, mantendo resultados e mensagens. A checagem usa inventário Git da documentação e das evidências e identifica caminhos em conteúdo textual. Arquivos PNG comprimidos não são tratados como texto.
+- Câmara e Senado usam streaming com teto de 5 MiB, por cabeçalho e por soma dos chunks. Excesso retorna `resposta_invalida` 502, sem retry e sem snapshot; a tentativa fica inválida. Norma gerada só aceita HTTPS com fronteira correta dos domínios oficiais autorizados; um link recusado deixa a norma nula e registra o motivo, mantendo a coleta válida. A seleção de situação exclui casas sem snapshot e responde com erro padrão 503 quando não há candidato utilizável.
+
+## QA e preservação
+
+As datas e os rótulos dos dois marcos são comparados aos campos das fixtures do Senado, sem datas digitadas nas asserções. A guarda de linguagem examina os blocos adicionais, incluindo `summary`, e detecta as três sondas novas sem alterar `FORBIDDEN` ou `bannedPhrases`. A documentação é inventariada com `git ls-files`, exige os quatro documentos conhecidos e falha sem Git. Os scripts de mutação usam somente worktrees locais descartáveis; o script de backend adotou o caminho sugerido `backend/scripts/check_mutations_o3.py`.
+
+O diff da PoC contra `49122080` é vazio. Os arquivos de vigência e da fixture legislativa da tela não foram alterados; os textos dos artigos 3º e 9º permanecem iguais. Missões continuam fora de `docs/`. As evidências novas têm prefixo `o3r`; evidências anteriores só mudaram na remoção dos caminhos locais autorizada em S4.
+
+## Commits da revisão
+
+```text
+2899f1dc5c2b72fc5d50bdd8d3f6763d900ce086 test(o3r): regressoes de Seguranca e QA antes das correcoes
+8e2a13ea86ffcee94dd9d9a910b9a3bf9586d125 fix(o3r): seguranca S1-S7 e minimizacao de dados
+8684d3abbcf4a149dea1d2f56ec79c902722b01b fix(o3r): guarda de linguagem e escopo dos testes QA
+9317d1f5bbb26ea23403a2e3ca7ae3a0a4e9af52 chore(o3r): mutacoes de backend e frontend em worktrees
+7218778fa2125de24ef8083f26f3fac77789374a fix(o3r): manter worktree de tela no volume das dependencias
+```
+
+O commit posterior de documentação e evidências não altera código de produção; seu SHA final consta na descrição do PR e na entrega.
+
+## Gitleaks
+
+Staging e histórico completo (`--all`) verificados antes do commit final, zero achados: `evidencias/o3r-gitleaks-staging.json` e `evidencias/o3r-gitleaks-history.json`. Após o último commit, as duas verificações são repetidas antes do push; os resultados finais e o SHA são registrados na entrega e no PR. Nenhuma allowlist foi acrescentada.
+
+## Pendências para a próxima missão
+
+- P1: permanece o partido atual com referência explícita `atual`. Confirmar a disponibilidade e o critério de partido na apresentação antes de mudar essa informação; nenhuma nova requisição nem mudança contratual foi introduzida nesta revisão.
+- P2: o marco de promulgação permanece derivado da situação e de sua data. Avaliar fonte direta para esse marco.
+- P3: a mutação BM sobreviveu: o filtro de validade é redundante com as outras barreiras. Permanece registrada, sem ampliação do escopo.
+- B2b (votos e placares, base sobre presentes e sigla na data do voto ou nula com motivo), tela no contrato v1.4, coleta real pelo CLI e conferência dos artigos 3º e 9º ficam fora desta missão.
+- Confirmações da Segurança: hash original com corpo minimizado de deputado, eventuais registros antigos em banco persistente não consultado e as citações de valores esperados que ficaram na spec B4.
+
+As validações novas usam transporte simulado e fixtures identificadas, em PostgreSQL local real descartável. Não foi feita coleta real pelo CLI ou nova conferência jurídica. Os dois testes ao vivo do IBGE permanecem desligados por padrão. Há o aviso conhecido de depreciação Starlette/HTTPX nas invocações do pytest.
