@@ -79,6 +79,18 @@ def test_measured_expanded_profile_is_accepted(monkeypatch):
     assert parse_workbook(raw,'2026-08',allow_recorte=True)['202608']==165827
 
 
+def json_tokens(node):
+    if isinstance(node,dict):
+        for key,value in node.items():
+            yield key
+            yield from json_tokens(value)
+    elif isinstance(node,list):
+        for item in node:
+            yield from json_tokens(item)
+    elif isinstance(node,str):
+        yield node
+
+
 async def public_caged_error(exc):
     from starlette.requests import Request
     from backend.oil.main import app, source_failure
@@ -121,12 +133,12 @@ def test_invalid_file_subcode_is_stored_and_hidden_from_api(sf,client,monkeypatc
         assert failed.erro==subcode and failed.valida is False
         assert session.scalar(select(func.count()).select_from(Observacao))==0
     response=client.get('/api/v1/indicadores/caged-saldo')
-    assert response.status_code==200 and subcode not in response.text
+    assert response.status_code==200 and subcode not in json_tokens(response.json())
     rendered=asyncio.run(public_caged_error(failure.value))
     payload=json.loads(rendered.body)
     assert payload=={'erro':{'codigo':'arquivo_invalido','mensagem':'A fonte não forneceu uma coleta válida.',
         'fonte':'IBGE / SIDRA','tentar_novamente_em':None,'ultima_coleta_id':None}}
-    assert subcode not in rendered.body.decode()
+    assert subcode not in json_tokens(payload)
     assert f'subcodigo={subcode}' in caplog.text
 
 
