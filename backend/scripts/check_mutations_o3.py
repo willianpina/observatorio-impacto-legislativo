@@ -7,6 +7,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import stat
 import xml.etree.ElementTree as ET
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -75,6 +76,16 @@ def clean(root):
     git(root,'diff','--cached','--quiet','--exit-code')
 
 
+def prepare_own_metadata_removal(checkout):
+    # OneDrive marca diretórios como ReadOnly; só altera o registro deste checkout.
+    metadata=git(checkout,'rev-parse','--absolute-git-dir')
+    if not metadata:return  # O teste de orquestração usa Git simulado.
+    common=Path(git(ROOT,'rev-parse','--path-format=absolute','--git-common-dir'))
+    target=Path(metadata)
+    if target.parent.resolve()!=(common/'worktrees').resolve():raise RuntimeError('Registro temporário fora do diretório esperado.')
+    for path in [*target.rglob('*'),target]:path.chmod(path.stat().st_mode|stat.S_IWRITE|stat.S_IREAD)
+
+
 def run_suite(checkout,output,label):
     xml=output/(label+'.xml');log=output/(label+'.txt')
     environment={**os.environ,'PYTHONDONTWRITEBYTECODE':'1','PYTEST_DISABLE_PLUGIN_AUTOLOAD':'1'}
@@ -126,6 +137,7 @@ def execute(only=None,publicar_evidencia=False):
     finally:
         clean(checkout)
         clean(ROOT)
+        prepare_own_metadata_removal(checkout)
         git(ROOT,'worktree','remove',str(checkout))
         scratch.rmdir()  # A pasta é a que este processo criou; nunca há remoção recursiva manual.
     report['total']=len(report['resultados'])

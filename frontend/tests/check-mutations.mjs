@@ -11,6 +11,13 @@ const prefix=process.env.OIL_MUTATION_EVIDENCE_PREFIX||'o3c';
 if(!/^[a-z0-9-]+$/.test(prefix))throw Error('Prefixo de evidência inválido.');
 function git(cwd,args){const result=spawnSync('git',['-C',cwd,...args],{encoding:'utf8',windowsHide:true});if(result.status!==0)throw Error('Verificação Git falhou: '+args.join(' '));return result.stdout.trim();}
 function clean(cwd){git(cwd,['diff','--quiet','--exit-code']);git(cwd,['diff','--cached','--quiet','--exit-code']);}
+function prepareOwnMetadataRemoval(checkout){
+  const target=git(checkout,['rev-parse','--absolute-git-dir']);
+  const common=git(repo,['rev-parse','--path-format=absolute','--git-common-dir']);
+  if(path.resolve(path.dirname(target))!==path.resolve(common,'worktrees'))throw Error('Registro temporário fora do diretório esperado.');
+  function writable(directory){for(const entry of fs.readdirSync(directory,{withFileTypes:true})){const item=path.join(directory,entry.name);if(entry.isDirectory())writable(item);else fs.chmodSync(item,0o600);}fs.chmodSync(directory,0o700);}
+  writable(target);
+}
 if(!process.argv.includes('--isolated')) {
   clean(repo);
   const head=git(repo,['rev-parse','HEAD']);
@@ -33,7 +40,7 @@ if(!process.argv.includes('--isolated')) {
   } finally {
     clean(checkout);clean(repo);
     if(fs.existsSync(dependencyLink)&&fs.lstatSync(dependencyLink).isSymbolicLink())fs.unlinkSync(dependencyLink);
-    git(repo,['worktree','remove',checkout]);
+    prepareOwnMetadataRemoval(checkout);git(repo,['worktree','remove',checkout]);
     fs.rmdirSync(scratch);
   }
   // Primeiro prova a integridade do repo principal; só depois copia os relatórios.
@@ -95,7 +102,7 @@ try {
   patch('components/indicator.tsx',s=>s.replace('if(body.simulada&&!testMode)','if(false)').replace('<summary>Saiba mais</summary>','<summary>Saiba mais</summary><svg className="mutation-a11y" role="img" width="12" height="12"><rect width="12" height="12"/></svg>'));
   patch('components/vigencia.tsx',s=>s.replace('vigenciaText(vigencia,hoje)',JSON.stringify('Em vigor desde 16/10/2026, data da publicação, exceto: repouso de 2 dias por semana e limite de 42 h semanais a partir de 16/12/2026 (prevista); limite de 40 h semanais a partir de 16/12/2027 (prevista).')).replace('Saiba mais sobre a vigência','Saiba mais sobre a vigência. Em 14/10/2026, a desocupação caiu'));
   patch('components/chart.tsx',s=>s.replace('event.currentTarget.open=true;','event.currentTarget.open=false;'));
-  patch('components/dashboard.tsx',s=>s.replace('<Reading data={states[code].data} summary/>','<Reading data={{...states[code].data,valor:0}} summary/>'));
+  patch('components/dashboard.tsx',s=>s.replace('<Reading data={states[code].data} summary/>','<Reading data={{...states[code].data,valor:0}} summary/>').replace('const law=<Law','const law=<><div>Em 14/10/2026, a desocupação caiu.</div><Law').replace('onData={onLawData}/>;','onData={onLawData}/></>;'));
   patch('app/globals.css',s=>s+'\n.mutation-a11y{display:none}@media(min-width:1000px){.mutation-a11y{display:block}}\n');
   console.log('Compilando as mutações de interface...');
   const build=run(['node_modules/next/dist/bin/next','build','--webpack']);
@@ -110,7 +117,7 @@ try {
     ['R2-1','1: trava de simulada removida'],['R2-3 mudar','3: vigência volta a texto fixo'],
     ['R2-6','6: foco deixa de revelar fonte'],['R2-9','9: resumo diverge do card'],
     ['axe 1280: detalhes abertos, modo normal','9: imagem sem alternativa nos detalhes desktop'],
-    ['frases proibidas','Q2: data e variação dentro do summary']
+    ['frases proibidas','Q2 e B1: texto no summary e no div próprio']
   ]){
     const selected=all.filter(s=>s.title.startsWith(prefix));
     if(!selected.length||selected.some(s=>s.ok||!s.tests.some(t=>t.results.some(r=>r.status==='failed'))))throw Error(`Mutação não detectada: ${name}`);
