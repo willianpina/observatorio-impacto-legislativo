@@ -110,6 +110,7 @@ def test_o3_caged_returns_to_old_value_creates_new_version(sf):
     workbook=openpyxl.load_workbook(io.BytesIO(entry('2026-08')[1]));sheet=workbook['Tabela 5.1']
     for row in range(6,sheet.max_row+1):
         if sheet.cell(row,2).value=='Julho/2026':sheet.cell(row,6,58568)
+    sheet.insert_rows(21)  # Conserva a linha em branco que separa os dados do rodapé.
     sheet.cell(21,2,'Setembro/2026');sheet.cell(21,6,1)  # Variante sintética, só neste teste.
     stream=io.BytesIO();workbook.save(stream);raw=stream.getvalue()
     metadata,_=entry('2026-08');metadata.update(competencia='2026-09',sha256=hashlib.sha256(raw).hexdigest())

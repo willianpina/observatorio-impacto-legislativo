@@ -101,3 +101,12 @@ Estados normal, lacuna, vazio, erro independente, última coleta válida, classi
 - A conferência visual cobre celular e desktop; axe não substitui revisão humana completa de WCAG.
 
 A relação exata de arquivos acompanha `evidencias/arquivos.txt`. A aprovação do PR e qualquer próxima fase permanecem a cargo do usuário.
+
+
+## Rodada O3 — preservação da O4
+
+Somente as sobras autorizadas no adendo O3: guarda de linguagem com datas brasileiras, eventos e comparação antes/depois; marco recolhe ao sair do foco; rendimento fracionário é idêntico no card e no resumo; axe cobre mais estados com detalhes abertos. Artigos 3º e 9º permanecem iguais.
+
+Resultado final: 72 testes Playwright aprovados (zero falhas, pulados ou instáveis), em 121,089 s; 20 cenários axe sem violações graves/críticas; typecheck e build aprovados. As 11 mutações foram detectadas e a restauração contra o staging retornou zero. Houve nova compilação e suíte completa após restaurar os fontes. Evidências desta rodada: videncias/o3-*; evidências O4 anteriores preservadas.
+
+Backend O2/O3: 223 aprovados e 2 testes ao vivo pulados; PoC: 39 aprovados, código intocado. Relatório detalhado em ../docs/o3/VALIDACAO.md. Sem CI, deploy ou merge do PR.

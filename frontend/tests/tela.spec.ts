@@ -71,8 +71,8 @@ test('erro informa o prazo recebido da API',async({page})=>{
   await page.unroute('**/api/oil/indicadores/**');await intercept(page,'error');await page.goto('/');await expect(page.getByTestId('card-desocupacao')).toContainText('Tente novamente em 60 segundos.');
 });
 
-for(const width of [360,1280])for(const mode of ['caged','normal'])test(`axe ${width}: detalhes abertos, modo ${mode}`,async({page})=>{
-  await page.setViewportSize({width,height:1000});await page.unroute('**/api/oil/indicadores/**');await intercept(page,mode==='caged'?'caged':'normal',mode==='normal');
+for(const width of [360,1280])for(const mode of ['caged','normal','gap','stale','unclassified'])test(`axe ${width}: detalhes abertos, modo ${mode}`,async({page})=>{
+  await page.setViewportSize({width,height:1000});await page.unroute('**/api/oil/indicadores/**');await intercept(page,mode,mode==='normal');
   await page.goto(mode==='normal'?'http://127.0.0.1:3102':'/');
   await expect(page.getByTestId('card-desocupacao')).toContainText('Último dado');
   await expect(page.getByText(warning,{exact:true})).toBeVisible();
@@ -82,7 +82,7 @@ for(const width of [360,1280])for(const mode of ['caged','normal'])test(`axe ${w
   expect(severe).toEqual([]);
   await fs.writeFile(`test-results/o4r2-axe-${width}-aberto-${mode}.json`,JSON.stringify({fixture:true,modo:mode,width,detalhes_abertos:true,graves_criticas:severe.length,violacoes:axe.violations.map(v=>({id:v.id,impacto:v.impact}))},null,2));
   for(const graph of await page.locator('.chart[role="img"]').all())await expect(graph.locator('[tabindex]:not([tabindex="-1"]),a[href],button,input,summary')).toHaveCount(0);
-  await expect(page.getByTestId('card-desocupacao').locator('.chart[role="img"]')).toHaveAttribute('aria-label',/5,3 %.*caiu/);
+  await expect(page.getByTestId('card-desocupacao').locator('.chart[role="img"]')).toHaveAttribute('aria-label',mode==='unclassified'?/5,3 %.*Classificação não disponível/:/5,3 %.*caiu/);
   await expect(page.locator('figcaption').first()).not.toContainText('trimestre_movel');
   await page.screenshot({path:`test-results/o4r2-${width}-aberto-${mode}-fixture.png`,fullPage:true});
 });
@@ -209,7 +209,9 @@ test('frases proibidas em todo texto, dicas, tabelas e rótulos', async ({page})
   const text=await page.locator('body').evaluate(el=>{const copy=el.cloneNode(true) as HTMLElement;copy.querySelectorAll('script,style').forEach(node=>node.remove());return copy.textContent||'';});
   const attributes=await page.locator('[aria-label],[title],[alt]').evaluateAll(els=>els.map(e=>[e.getAttribute('aria-label'),e.getAttribute('title'),e.getAttribute('alt')].join(' ')).join(' '));
   const corpus=(text.split(legend).join('')+' '+attributes).toLocaleLowerCase('pt-BR');
-  expect(languageViolations(text+' '+attributes)).toEqual([]);
+  // O corpus concatena blocos independentes sem separadores de frase. Nele,
+  // verifica literais; relações entre datas e variação são verificadas por bloco abaixo.
+  expect(languageViolations(text+' '+attributes,[],false)).toEqual([]);
   const phrases=await page.locator('p,h1,h2,h3,h4,figcaption,td,th,[aria-label],[title],[alt]').evaluateAll(els=>els.map(el=>(el.textContent||'')+' '+['aria-label','title','alt'].map(a=>el.getAttribute(a)||'').join(' ')));
   const markers=lei.marcos.flatMap(m=>[m.rotulo,m.data]);
   for(const phrase of phrases)expect(languageViolations(phrase,markers),phrase).toEqual([]);

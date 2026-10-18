@@ -7,6 +7,8 @@ import {spawnSync} from 'node:child_process';
 const root=process.cwd();
 if(!fs.existsSync(path.join(root,'components/indicator.tsx')))throw Error('Execute dentro de frontend/.');
 const evidence=path.join(root,'evidencias');
+const prefix=process.env.OIL_MUTATION_EVIDENCE_PREFIX||'o4r2';
+if(!/^[a-z0-9-]+$/.test(prefix))throw Error('Prefixo de evidência inválido.');
 const env={...process.env,NEXT_TELEMETRY_DISABLED:'1',OIL_BROWSER_CHANNEL:process.env.OIL_BROWSER_CHANNEL||'msedge'};
 const results=[];
 const originals=new Map();
@@ -17,7 +19,7 @@ function patch(file,replace){
   if(before===after)throw Error(`Mutação sem efeito: ${file}`);
   fs.writeFileSync(target,after);
 }
-function restore(){for(const [file,bytes] of originals)fs.writeFileSync(file,bytes);originals.clear();}
+function restore(){for(const [file,bytes] of originals){fs.writeFileSync(file,bytes);if(!fs.readFileSync(file).equals(bytes))throw Error(`Restauração divergente: ${file}`);}originals.clear();}
 function run(args){return spawnSync(process.execPath,args,{cwd:root,env,encoding:'utf8',windowsHide:true,maxBuffer:16*1024*1024,timeout:240000});}
 function testResult(output){
   if(output.error)throw output.error;
@@ -27,7 +29,7 @@ function testResult(output){
 }
 function record(name,report){
   results.push({mutacao:name,detectada:true,stats:report.stats});
-  fs.writeFileSync(path.join(evidence,'o4r2-mutacoes.json'),JSON.stringify({modo:'regressoes intencionais, nao sao falhas da entrega',resultados:results},null,2)+'\n');
+  fs.writeFileSync(path.join(evidence,`${prefix}-mutacoes.json`),JSON.stringify({modo:'regressoes intencionais, nao sao falhas da entrega',resultados:results},null,2)+'\n');
   console.log(`DETECTADA: ${name} (${report.stats.unexpected} teste(s) falhou/falharam como esperado)`);
 }
 try {
@@ -61,7 +63,7 @@ try {
   const report=testResult(output);
   function specs(suites){return suites.flatMap(s=>[...(s.specs||[]),...specs(s.suites||[])]);}
   const all=specs(report.suites);
-  fs.writeFileSync(path.join(evidence,'o4r2-mutacoes-ui.json'),JSON.stringify(all.map(s=>({teste:s.title,aprovado:s.ok,resultados:s.tests.flatMap(t=>t.results.map(r=>({status:r.status,asserção:r.error?.message?.slice(0,1800)})))})),null,2)+'\n');
+  fs.writeFileSync(path.join(evidence,`${prefix}-mutacoes-ui.json`),JSON.stringify(all.map(s=>({teste:s.title,aprovado:s.ok,resultados:s.tests.flatMap(t=>t.results.map(r=>({status:r.status,asserção:r.error?.message?.slice(0,1800)})))})),null,2)+'\n');
   for(const [prefix,name] of [
     ['R2-1','1: trava de simulada removida'],['R2-3 mudar','3: vigência volta a texto fixo'],
     ['R2-6','6: foco deixa de revelar fonte'],['R2-9','9: resumo diverge do card'],

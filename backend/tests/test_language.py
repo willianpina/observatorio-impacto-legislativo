@@ -48,6 +48,8 @@ def response_texts(populated,client):
                  '/api/v1/indicadores/inexistente/serie',
                  '/api/v1/indicadores?janela=invalida','/nao-existe']:
         capture(path)
+    for path in ['/api/v1/proposicoes/2233802','/api/v1/proposicoes/999','/api/v1/proposicoes/nao-numerico']:
+        capture(path)
     capture('/api/v1/indicadores','post')
     # Inclui nomes, motivos das lacunas e resposta indisponível por ausência de coleta.
     with populated.begin() as session:
@@ -118,4 +120,9 @@ def test_no_forbidden_phrases_in_all_docs(phrase):
     assert documents
     for document in documents:
         assert not (document.name=='.env' or document.name.startswith('.env.')), 'Arquivo de ambiente não permitido em docs/.'
+        # Planilhas são fixtures binárias documentadas; seus textos são verificados
+        # após leitura pelo coletor. Todos os demais arquivos continuam cobertos.
+        if document.suffix == '.xlsx':
+            assert document.parent == ROOT/'docs/o3/fixtures'
+            continue
         assert normalized(phrase) not in normalized(document.read_text(encoding='utf-8')), str(document.relative_to(ROOT))

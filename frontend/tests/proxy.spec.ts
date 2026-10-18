@@ -24,7 +24,7 @@ test('R2-3 vigência é derivada do dado, e prevista exige data calculada futura
 
 test('R2-4 periodicidade trimestral não vira mensal',()=>expect(periodType('trimestral')).toBe('Trimestral'));
 
-for(const sentence of ['Após a Aprovação no Senado, a desocupação caiu.','antes e depois da lei','Aprovação no Senado: variação anual de -0,3 p.p.']) test(`R2-5 linguagem rejeita: ${sentence}`,()=>{
+for(const sentence of ['Após a Aprovação no Senado, a desocupação caiu.','antes e depois da lei','Aprovação no Senado: variação anual de -0,3 p.p.','Em 14/10/2026, a desocupação caiu.','Com a promulgação, o rendimento aumentou.','antes e depois do marco']) test(`R2-5 linguagem rejeita: ${sentence}`,()=>{
   expect(languageViolations(sentence,['Aprovação no Senado'])).not.toEqual([]);
 });
 test('R2-5 exceção restrita à legenda literal',()=>{
