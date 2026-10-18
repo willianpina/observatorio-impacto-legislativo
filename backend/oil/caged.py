@@ -7,6 +7,7 @@ import re
 import tempfile
 from urllib.parse import urlsplit, parse_qs
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 from zipfile import BadZipFile, ZipFile
 from xml.etree.ElementTree import ParseError
 from defusedxml.common import DefusedXmlException
@@ -249,8 +250,10 @@ def read_caged(session,janela,*,test_mode=False,now=None):
         fonte='MTE / Novo Caged',tabela_ou_arquivo=metadata['arquivo'],link=metadata['pagina_oficial'],
         cv=None,classificacao=None,classificacao_origem=None,variacao_anual_unidade='postos de trabalho',
         variacao_anual_origem='calculo_observatorio',ajuste='com_ajuste',competencia_coleta=good.mes_referencia,
-        atribuicao=dict(texto=f'Fonte: Novo Caged – MTE, Tabela 5.1 (com ajustes), arquivo {month}, licença CC BY-ND 3.0',
-            link=metadata['pagina_oficial'],licenca='CC BY-ND 3.0'),
+        atribuicao=dict(texto=f'Fonte: Novo Caged – MTE, Tabela 5.1 (com ajustes), arquivo {month}, coletado em {good.coletado_em.astimezone(ZoneInfo("America/Sao_Paulo")).strftime("%d/%m/%Y")}. Elaboração: OIL.',
+            link=metadata['pagina_oficial'],licenca=None,base_legal=dict(
+                texto='Uso livre e gratuito, com citação da fonte (Decreto nº 8.777/2016, art. 4º e §1º, com a redação do Decreto nº 9.903/2019). O MTE não publica licença própria para estes dados.',
+                link='https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2016/decreto/d8777.htm')),
         nota_revisao='Série revisada mensalmente pelo MTE: os meses anteriores podem mudar a cada novo arquivo.',
         desatualizado=failed is not None and failed.id>good.id,atrasado_calendario=delayed,simulada=test_mode,
         variaveis={},disponivel=True,motivo=None)

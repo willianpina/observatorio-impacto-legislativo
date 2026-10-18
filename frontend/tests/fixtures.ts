@@ -43,7 +43,7 @@ export async function intercept(page: Page, state = 'normal', normalMode = false
     }
     if (code === 'caged-saldo' && ['caged','csv'].includes(state)) {
       const reference = fixture('desocupacao');
-      Object.assign(data, { ...reference, codigo: code, nome: 'Saldo de empregos formais', valor:-10, cv:null, classificacao:null, variacao_anual:2, variacao_anual_unidade:'vínculos', unidade:'vínculos',fonte:'Novo Caged – MTE',link:'https://www.gov.br/trabalho-e-emprego/pt-br',tabela_ou_arquivo:'Tabela 5.1 (com ajustes)',arquivo_origem:'08/2026',licenca:'CC BY-ND 3.0', medida: 'saldo', tipo_periodo: 'mensal', ajuste: 'com_ajuste',
+      Object.assign(data, { ...reference, codigo: code, nome: 'Saldo de empregos formais', valor:-10, cv:null, classificacao:null, variacao_anual:2, variacao_anual_unidade:'vínculos', unidade:'vínculos',fonte:'Novo Caged – MTE',link:'https://www.gov.br/trabalho-e-emprego/pt-br',tabela_ou_arquivo:'Tabela 5.1 (com ajustes)',arquivo_origem:'08/2026',licenca:null, medida: 'saldo', tipo_periodo: 'mensal', ajuste: 'com_ajuste',
         pontos: reference.pontos.slice(-3).map((p,i) => ({ ...p, valor: i === 1 ? -10 : 20, unidade: 'vínculos', ajuste: i === 1 ? 'com_ajuste' : 'sem_ajuste', competencia_coleta: '202608' })) });
     }
     if(code==='caged-saldo'&&state==='csv') {data.pontos[0].unidade='=1+1';data.pontos[1].unidade='-x';}

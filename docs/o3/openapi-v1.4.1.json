@@ -1,0 +1,1821 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "OIL — indicadores e legislação",
+    "version": "1.4.1"
+  },
+  "paths": {
+    "/api/legislacao": {
+      "get": {
+        "summary": "Get Legislation",
+        "operationId": "get_legislation_api_legislacao_get",
+        "parameters": [
+          {
+            "name": "limite",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 5,
+              "minimum": 1,
+              "default": 3,
+              "title": "Limite"
+            }
+          },
+          {
+            "name": "ano",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 2100,
+              "minimum": 1900,
+              "default": 2026,
+              "title": "Ano"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LegislationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/indicadores/desemprego": {
+      "get": {
+        "summary": "Get Unemployment",
+        "operationId": "get_unemployment_api_indicadores_desemprego_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndicatorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/indicadores": {
+      "get": {
+        "summary": "Indicators",
+        "operationId": "indicators_api_v1_indicadores_get",
+        "parameters": [
+          {
+            "name": "janela",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "2a",
+                "5a",
+                "desde_2020"
+              ],
+              "type": "string",
+              "default": "5a",
+              "title": "Janela"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndexResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/indicadores/{codigo}/serie": {
+      "get": {
+        "summary": "Series",
+        "operationId": "series_api_v1_indicadores__codigo__serie_get",
+        "parameters": [
+          {
+            "name": "codigo",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Codigo"
+            }
+          },
+          {
+            "name": "janela",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "2a",
+                "5a",
+                "desde_2020"
+              ],
+              "type": "string",
+              "default": "5a",
+              "title": "Janela"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeriesResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/indicadores/caged-saldo": {
+      "get": {
+        "summary": "Unavailable Caged",
+        "operationId": "unavailable_caged_api_v1_indicadores_caged_saldo_get",
+        "parameters": [
+          {
+            "name": "janela",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "2a",
+                "5a",
+                "desde_2020"
+              ],
+              "type": "string",
+              "default": "5a",
+              "title": "Janela"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeriesResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/proposicoes/{id_camara}": {
+      "get": {
+        "summary": "Proposition",
+        "operationId": "proposition_api_v1_proposicoes__id_camara__get",
+        "parameters": [
+          {
+            "name": "id_camara",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Id Camara"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LawResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Atribuicao": {
+        "properties": {
+          "texto": {
+            "type": "string",
+            "title": "Texto"
+          },
+          "link": {
+            "type": "string",
+            "title": "Link"
+          },
+          "licenca": {
+            "type": "null",
+            "title": "Licenca"
+          },
+          "base_legal": {
+            "$ref": "#/components/schemas/BaseLegal"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "texto",
+          "link",
+          "base_legal"
+        ],
+        "title": "Atribuicao"
+      },
+      "BaseLegal": {
+        "properties": {
+          "texto": {
+            "type": "string",
+            "title": "Texto"
+          },
+          "link": {
+            "type": "string",
+            "title": "Link"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "texto",
+          "link"
+        ],
+        "title": "BaseLegal"
+      },
+      "Bill": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "tipo": {
+            "type": "string",
+            "title": "Tipo"
+          },
+          "numero": {
+            "type": "integer",
+            "title": "Numero"
+          },
+          "ano": {
+            "type": "integer",
+            "title": "Ano"
+          },
+          "ementa": {
+            "type": "string",
+            "title": "Ementa"
+          },
+          "situacao": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Situacao"
+          },
+          "origem": {
+            "type": "string",
+            "title": "Origem"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "tipo",
+          "numero",
+          "ano",
+          "ementa",
+          "situacao",
+          "origem"
+        ],
+        "title": "Bill"
+      },
+      "CurrentSituation": {
+        "properties": {
+          "casa": {
+            "type": "string",
+            "enum": [
+              "camara",
+              "senado"
+            ],
+            "title": "Casa"
+          },
+          "situacao": {
+            "type": "string",
+            "title": "Situacao"
+          },
+          "data": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data"
+          },
+          "link": {
+            "type": "string",
+            "title": "Link"
+          },
+          "fonte": {
+            "type": "string",
+            "title": "Fonte"
+          },
+          "coleta_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coleta Id"
+          },
+          "coletado_em": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coletado Em"
+          },
+          "disponivel": {
+            "type": "boolean",
+            "title": "Disponivel"
+          },
+          "motivo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Motivo"
+          },
+          "regra": {
+            "type": "string",
+            "enum": [
+              "mais_recente",
+              "unica_disponivel"
+            ],
+            "title": "Regra"
+          },
+          "divergencia": {
+            "type": "boolean",
+            "title": "Divergencia"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "casa",
+          "situacao",
+          "data",
+          "link",
+          "fonte",
+          "coleta_id",
+          "coletado_em",
+          "disponivel",
+          "motivo",
+          "regra",
+          "divergencia"
+        ],
+        "title": "CurrentSituation"
+      },
+      "GeneratedNorm": {
+        "properties": {
+          "rotulo": {
+            "type": "string",
+            "title": "Rotulo"
+          },
+          "data": {
+            "type": "string",
+            "title": "Data"
+          },
+          "link": {
+            "type": "string",
+            "title": "Link"
+          },
+          "fonte": {
+            "type": "string",
+            "title": "Fonte"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "rotulo",
+          "data",
+          "link",
+          "fonte"
+        ],
+        "title": "GeneratedNorm"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "IndexResponse": {
+        "properties": {
+          "fonte": {
+            "type": "string",
+            "title": "Fonte"
+          },
+          "coletado_em": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coletado Em"
+          },
+          "atrasado_calendario": {
+            "type": "boolean",
+            "title": "Atrasado Calendario"
+          },
+          "desatualizado": {
+            "type": "boolean",
+            "title": "Desatualizado"
+          },
+          "indicadores": {
+            "items": {
+              "$ref": "#/components/schemas/SeriesResponse"
+            },
+            "type": "array",
+            "title": "Indicadores"
+          }
+        },
+        "type": "object",
+        "required": [
+          "fonte",
+          "coletado_em",
+          "atrasado_calendario",
+          "desatualizado",
+          "indicadores"
+        ],
+        "title": "IndexResponse"
+      },
+      "IndicatorResponse": {
+        "properties": {
+          "dados": {
+            "items": {
+              "$ref": "#/components/schemas/Observation"
+            },
+            "type": "array",
+            "title": "Dados"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dados",
+          "meta"
+        ],
+        "title": "IndicatorResponse"
+      },
+      "LawResponse": {
+        "properties": {
+          "id_camara": {
+            "type": "integer",
+            "title": "Id Camara"
+          },
+          "id_senado": {
+            "type": "integer",
+            "title": "Id Senado"
+          },
+          "sigla_tipo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sigla Tipo"
+          },
+          "numero": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Numero"
+          },
+          "ano": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ano"
+          },
+          "ementa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ementa"
+          },
+          "autor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Autor"
+          },
+          "partido": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Partido"
+          },
+          "uf": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uf"
+          },
+          "coautores": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coautores"
+          },
+          "partido_referencia": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "atual",
+                  "apresentacao"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Partido Referencia"
+          },
+          "autoria_motivo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Autoria Motivo"
+          },
+          "data_apresentacao": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Apresentacao"
+          },
+          "situacao": {
+            "items": {
+              "$ref": "#/components/schemas/Situation"
+            },
+            "type": "array",
+            "title": "Situacao"
+          },
+          "situacao_atual": {
+            "$ref": "#/components/schemas/CurrentSituation"
+          },
+          "norma_gerada": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GeneratedNorm"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "norma_gerada_motivo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Norma Gerada Motivo"
+          },
+          "marcos": {
+            "items": {
+              "$ref": "#/components/schemas/Marker"
+            },
+            "type": "array",
+            "title": "Marcos"
+          },
+          "fontes_norma": {
+            "items": {
+              "$ref": "#/components/schemas/Reference"
+            },
+            "type": "array",
+            "title": "Fontes Norma"
+          },
+          "nivel_evidencia": {
+            "type": "string",
+            "const": "descritivo",
+            "title": "Nivel Evidencia",
+            "default": "descritivo"
+          },
+          "desatualizado": {
+            "type": "boolean",
+            "title": "Desatualizado"
+          },
+          "simulada": {
+            "type": "boolean",
+            "title": "Simulada"
+          },
+          "fonte": {
+            "type": "string",
+            "title": "Fonte"
+          },
+          "coleta_id": {
+            "type": "integer",
+            "title": "Coleta Id"
+          },
+          "coletado_em": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Coletado Em"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id_camara",
+          "id_senado",
+          "sigla_tipo",
+          "numero",
+          "ano",
+          "ementa",
+          "autor",
+          "partido",
+          "uf",
+          "coautores",
+          "partido_referencia",
+          "autoria_motivo",
+          "data_apresentacao",
+          "situacao",
+          "situacao_atual",
+          "norma_gerada",
+          "norma_gerada_motivo",
+          "marcos",
+          "fontes_norma",
+          "desatualizado",
+          "simulada",
+          "fonte",
+          "coleta_id",
+          "coletado_em"
+        ],
+        "title": "LawResponse"
+      },
+      "LegislationResponse": {
+        "properties": {
+          "dados": {
+            "items": {
+              "$ref": "#/components/schemas/Bill"
+            },
+            "type": "array",
+            "title": "Dados"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dados",
+          "meta"
+        ],
+        "title": "LegislationResponse"
+      },
+      "Marker": {
+        "properties": {
+          "tipo": {
+            "type": "string",
+            "title": "Tipo"
+          },
+          "rotulo": {
+            "type": "string",
+            "title": "Rotulo"
+          },
+          "data": {
+            "type": "string",
+            "title": "Data"
+          },
+          "prevista": {
+            "type": "boolean",
+            "title": "Prevista"
+          },
+          "fonte": {
+            "type": "string",
+            "title": "Fonte"
+          },
+          "link": {
+            "type": "string",
+            "title": "Link"
+          },
+          "origem": {
+            "type": "string",
+            "enum": [
+              "fonte",
+              "calculado"
+            ],
+            "title": "Origem"
+          },
+          "artigo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Artigo"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "tipo",
+          "rotulo",
+          "data",
+          "prevista",
+          "fonte",
+          "link",
+          "origem",
+          "artigo"
+        ],
+        "title": "Marker"
+      },
+      "Meta": {
+        "properties": {
+          "fonte": {
+            "type": "string",
+            "title": "Fonte"
+          },
+          "coletado_em": {
+            "type": "string",
+            "title": "Coletado Em"
+          },
+          "duracao_ms": {
+            "type": "number",
+            "title": "Duracao Ms"
+          },
+          "quantidade": {
+            "type": "integer",
+            "title": "Quantidade"
+          },
+          "urls": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Urls"
+          },
+          "periodicidade": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Periodicidade"
+          },
+          "tabela": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tabela"
+          },
+          "variavel": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Variavel"
+          }
+        },
+        "type": "object",
+        "required": [
+          "fonte",
+          "coletado_em",
+          "duracao_ms",
+          "quantidade",
+          "urls"
+        ],
+        "title": "Meta"
+      },
+      "Observation": {
+        "properties": {
+          "periodo": {
+            "type": "string",
+            "pattern": "^\\d{4}0[1-4]$",
+            "title": "Periodo"
+          },
+          "rotulo": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Rotulo"
+          },
+          "valor": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valor"
+          },
+          "unidade": {
+            "type": "string",
+            "const": "%",
+            "title": "Unidade"
+          },
+          "territorio": {
+            "type": "string",
+            "const": "Brasil",
+            "title": "Territorio",
+            "default": "Brasil"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "disponivel",
+              "ausente"
+            ],
+            "title": "Status"
+          },
+          "valor_original": {
+            "type": "string",
+            "title": "Valor Original"
+          },
+          "origem": {
+            "type": "string",
+            "title": "Origem"
+          }
+        },
+        "type": "object",
+        "required": [
+          "periodo",
+          "rotulo",
+          "valor",
+          "unidade",
+          "status",
+          "valor_original",
+          "origem"
+        ],
+        "title": "Observation"
+      },
+      "PointResponse": {
+        "properties": {
+          "valor": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valor"
+          },
+          "lacuna": {
+            "type": "boolean",
+            "title": "Lacuna"
+          },
+          "unidade": {
+            "type": "string",
+            "title": "Unidade"
+          },
+          "periodo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Periodo"
+          },
+          "tipo_periodo": {
+            "type": "string",
+            "enum": [
+              "mensal",
+              "trimestre_movel"
+            ],
+            "title": "Tipo Periodo",
+            "default": "trimestre_movel"
+          },
+          "tipo_valor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "real",
+                  "nominal"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tipo Valor"
+          },
+          "medida": {
+            "type": "string",
+            "enum": [
+              "taxa",
+              "saldo",
+              "valor"
+            ],
+            "title": "Medida"
+          },
+          "base_precos": {
+            "type": "null",
+            "title": "Base Precos"
+          },
+          "cv": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cv"
+          },
+          "variacao_anual": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Variacao Anual"
+          },
+          "variacao_anual_unidade": {
+            "type": "string",
+            "title": "Variacao Anual Unidade"
+          },
+          "classificacao": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "subiu",
+                  "caiu",
+                  "estavel"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Classificacao"
+          },
+          "classificacao_origem": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": "calculada"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Classificacao Origem",
+            "default": "calculada"
+          },
+          "variacao_anual_origem": {
+            "type": "string",
+            "enum": [
+              "fonte",
+              "calculo_observatorio"
+            ],
+            "title": "Variacao Anual Origem",
+            "default": "fonte"
+          },
+          "ajuste": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "com_ajuste",
+                  "sem_ajuste"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ajuste"
+          },
+          "competencia_coleta": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Competencia Coleta"
+          },
+          "atribuicao": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Atribuicao"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "nota_revisao": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nota Revisao"
+          },
+          "fonte": {
+            "type": "string",
+            "title": "Fonte"
+          },
+          "tabela_ou_arquivo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tabela Ou Arquivo"
+          },
+          "link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link"
+          },
+          "coleta_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coleta Id"
+          },
+          "coletado_em": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coletado Em"
+          },
+          "desatualizado": {
+            "type": "boolean",
+            "title": "Desatualizado"
+          },
+          "atrasado_calendario": {
+            "type": "boolean",
+            "title": "Atrasado Calendario"
+          },
+          "nivel_evidencia": {
+            "type": "string",
+            "const": "descritivo",
+            "title": "Nivel Evidencia",
+            "default": "descritivo"
+          },
+          "disponivel": {
+            "type": "boolean",
+            "title": "Disponivel"
+          },
+          "motivo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Motivo"
+          },
+          "comparacao": {
+            "type": "string",
+            "const": "mesmo_periodo_ano_anterior",
+            "title": "Comparacao",
+            "default": "mesmo_periodo_ano_anterior"
+          },
+          "simulada": {
+            "type": "boolean",
+            "title": "Simulada"
+          },
+          "variaveis": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Variaveis"
+          },
+          "versao": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Versao"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "valor",
+          "lacuna",
+          "unidade",
+          "periodo",
+          "tipo_valor",
+          "medida",
+          "cv",
+          "variacao_anual",
+          "variacao_anual_unidade",
+          "classificacao",
+          "fonte",
+          "tabela_ou_arquivo",
+          "link",
+          "coleta_id",
+          "coletado_em",
+          "desatualizado",
+          "atrasado_calendario",
+          "disponivel",
+          "motivo",
+          "simulada",
+          "variaveis",
+          "versao"
+        ],
+        "title": "PointResponse"
+      },
+      "Reference": {
+        "properties": {
+          "rotulo": {
+            "type": "string",
+            "title": "Rotulo"
+          },
+          "link": {
+            "type": "string",
+            "title": "Link"
+          },
+          "coletado_em": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Coletado Em"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "rotulo",
+          "link",
+          "coletado_em"
+        ],
+        "title": "Reference"
+      },
+      "SeriesResponse": {
+        "properties": {
+          "valor": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valor"
+          },
+          "lacuna": {
+            "type": "boolean",
+            "title": "Lacuna"
+          },
+          "unidade": {
+            "type": "string",
+            "title": "Unidade"
+          },
+          "periodo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Periodo"
+          },
+          "tipo_periodo": {
+            "type": "string",
+            "enum": [
+              "mensal",
+              "trimestre_movel"
+            ],
+            "title": "Tipo Periodo",
+            "default": "trimestre_movel"
+          },
+          "tipo_valor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "real",
+                  "nominal"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tipo Valor"
+          },
+          "medida": {
+            "type": "string",
+            "enum": [
+              "taxa",
+              "saldo",
+              "valor"
+            ],
+            "title": "Medida"
+          },
+          "base_precos": {
+            "type": "null",
+            "title": "Base Precos"
+          },
+          "cv": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cv"
+          },
+          "variacao_anual": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Variacao Anual"
+          },
+          "variacao_anual_unidade": {
+            "type": "string",
+            "title": "Variacao Anual Unidade"
+          },
+          "classificacao": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "subiu",
+                  "caiu",
+                  "estavel"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Classificacao"
+          },
+          "classificacao_origem": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": "calculada"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Classificacao Origem",
+            "default": "calculada"
+          },
+          "variacao_anual_origem": {
+            "type": "string",
+            "enum": [
+              "fonte",
+              "calculo_observatorio"
+            ],
+            "title": "Variacao Anual Origem",
+            "default": "fonte"
+          },
+          "ajuste": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "com_ajuste",
+                  "sem_ajuste"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ajuste"
+          },
+          "competencia_coleta": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Competencia Coleta"
+          },
+          "atribuicao": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Atribuicao"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "nota_revisao": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nota Revisao"
+          },
+          "fonte": {
+            "type": "string",
+            "title": "Fonte"
+          },
+          "tabela_ou_arquivo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tabela Ou Arquivo"
+          },
+          "link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link"
+          },
+          "coleta_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coleta Id"
+          },
+          "coletado_em": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coletado Em"
+          },
+          "desatualizado": {
+            "type": "boolean",
+            "title": "Desatualizado"
+          },
+          "atrasado_calendario": {
+            "type": "boolean",
+            "title": "Atrasado Calendario"
+          },
+          "nivel_evidencia": {
+            "type": "string",
+            "const": "descritivo",
+            "title": "Nivel Evidencia",
+            "default": "descritivo"
+          },
+          "disponivel": {
+            "type": "boolean",
+            "title": "Disponivel"
+          },
+          "motivo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Motivo"
+          },
+          "comparacao": {
+            "type": "string",
+            "const": "mesmo_periodo_ano_anterior",
+            "title": "Comparacao",
+            "default": "mesmo_periodo_ano_anterior"
+          },
+          "simulada": {
+            "type": "boolean",
+            "title": "Simulada"
+          },
+          "variaveis": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Variaveis"
+          },
+          "codigo": {
+            "type": "string",
+            "title": "Codigo"
+          },
+          "nome": {
+            "type": "string",
+            "title": "Nome"
+          },
+          "janela": {
+            "type": "string",
+            "enum": [
+              "2a",
+              "5a",
+              "desde_2020"
+            ],
+            "title": "Janela"
+          },
+          "pontos": {
+            "items": {
+              "$ref": "#/components/schemas/PointResponse"
+            },
+            "type": "array",
+            "title": "Pontos"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "valor",
+          "lacuna",
+          "unidade",
+          "periodo",
+          "tipo_valor",
+          "medida",
+          "cv",
+          "variacao_anual",
+          "variacao_anual_unidade",
+          "classificacao",
+          "fonte",
+          "tabela_ou_arquivo",
+          "link",
+          "coleta_id",
+          "coletado_em",
+          "desatualizado",
+          "atrasado_calendario",
+          "disponivel",
+          "motivo",
+          "simulada",
+          "variaveis",
+          "codigo",
+          "nome",
+          "janela",
+          "pontos"
+        ],
+        "title": "SeriesResponse"
+      },
+      "Situation": {
+        "properties": {
+          "casa": {
+            "type": "string",
+            "enum": [
+              "camara",
+              "senado"
+            ],
+            "title": "Casa"
+          },
+          "situacao": {
+            "type": "string",
+            "title": "Situacao"
+          },
+          "data": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data"
+          },
+          "link": {
+            "type": "string",
+            "title": "Link"
+          },
+          "fonte": {
+            "type": "string",
+            "title": "Fonte"
+          },
+          "coleta_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coleta Id"
+          },
+          "coletado_em": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coletado Em"
+          },
+          "disponivel": {
+            "type": "boolean",
+            "title": "Disponivel"
+          },
+          "motivo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Motivo"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "casa",
+          "situacao",
+          "data",
+          "link",
+          "fonte",
+          "coleta_id",
+          "coletado_em",
+          "disponivel",
+          "motivo"
+        ],
+        "title": "Situation"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

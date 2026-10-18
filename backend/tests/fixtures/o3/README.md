@@ -4,7 +4,7 @@
 - São recortes pequenos da aba «Tabela 5.1» (com ajustes) das planilhas oficiais do MTE (`3-tabelas_Julho de 2026.xlsx` e `3-tabelas_Agosto de 2026.xlsx`). Origem, URL, data e sha256 estão em `manifesto-fixtures.json`.
 - Mesmo layout do original: título em B2, cabeçalho na linha 5 (B..G), dados a partir da linha 6, linha em branco, «Fonte: Novo Caged – MTE.» e a nota. Só os meses de junho/2025 até o último mês do arquivo.
 - **Nenhum número foi alterado.** B, D, E e F são cópia direta. C (Estoque) e G (Variação Relativa) eram fórmulas no original; aqui vão como o valor que o próprio arquivo guardou, com o mesmo texto numérico do XML original, porque as fórmulas apontavam para linhas que não estão no recorte. A ingestão não usa C nem G.
-- **Não redistribuir.** Licença da fonte: CC BY-ND 3.0 (sem derivações). Estes recortes existem só para os testes automáticos, no repositório privado. Ficam **fora de qualquer publicação**: não vão para o site, para a API, para downloads, para releases nem para imagens de deploy.
+- **Não redistribuir.** Base legal: Decreto nº 8.777/2016, art. 4º e §1º, com redação do Decreto nº 9.903/2019; uso livre e gratuito com citação da fonte. O MTE não publica licença própria para estes dados. Estes recortes existem só para os testes automáticos, no repositório privado. Ficam **fora de qualquer publicação**: não vão para o site, para a API, para downloads, para releases nem para imagens de deploy.
 - Para gerar de novo: `python gerar_recortes.py <pasta com os xlsx originais> .`
 
 ## Respostas reais das APIs (B2)

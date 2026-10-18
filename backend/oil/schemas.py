@@ -4,6 +4,20 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict
 
 
+class BaseLegal(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    texto: str
+    link: str
+
+
+class Atribuicao(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    texto: str
+    link: str
+    licenca: None = None
+    base_legal: BaseLegal
+
+
 class Common(BaseModel):
     model_config = ConfigDict(extra='forbid')
     valor: float | None
@@ -22,7 +36,7 @@ class Common(BaseModel):
     variacao_anual_origem: Literal['fonte','calculo_observatorio'] = 'fonte'
     ajuste: Literal['com_ajuste','sem_ajuste'] | None = None
     competencia_coleta: str | None = None
-    atribuicao: dict[str,str] | None = None
+    atribuicao: Atribuicao | None = None
     nota_revisao: str | None = None
     fonte: str
     tabela_ou_arquivo: str | None

@@ -33,7 +33,7 @@
 - Testes: manifesto sem sha256; sha256 malformado; zip com razão acima de 100 (gerado no teste, pequeno); soma descompactada acima do limite (simule pelos metadados do zip, sem criar 200 MB em disco); planilha com mais de 1000 linhas; defusedxml ativo.
 
 ### S2. Fixtures do Caged fora de `docs/` (médio)
-A licença é CC BY-ND 3.0. Vale a Segurança, e não o critério antigo da O3 de manter as fixtures em `backend/tests/fixtures/o3/` e `docs/o3/`.
+Correção O3-C: aplica-se o Decreto nº 8.777/2016, art. 4º e §1º, com redação do Decreto nº 9.903/2019, e citação da fonte. Vale a Segurança, e não o critério antigo da O3 de manter as fixtures em `backend/tests/fixtures/o3/` e `docs/o3/`.
 - Remova com `git rm` a pasta `docs/o3/fixtures/` inteira. Hoje ela tem `caged_t51_2026-07_recorte.xlsx`, `caged_t51_2026-08_recorte.xlsx`, `gerar_recortes.py`, os dois JSON das casas e um `README.md`. Os cinco primeiros são idênticos aos de `backend/tests/fixtures/o3/`; o README é diferente. Antes de remover, confira que tudo existe em `backend/tests/fixtures/o3/` e leve para o README de lá o que só existir no de `docs/`.
 - Remova `docs/o3/manifesto-fixtures.json`, que é idêntico a `backend/tests/fixtures/o3/manifesto-fixtures.json`.
 - Atualize as referências: `docs/o3/spec-b4-caged.md:75` (aponta para `docs/o3/fixtures/`) e `backend/tests/test_language.py:126`, a exceção de `.xlsx` em `docs/o3/fixtures`. Com a pasta fora, `docs/` não pode ter nenhum `.xlsx`; o teste deve falhar se aparecer um.
@@ -185,7 +185,7 @@ Pode juntar ou separar commits, desde que os testes de cada bloco venham antes d
 ## Critérios de aceite
 - [ ] PR #3 continua em rascunho, sem merge e sem force push. Os commits de teste vêm antes dos de código em cada bloco.
 - [ ] S1 a S7 corrigidos, com testes que falham no `49122080` e passam no head final.
-- [ ] Nenhum `.xlsx` nem recorte do Caged em `docs/`. Fixtures só em `backend/tests/fixtures/o3/`, com o README de «não redistribuir».
+- [ ] Nenhum `.xlsx` nem recorte do Caged em `docs/`. Fixtures só em `backend/tests/fixtures/o3/`, com o README de «não redistribuir» (regra preservada; base legal corrigida na O3-C).
 - [ ] Nenhum dado pessoal de deputado além de nome, partido e UF no banco ou na API.
 - [ ] Nenhum caminho `D:\` (nem outro caminho absoluto local) em `docs/` ou `frontend/evidencias/`.
 - [ ] Q1 a Q10 fechados. As mutações BA4, BK, BQ e BR e as sondas FC4, FC5, FD3 e «data no summary» agora são detectadas.

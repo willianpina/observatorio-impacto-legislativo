@@ -17,7 +17,7 @@ Proposta do Backend, 17/10/2026, para a O3. Tudo o que não está aqui continua 
 - Série: `medida="saldo"`, **`tipo_valor=null`**, `tipo_periodo="mensal"`, **`unidade="postos de trabalho"`**, `cv=null`, **`classificacao=null` sempre** (e `classificacao_origem=null`), `nivel_evidencia="descritivo"`.
 - Ponto: `periodo`, `valor` (saldo exatamente como na fonte; pode ser negativo), `lacuna`, `ajuste="com_ajuste"`, `competencia_coleta`, `coleta_id`.
 - `variacao_anual` (diferença para o mesmo mês do ano anterior, do mesmo arquivo) e `variacao_anual_unidade="postos de trabalho"`, com **`variacao_anual_origem="calculo_observatorio"`** e o rótulo «cálculo do Observatório a partir de dados do MTE». Os valores do MTE nunca são alterados.
-- **`atribuicao`** (novo): `{texto, link, licenca}`. Texto: «Fonte: Novo Caged – MTE, Tabela 5.1 (com ajustes), arquivo <mês/ano>, licença CC BY-ND 3.0». Link: página oficial do mês no gov.br do MTE.
+- **`atribuicao`**: `{texto, link, licenca: null, base_legal: {texto, link}}`, corrigido na v1.4.1. Texto: «Fonte: Novo Caged – MTE, Tabela 5.1 (com ajustes), arquivo <mês/ano>, coletado em DD/MM/AAAA. Elaboração: OIL.» Base legal e link do decreto em `contrato-api-v1.4.1-delta.md`; mês do manifesto e data da coleta servida, convertida para America/Sao_Paulo.
 - **`nota_revisao`** (novo): «Série revisada mensalmente pelo MTE: os meses anteriores podem mudar a cada novo arquivo.»
 - Sem coleta válida → **200** com `disponivel=false`, `motivo` e `pontos=[]` (nunca 404).
 - `atrasado_calendario` segue o calendário oficial do MTE (29/10/2026, 30/11/2026, 30/12/2026).
