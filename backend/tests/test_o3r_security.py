@@ -13,7 +13,7 @@ import openpyxl
 import pytest
 from sqlalchemy import func, select, delete
 
-from backend.oil.caged import CagedCollector, parse_workbook
+from backend.oil.caged import MAX_EXPANDED_BYTES, CagedCollector, parse_workbook
 from backend.oil.ingest import SourceFailure
 from backend.oil.legislation import LawCollector
 from backend.oil.models import Coleta, Observacao, ProposicaoSnapshot
@@ -44,7 +44,7 @@ def test_zip_metadata_checked_before_openpyxl(monkeypatch,problem):
     def metadata(archive):
         items=original(archive)
         item=copy.copy(items[0])
-        item.file_size=201*1024*1024 if problem=='total' else 10001
+        item.file_size=MAX_EXPANDED_BYTES+1 if problem=='total' else 10001
         item.compress_size=item.file_size if problem=='total' else 0 if problem=='zero_compressed' else 100
         return [item,*items[1:]]
     monkeypatch.setattr(zipfile.ZipFile,'infolist',metadata)
@@ -52,6 +52,30 @@ def test_zip_metadata_checked_before_openpyxl(monkeypatch,problem):
     monkeypatch.setattr(openpyxl,'load_workbook',forbidden)
     with pytest.raises(ValueError):parse_workbook(raw,'2026-08',allow_recorte=True)
     assert not opened
+
+
+def test_measured_expanded_profile_is_accepted(monkeypatch):
+    # Perfil medido no xlsx real. O zip abaixo só declara tamanhos; a planilha real não é usada.
+    total=269003821
+    sheet13,sheet14=111*1024*1024,88*1024*1024
+    remainder=total-sheet13-sheet14
+    assert remainder>0 and sheet13+sheet14+remainder==total and total>200*1024*1024
+    raw=entry('2026-08')[1]
+    original=zipfile.ZipFile.infolist
+    seen={'once':False}
+    def metadata(archive):
+        if not seen['once']:
+            seen['once']=True
+            members=[]
+            for name,size in (('xl/worksheets/sheet13.xml',sheet13),('xl/worksheets/sheet14.xml',sheet14),('xl/worksheets/sheet1.xml',remainder)):
+                item=zipfile.ZipInfo(name)
+                item.file_size=size
+                item.compress_size=size
+                members.append(item)
+            return members
+        return original(archive)
+    monkeypatch.setattr(zipfile.ZipFile,'infolist',metadata)
+    assert parse_workbook(raw,'2026-08',allow_recorte=True)['202608']==165827
 
 
 def test_small_high_ratio_zip_is_invalid_without_observations(sf):

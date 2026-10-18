@@ -58,6 +58,7 @@ MUTATIONS=[
     ('BQ',LAW,'Data fixa no marco',replace_once("deliberation['tipoDeliberacao'],deliberation['data']","deliberation['tipoDeliberacao'],'2026-10-15'")),
     ('BR',LAW,'Rótulo fixo no marco',replace_once("deliberation['tipoDeliberacao'],deliberation['data']","'Aprovação',deliberation['data']")),
     ('S1',CAGED,'Manifesto sem hash aceito',replace_once("if not isinstance(expected_hash,str) or re.fullmatch(r'[0-9a-fA-F]{64}',expected_hash) is None:",'if False:')),
+    ('S8',CAGED,'Teto expandido revertido a 200 MiB',replace_once('MAX_EXPANDED_BYTES=512*1024*1024','MAX_EXPANDED_BYTES=200*1024*1024')),
     ('S3',LAW,'Corpo completo de deputado armazenado',replace_once('raw=minimized_deputy(raw)','raw=raw')),
     ('S5',LAW,'Teto de resposta removido',remove_law_limit),
     ('S6',LAW,'Link de norma sem validação de origem',replace_once("if not official_norm_link(norm['link']):",'if False:')),
@@ -164,7 +165,7 @@ def main():
     if args.check:
         for identifier,file,name,transform in MUTATIONS:
             source=(ROOT/file).read_text(encoding='utf-8');compile(transform(source),file,'exec')
-        print('27 alvos válidos, sintaxe conferida.');return
+        print(str(len(MUTATIONS))+' alvos válidos, sintaxe conferida.');return
     execute(set(args.only) if args.only else None,args.publicar_evidencia)
 
 
