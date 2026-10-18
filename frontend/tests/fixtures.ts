@@ -31,7 +31,6 @@ export async function intercept(page: Page, state = 'normal', normalMode = false
     const code = new URL(route.request().url()).pathname.split('/')[4];
     if (state === 'error' && code === 'desocupacao') return route.fulfill({ status: 503, json: { erro: { fonte: 'IBGE', mensagem: 'Fonte temporariamente indisponível.', tentar_novamente_em: 60 } } });
     const data = fixture(code,new URL(route.request().url()).searchParams.get('janela')||'5a');
-    if (normalMode) data.simulada=false;
     if ('desatualizado' in data && state === 'stale') data.desatualizado = true;
     if ('pontos' in data && data.pontos.length && state === 'gap') data.pontos[20] = { ...data.pontos[20], valor: null as unknown as number, lacuna: true };
     if (state === 'empty') data.pontos = [];
@@ -49,6 +48,7 @@ export async function intercept(page: Page, state = 'normal', normalMode = false
         pontos: reference.pontos.slice(-3).map((p,i) => ({ ...p, valor: i === 1 ? -10 : 20, unidade: 'postos de trabalho', ajuste: i === 1 ? 'com_ajuste' : 'sem_ajuste', competencia_coleta: '202608' })) });
     }
     if(code==='caged-saldo'&&state==='csv') {data.pontos[0].unidade='=1+1';data.pontos[1].unidade='-x';}
+    if (normalMode) data.simulada=false;
     transform?.(data,code);
     await route.fulfill({ json: data });
   });
