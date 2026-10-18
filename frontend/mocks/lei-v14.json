@@ -1,0 +1,94 @@
+{
+  "id_camara": 2233802,
+  "id_senado": 9056435,
+  "sigla_tipo": "PEC",
+  "numero": 221,
+  "ano": 2019,
+  "ementa": "Altera o Art. 7º inciso XII da constituição Federal, reduzindo a jornada de trabalho a 36 horas semanais em 10 anos.",
+  "autor": "Reginaldo Lopes",
+  "partido": "PT",
+  "uf": "MG",
+  "coautores": 0,
+  "partido_referencia": "apresentacao",
+  "autoria_motivo": "Partido e UF do histórico oficial da Câmara: registro de 2019-02-01 vigente na data da apresentação.",
+  "data_apresentacao": "2019-12-11T17:37",
+  "situacao": [
+    {
+      "casa": "camara",
+      "situacao": "Transformado em Norma Jurídica",
+      "data": "2026-10-16",
+      "link": "https://www.camara.leg.br/propostas-legislativas/2233802",
+      "fonte": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2233802",
+      "coleta_id": 5,
+      "coletado_em": "2026-10-18T18:58:45.679639Z",
+      "disponivel": true,
+      "motivo": null
+    },
+    {
+      "casa": "senado",
+      "situacao": "TRANSFORMADA EM NORMA JURÍDICA",
+      "data": "2026-10-16",
+      "link": "https://www25.senado.leg.br/web/atividade/materias/-/materia/174386",
+      "fonte": "https://legis.senado.leg.br/dadosabertos/processo/9056435?v=1",
+      "coleta_id": 8,
+      "coletado_em": "2026-10-18T18:58:46.368344Z",
+      "disponivel": true,
+      "motivo": null
+    }
+  ],
+  "situacao_atual": {
+    "casa": "senado",
+    "situacao": "TRANSFORMADA EM NORMA JURÍDICA",
+    "data": "2026-10-16",
+    "link": "https://www25.senado.leg.br/web/atividade/materias/-/materia/174386",
+    "fonte": "https://legis.senado.leg.br/dadosabertos/processo/9056435?v=1",
+    "coleta_id": 8,
+    "coletado_em": "2026-10-18T18:58:46.368344Z",
+    "disponivel": true,
+    "motivo": null,
+    "regra": "mais_recente",
+    "divergencia": false
+  },
+  "norma_gerada": null,
+  "norma_gerada_motivo": "normaGerada vazio ou não disponível na fonte do Senado",
+  "marcos": [
+    {
+      "tipo": "aprovacao_senado",
+      "rotulo": "Aprovada pelo Plenário",
+      "data": "2026-10-14",
+      "prevista": false,
+      "fonte": "https://legis.senado.leg.br/dadosabertos/processo/9056435?v=1",
+      "link": "https://www25.senado.leg.br/web/atividade/materias/-/materia/174386",
+      "origem": "fonte",
+      "artigo": null
+    },
+    {
+      "tipo": "promulgacao",
+      "rotulo": "TRANSFORMADA EM NORMA JURÍDICA",
+      "data": "2026-10-16",
+      "prevista": false,
+      "fonte": "https://legis.senado.leg.br/dadosabertos/processo/9056435?v=1",
+      "link": "https://www25.senado.leg.br/web/atividade/materias/-/materia/174386",
+      "origem": "fonte",
+      "artigo": null
+    }
+  ],
+  "fontes_norma": [
+    {
+      "rotulo": "Planalto",
+      "link": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc141.htm",
+      "coletado_em": "2026-10-17T11:22:07-03:00"
+    },
+    {
+      "rotulo": "DOU",
+      "link": "https://www.in.gov.br/web/dou/-/emenda-constitucional-n-141-738818165",
+      "coletado_em": "2026-10-17T11:22:46-03:00"
+    }
+  ],
+  "nivel_evidencia": "descritivo",
+  "desatualizado": false,
+  "simulada": true,
+  "fonte": "Câmara dos Deputados / Senado Federal",
+  "coleta_id": 8,
+  "coletado_em": "2026-10-18T18:58:46.368344Z"
+}
