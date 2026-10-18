@@ -5,10 +5,19 @@ from .conftest import ROOT
 
 EXCLUDED=frozenset({'frontend/package-lock.json','frontend/referencias/o3/missao-o3c-codex.md'})
 
+def license_pattern():
+    return re.compile('c'+'c'+r'[\s_-]*by|by'+'-nd|sem'+'deriva|'+r'\b'+'c'+'c'+'0'+r'\b|dom[ií]nio p[uú]blico',re.I)
+
+def test_o3c_license_guard_detects_standalone_designation_and_preserves_ids():
+    pattern=license_pattern()
+    for text in ['c'+'c'+'0','c'+'c BY','by'+'-nd','domínio '+'público']:
+        assert pattern.search(text)
+    assert not pattern.search('32a1c8da79eda1a4f21c-ce23a5bb41c41ef6fc'+'c0')
+
 def test_o3c_no_inapplicable_license_in_versioned_text():
     result=subprocess.run(['git','ls-files','-z'],cwd=ROOT,capture_output=True,check=True)
     names=filter(None,result.stdout.decode().split('\0'))
-    pattern=re.compile('c'+'c'+r'[\s_-]*by|by'+'-nd|sem'+'deriva|c'+'c'+'0|dom[ií]nio p[uú]blico',re.I)
+    pattern=license_pattern()
     found=[]
     for name in names:
         if name in EXCLUDED:continue
