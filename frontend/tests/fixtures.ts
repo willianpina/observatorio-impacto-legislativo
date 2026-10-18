@@ -24,7 +24,7 @@ export function fixture(code: string, janela = '5a') {
   return { ...meta, ...points.at(-1), pontos: points };
 }
 
-export async function intercept(page: Page, state = 'normal', normalMode = false) {
+export async function intercept(page: Page, state = 'normal', normalMode = false,transform?:(data:Record<string,unknown>,code:string)=>void) {
   await page.route('**/api/oil/lei',route=>route.fulfill({json:{...lawFixture,simulada:!normalMode}}));
   await page.route('**/api/oil/indicadores?*',route=>route.fulfill({json:{indicadores:[],coletado_em:null,simulada:!normalMode}}));
   await page.route('**/api/oil/indicadores/**', async route => {
@@ -49,6 +49,7 @@ export async function intercept(page: Page, state = 'normal', normalMode = false
         pontos: reference.pontos.slice(-3).map((p,i) => ({ ...p, valor: i === 1 ? -10 : 20, unidade: 'postos de trabalho', ajuste: i === 1 ? 'com_ajuste' : 'sem_ajuste', competencia_coleta: '202608' })) });
     }
     if(code==='caged-saldo'&&state==='csv') {data.pontos[0].unidade='=1+1';data.pontos[1].unidade='-x';}
+    transform?.(data,code);
     await route.fulfill({ json: data });
   });
 }
