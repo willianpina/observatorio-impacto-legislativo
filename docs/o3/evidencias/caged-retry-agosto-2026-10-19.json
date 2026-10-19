@@ -1,0 +1,64 @@
+{
+  "base": "c00b563d0dd27963f74a3d7b8de0b9d52ef2f5aa",
+  "inicio": {
+    "utc": "2026-10-19T12:26:34.814360+00:00",
+    "brt": "2026-10-19T09:26:34.814360-03:00"
+  },
+  "modo": "real; banco novo descartável; sem fixture",
+  "manifesto_sha256": "f1638d1e29f522d9142f194976443d8dd27a341bb8a3bf39db3a1819828c5263",
+  "teto_descompactado_bytes": 536870912,
+  "jobs": [
+    {
+      "job": "caged 2026-08",
+      "competencia": "2026-08",
+      "inicio": {
+        "utc": "2026-10-19T12:26:38.504255+00:00",
+        "brt": "2026-10-19T09:26:38.504255-03:00"
+      },
+      "simulada": false,
+      "url": "https://drive.usercontent.google.com/download?id=1LFiRd5cYqCLbBv7udPWtus6h4cF3GaA0&export=download&confirm=t",
+      "sha256_manifesto": "d36c8ebe54e3e10ea877f5ea4dd6798a0a276c4fcff262c73102f4b9c8459e7d",
+      "fim": {
+        "utc": "2026-10-19T12:26:58.928653+00:00",
+        "brt": "2026-10-19T09:26:58.928653-03:00"
+      },
+      "resultado": null,
+      "erro_publico": "RuntimeError",
+      "coletas": [
+        {
+          "coleta_id": 1,
+          "http": null,
+          "sha256": null,
+          "hash_confere": false,
+          "valida": false,
+          "simulada": false,
+          "erro_interno": "timeout_fonte",
+          "tamanho_bytes": null,
+          "pontos_gravados": 0,
+          "periodo_inicio": null,
+          "periodo_fim": null,
+          "coletado_em": "2026-10-19T12:26:58.913534+00:00"
+        }
+      ],
+      "pontos": 0,
+      "amostras": {}
+    }
+  ],
+  "requisicoes_por_url": {
+    "https://drive.usercontent.google.com/download?id=1LFiRd5cYqCLbBv7udPWtus6h4cF3GaA0&export=download&confirm=t": 1
+  },
+  "api": null,
+  "api_encerrada": true,
+  "container_parado": true,
+  "aprovado": false,
+  "porta_postgres_host": 50737,
+  "migracao_codigo_saida": 0,
+  "parada": "Falha registrada; nenhuma nova tentativa nem alteração de limite.",
+  "docker_ps_apos_limpeza": "CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES\n",
+  "manifesto_inalterado": true,
+  "fim": {
+    "utc": "2026-10-19T12:26:59.735829+00:00",
+    "brt": "2026-10-19T09:26:59.735829-03:00"
+  },
+  "esclarecimento_erro_orquestracao": "RuntimeError representa a trava de reconexão da execução única; a fonte registrou timeout_fonte. Nenhuma segunda requisição foi enviada."
+}
