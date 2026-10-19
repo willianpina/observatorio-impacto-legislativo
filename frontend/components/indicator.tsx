@@ -12,6 +12,11 @@ export function Source({data}:{data:Series}){ const text=data.atribuicao?.texto|
 
 export function Classification({data}:{data:Series}){ return data.classificacao?<span className="classification"><span aria-hidden="true">{data.classificacao==='subiu'?'▲':data.classificacao==='caiu'?'▼':'='}</span> {data.classificacao==='estavel'?'estável':data.classificacao}<small>{data.classificacao_origem==='ibge'?'classificação publicada pelo IBGE':'calculado pelo Observatório com a margem de erro do IBGE'}</small></span>:null; }
 
+export function CollectionStatus({data}:{data:Series}){return <>
+  {data.atrasado_calendario&&<p className="calendar-delay">Atraso no calendário: a fonte ainda não publicou o período esperado no calendário.</p>}
+  {data.desatualizado&&<p className="notice">Fonte fora do ar. Mostrando a última coleta válida de {date(data.coletado_em)}</p>}
+</>;}
+
 
 /** Leitura idêntica no card e no resumo, com a comparação separada do saldo oficial. */
 export function Reading({data,summary=false}:{data:Series;summary?:boolean}) {
@@ -50,13 +55,12 @@ export function Indicator({code,window,testMode,marcos,onState,onInvalidWindow}:
     <div aria-live="polite" aria-busy={state.status==='loading'}>
     {state.status==='loading'&&<div className="loading"><div className="skeleton"/>Carregando dados…</div>}
     {state.status==='error'&&<div className="unavailable error"><strong>Não conseguimos obter dados de {state.source} agora.</strong><p>{state.retryAfter?`Tente novamente em ${state.retryAfter} segundos.`:'Tente novamente em instantes.'}</p><button onClick={()=>setReload(v=>v+1)}><RefreshCw size={15}/> Tentar de novo</button></div>}
-    {data?.atrasado_calendario&&<p className="calendar-delay">Atraso no calendário: a fonte ainda não publicou o período esperado no calendário.</p>}
+    {data&&<CollectionStatus data={data}/>}
     {data&&(!data.disponivel?<div className="unavailable"><strong>Dado ainda não disponível</strong><p>{data.motivo}</p><span className="muted">Fonte prevista: {code==='caged-saldo'?'MTE / Novo Caged':data.fonte}</span></div>:data.pontos.length===0?<div className="unavailable">Ainda não há dados de {data.fonte} para este período.</div>:<>
       {data.simulada&&<span className="test-badge">Dado de teste · simulado</span>}
       <div data-testid={`insight-${code}`}><Reading data={data}/><Classification data={data}/></div>
       <p className="metadata">{data.medida==='taxa'?'Taxa (%)':data.medida==='saldo'?'Saldo de vagas':'Valor em R$'} · {periodType(data.tipo_periodo)}{data.medida!=='taxa'&&data.tipo_valor&&<> · {data.tipo_valor==='real'?(data.base_precos?`Real (preços de ${data.base_precos})`:'Real, base de preços do IBGE em verificação'):'Nominal'}</>}</p>
       <span className="evidence-badge">Descritivo</span>
-      {data.desatualizado&&<p className="notice">Fonte fora do ar. Mostrando a última coleta válida de {date(data.coletado_em)}</p>}
       <Chart series={data} marcos={marcos}/><Source data={data}/>
       <details className="more"><summary>Saiba mais</summary><p>Comparação: mesmo período do ano anterior. CV: {number(data.cv)}%. Coleta: {data.coleta_id ?? 'Não informado'}.</p><a href="#metodologia">Consultar metodologia</a>
         {data.pontos.some(p=>p.valor===null)&&<p>Há períodos sem dado na fonte.</p>}
