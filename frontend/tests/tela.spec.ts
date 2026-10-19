@@ -95,7 +95,7 @@ test('aviso exato, origem e dado de teste; indicador sem tipo monetário', async
   await expect(page.getByTestId('card-desocupacao')).toContainText('p.p.');
   await expect(page.getByTestId('card-rendimento-real')).toContainText('Real, base de preços do IBGE em verificação');
   await expect(page.getByTestId('card-desocupacao')).not.toContainText('Nominal');
-  await expect(page.getByText('Transformado em Norma Jurídica',{exact:true})).toBeVisible();
+  await expect(page.locator('#lei').getByText('Transformado em Norma Jurídica',{exact:true})).toBeVisible();
 });
 
 test('modo normal não exibe mock nem aceita dados simulados', async ({page}) => {

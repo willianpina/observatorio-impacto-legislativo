@@ -149,3 +149,7 @@ Contrato legislativo v1.4.1, atribuição aninhada e base legal, selo condiciona
 ## Revisão O4 — 19/10/2026
 
 Resumo, rastreabilidade, estados e ordem móvel revisados preservando a API real. Playwright: 153 aprovados; axe: 36 cenários sem violações graves/críticas; typecheck e build aprovados. Backend: 243 aprovados, 2 opcionais pulados; PoC: 39 aprovados, separadamente. Relatório e desvios em `VALIDACAO-O4-REVISAO.md`; capturas controladas em `evidencias/o4-revisao-2026-10-19/`. Caged real: julho válido e agosto com timeout, sem repetição de download; não considerar agosto aprovado.
+
+## Correção do PR #5 — 19/10/2026
+
+Veja VALIDACAO-O4-CORRECAO.md: 11 novos testes, 164 Playwright, 38 axe sem graves/críticas, M4 morto e PoC 39. B8 rotulado e CSV, placar corrigido, gitleaks com SHA final e saída Docker na evidência.

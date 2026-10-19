@@ -14,3 +14,5 @@
 @media(max-width:767px){.sources-container{order:3}}
 
 .indicator-help{font-size:12px;position:relative}.indicator-help summary{display:flex;align-items:center;gap:4px;cursor:pointer;min-height:44px;color:#174ab5}.indicator-help p{padding:10px;background:#f0f5fc;border:1px solid #dce4ef;border-radius:6px;min-width:140px}.card-heading{align-items:flex-start}.summary-item .insight{font-size:13px}
+
+.evidence-card dt{font-weight:600;margin-top:10px}.evidence-card dd{margin:3px 0 0}.evidence-card button{display:block;min-height:44px;margin-top:10px;text-align:left;color:var(--blue)}

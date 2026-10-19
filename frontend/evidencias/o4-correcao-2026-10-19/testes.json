@@ -1,0 +1,191 @@
+{
+  "base": "9387bd317720621dcbdd1f947093b39d2fb4ef7c",
+  "tdd": {
+    "falhas": 7,
+    "aprovados": 4,
+    "infraestrutura_excluida": true
+  },
+  "novos": {
+    "aprovados": 11,
+    "falhas": 0
+  },
+  "playwright": {
+    "startTime": "2026-10-19T12:32:55.516Z",
+    "duration": 260122.695,
+    "expected": 164,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "axe": [
+    {
+      "arquivo": "o3c-axe-1280-error.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o3c-axe-1280-normal.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o3c-axe-1280-unavailable.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o3c-axe-360-error.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o3c-axe-360-normal.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o3c-axe-360-unavailable.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4-correcao-axe-1280.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4-correcao-axe-360.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4-revisao-axe-1280-gap.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4-revisao-axe-1280-normal.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4-revisao-axe-1280-stale.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4-revisao-axe-1280-test.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4-revisao-axe-1280-unavailable.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4-revisao-axe-360-gap.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4-revisao-axe-360-normal.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4-revisao-axe-360-stale.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4-revisao-axe-360-test.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4-revisao-axe-360-unavailable.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-1280-empty.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-1280-error.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-1280-gap.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-1280-normal.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-1280-stale.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-360-empty.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-360-error.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-360-gap.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-360-normal.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-360-stale.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-1280-aberto-caged.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-1280-aberto-gap.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-1280-aberto-normal.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-1280-aberto-stale.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-1280-aberto-unclassified.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-360-aberto-caged.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-360-aberto-gap.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-360-aberto-normal.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-360-aberto-stale.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-360-aberto-unclassified.json",
+      "graves_criticas": 0
+    }
+  ],
+  "mutante_M4": {
+    "mutante": "M4: quórum menos 1 no limiar de aprovação",
+    "detectado": true,
+    "assercoes_falharam": [
+      "O4 correção placar camara 307 quorum 308 Aprovada",
+      "O4 correção placar senado 48 quorum 49 Aprovada"
+    ],
+    "aprovados": 6,
+    "falhas_de_assercao": 2,
+    "erros_infraestrutura": 0
+  },
+  "poc": {
+    "aprovados": 39,
+    "falhas": 0,
+    "duracao_segundos": 4.27
+  },
+  "backend": "Não repetido nesta rodada; nenhum arquivo alterado. Resultado anterior 243 pass/2 skip."
+}
