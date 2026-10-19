@@ -1,0 +1,18 @@
+{
+  "sha_verificado": "8de4af8dbadf848739057bd2e03b21baeed2dbaf",
+  "fase": "pre",
+  "verificado_em": "2026-10-19T15:33:34.001959+00:00",
+  "gitleaks": "8.30.1",
+  "escopos": {
+    "staging": {
+      "codigo_saida": 0,
+      "achados": [],
+      "total": 0
+    },
+    "historico": {
+      "codigo_saida": 0,
+      "achados": [],
+      "total": 0
+    }
+  }
+}

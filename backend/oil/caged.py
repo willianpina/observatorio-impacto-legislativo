@@ -3,6 +3,7 @@ import asyncio
 import hashlib
 import io
 import logging
+import math
 import os
 import re
 import tempfile
@@ -29,6 +30,19 @@ MAX_EXPANDED_BYTES=512*1024*1024
 MAX_COMPRESSION_RATIO=100
 MAX_DATA_ROWS=1000
 LOG=logging.getLogger(__name__)
+
+
+def download_timeout():
+    """Configuração exclusiva do job; nunca desativa o prazo nem muda o cliente comum."""
+    try:
+        read=float(os.environ.get('OIL_CAGED_READ_TIMEOUT','120'))
+    except ValueError:
+        raise ValueError('OIL_CAGED_READ_TIMEOUT deve ser um número positivo e finito.') from None
+    if not math.isfinite(read) or read<=0:
+        raise ValueError('OIL_CAGED_READ_TIMEOUT deve ser um número positivo e finito.')
+    return httpx.Timeout(connect=5,read=min(read,300),write=10,pool=10)
+
+
 _SUBCODES={
     'Conteúdo descompactado acima do limite.':'zip_total',
     'Razão de compactação acima do limite.':'zip_razao',
@@ -162,11 +176,14 @@ class CagedCollector:
             raise ValueError('URL fora da origem autorizada no manifesto.')
         if not self.simulada and parse_qs(urlsplit(url).query).get('id')!=[entry['drive_file_id']]:
             raise ValueError('Identificador de arquivo divergente do manifesto.')
+        url=str(httpx.URL(url).copy_set_param('confirm','t'))
+        timeout=download_timeout()
         for attempt in range(3):
             response=None;cid=None;digest=hashlib.sha256();size=0
             with tempfile.TemporaryFile() as stream:
                 try:
-                    async with self.client.stream('GET',url,headers={'Accept':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}) as response:
+                    async with self.client.stream('GET',url,timeout=timeout,follow_redirects=True,
+                        headers={'Accept':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}) as response:
                         if response.status_code!=200:
                             failure=SourceFailure('http_fonte',503 if response.status_code in {429,500,502,503,504} else 502)
                             cid=self.record(entry,status=response.status_code,error=failure.code)
@@ -177,8 +194,9 @@ class CagedCollector:
                                 raise ValueError('Arquivo acima do limite ou tamanho inválido.')
                             async for chunk in response.aiter_bytes():
                                 size+=len(chunk)
+                                digest.update(chunk)
                                 if size>MAX_BYTES: raise ValueError('Arquivo acima do limite.')
-                                digest.update(chunk);stream.write(chunk)
+                                stream.write(chunk)
                             cid=self.record(entry,status=200,digest=digest.hexdigest(),size=size)
                             if digest.hexdigest()!=expected_hash.lower():
                                 raise ValueError('Hash divergente do manifesto.')
@@ -186,9 +204,12 @@ class CagedCollector:
                             points=parse_workbook(stream,entry['competencia'],allow_recorte=recorte)
                             count=self.persist(entry,points,cid,digest.hexdigest())
                             return dict(coleta_id=cid,novas_versoes=count,simulada=self.simulada)
-                except httpx.TimeoutException:
+                except httpx.TimeoutException as exc:
                     failure=SourceFailure('timeout_fonte',504)
-                    self.record(entry,error=failure.code)
+                    phase=('timeout_conexao' if isinstance(exc,(httpx.ConnectTimeout,httpx.PoolTimeout))
+                        else 'timeout_leitura' if size else 'timeout_primeiro_byte')
+                    self.record(entry,status=response.status_code if response is not None else None,
+                        error=phase,digest=digest.hexdigest() if size else None,size=size)
                 except httpx.TransportError:
                     failure=SourceFailure('erro_conexao',503)
                     self.record(entry,error=failure.code)
