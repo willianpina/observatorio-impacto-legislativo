@@ -145,3 +145,7 @@ Relatório de Segurança, TDD e pendências P1–P3 em `../docs/o3/VALIDACAO.md`
 ## O3-C
 
 Contrato legislativo v1.4.1, atribuição aninhada e base legal, selo condicionado à resposta simulada, estados de erro/indisponibilidade e linhagem. 126 testes Playwright aprovados, zero falhas/pulados/instáveis, 26 cenários axe sem violações graves/críticas; typecheck e build aprovados. Mutações frontend 17/17 e backend 27/27 detectadas. Backend: 236 aprovados e 2 pulados; PoC separada: 39 aprovados. Validação real parcial: IBGE e lei exibidos; Caged indisponível, registrado como falha, sem substituição por fixture. API e bancos próprios encerrados. Arquivos de vigência e mock legislativo preservados. Relatório completo em `../docs/o3/VALIDACAO.md`; evidências com prefixo `o3c-`.
+
+## Revisão O4 — 19/10/2026
+
+Resumo, rastreabilidade, estados e ordem móvel revisados preservando a API real. Playwright: 153 aprovados; axe: 36 cenários sem violações graves/críticas; typecheck e build aprovados. Backend: 243 aprovados, 2 opcionais pulados; PoC: 39 aprovados, separadamente. Relatório e desvios em `VALIDACAO-O4-REVISAO.md`; capturas controladas em `evidencias/o4-revisao-2026-10-19/`. Caged real: julho válido e agosto com timeout, sem repetição de download; não considerar agosto aprovado.
