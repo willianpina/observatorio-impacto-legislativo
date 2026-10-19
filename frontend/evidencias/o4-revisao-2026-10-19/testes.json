@@ -1,0 +1,212 @@
+{
+  "base": "c000ee67401493998ffe2ce14f743dc14b304272",
+  "head_codigo": "c8fe9c9e5748da79eb1cae397350e60c78f9859e",
+  "backend": {
+    "aprovados": 243,
+    "pulados": 2,
+    "falhas": 0
+  },
+  "poc_separada": {
+    "aprovados": 39,
+    "falhas": 0
+  },
+  "playwright": {
+    "startTime": "2026-10-19T03:15:39.962Z",
+    "duration": 271339.634,
+    "expected": 153,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "axe": [
+    {
+      "arquivo": "o3c-axe-1280-error.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o3c-axe-1280-normal.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o3c-axe-1280-unavailable.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o3c-axe-360-error.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o3c-axe-360-normal.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o3c-axe-360-unavailable.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4-revisao-axe-1280-gap.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4-revisao-axe-1280-normal.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4-revisao-axe-1280-stale.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4-revisao-axe-1280-test.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4-revisao-axe-1280-unavailable.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4-revisao-axe-360-gap.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4-revisao-axe-360-normal.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4-revisao-axe-360-stale.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4-revisao-axe-360-test.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4-revisao-axe-360-unavailable.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-1280-empty.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-1280-error.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-1280-gap.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-1280-normal.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-1280-stale.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-360-empty.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-360-error.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-360-gap.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-360-normal.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r-axe-360-stale.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-1280-aberto-caged.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-1280-aberto-gap.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-1280-aberto-normal.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-1280-aberto-stale.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-1280-aberto-unclassified.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-360-aberto-caged.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-360-aberto-gap.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-360-aberto-normal.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-360-aberto-stale.json",
+      "graves_criticas": 0
+    },
+    {
+      "arquivo": "o4r2-axe-360-aberto-unclassified.json",
+      "graves_criticas": 0
+    }
+  ],
+  "typecheck": "aprovado",
+  "build": "aprovado",
+  "tdd": {
+    "resumo_estados_na_base": {
+      "startTime": "2026-10-19T02:57:23.002Z",
+      "duration": 162938.688,
+      "expected": 10,
+      "skipped": 0,
+      "unexpected": 12,
+      "flaky": 0
+    },
+    "ordem_na_base": {
+      "startTime": "2026-10-19T03:00:27.155Z",
+      "duration": 6585.995,
+      "expected": 0,
+      "skipped": 0,
+      "unexpected": 1,
+      "flaky": 0
+    },
+    "novos_apos_correcao": {
+      "startTime": "2026-10-19T03:01:57.538Z",
+      "duration": 71793.61,
+      "expected": 23,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    }
+  },
+  "capturas": {
+    "fixture": true,
+    "rede_oficial": false,
+    "arquivos": [
+      "o4-revisao-1280-gap-fixture.png",
+      "o4-revisao-1280-normal-fixture.png",
+      "o4-revisao-1280-stale-fixture.png",
+      "o4-revisao-1280-test-fixture.png",
+      "o4-revisao-1280-unavailable-fixture.png",
+      "o4-revisao-360-gap-fixture.png",
+      "o4-revisao-360-normal-fixture.png",
+      "o4-revisao-360-stale-fixture.png",
+      "o4-revisao-360-test-fixture.png",
+      "o4-revisao-360-unavailable-fixture.png"
+    ]
+  },
+  "caged_real": "julho válido; agosto timeout; evidência separada c00b563d0dd27963f74a3d7b8de0b9d52ef2f5aa; sem novo download"
+}

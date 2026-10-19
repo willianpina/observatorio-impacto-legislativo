@@ -1,0 +1,9 @@
+{
+  "fixture": true,
+  "rede_oficial": false,
+  "estado": "test",
+  "width": 360,
+  "detalhes_abertos": true,
+  "graves_criticas": 0,
+  "violacoes": []
+}

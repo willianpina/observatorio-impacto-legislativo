@@ -1,0 +1,11 @@
+{
+  "mutante": "M4: quórum menos 1 no limiar de aprovação",
+  "detectado": true,
+  "assercoes_falharam": [
+    "O4 correção placar camara 307 quorum 308 Aprovada",
+    "O4 correção placar senado 48 quorum 49 Aprovada"
+  ],
+  "aprovados": 6,
+  "falhas_de_assercao": 2,
+  "erros_infraestrutura": 0
+}

@@ -1,0 +1,18 @@
+{
+  "vermelho": {
+    "startTime": "2026-10-19T03:07:27.890Z",
+    "duration": 963.638,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  },
+  "verde": {
+    "startTime": "2026-10-19T03:08:34.413Z",
+    "duration": 878.9029999999999,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
