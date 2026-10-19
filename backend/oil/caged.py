@@ -182,7 +182,7 @@ class CagedCollector:
             response=None;cid=None;digest=hashlib.sha256();size=0
             with tempfile.TemporaryFile() as stream:
                 try:
-                    async with self.client.stream('GET',url,timeout=timeout,follow_redirects=True,
+                    async with self.client.stream('GET',url,timeout=timeout,follow_redirects=False,
                         headers={'Accept':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}) as response:
                         if response.status_code!=200:
                             failure=SourceFailure('http_fonte',503 if response.status_code in {429,500,502,503,504} else 502)

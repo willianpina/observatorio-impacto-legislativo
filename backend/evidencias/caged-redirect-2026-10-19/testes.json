@@ -1,0 +1,34 @@
+{
+  "base": "23ea09fcfebfcba5f49d73056d806bef851e42dd",
+  "tdd": {
+    "falhas_de_assercao": 3,
+    "deselecionados": 18
+  },
+  "bateria_caged": {
+    "aprovados": 48,
+    "deselecionados": 218,
+    "falhas": 0,
+    "duracao_segundos": 5.51
+  },
+  "poc": {
+    "aprovados": 39,
+    "falhas": 0,
+    "duracao_segundos": 3.99
+  },
+  "rede_externa": false,
+  "coletas_reais": 0,
+  "transporte": "httpx.MockTransport",
+  "redirecionamentos_seguidos": 0,
+  "casos_302": [
+    "mesmo host HTTPS",
+    "host fora da lista",
+    "mesmo host HTTP"
+  ],
+  "coleta_302": {
+    "codigo_http": 302,
+    "valida": false,
+    "erro": "http_fonte",
+    "hash_sha256": null,
+    "observacoes": 0
+  }
+}

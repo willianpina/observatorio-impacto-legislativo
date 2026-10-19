@@ -115,7 +115,7 @@ def test_streaming_limit_aborts_above_100_mib(sf):
         assert session.scalar(select(func.count()).select_from(Observacao)) == 0
 
 
-def test_redirect_confirm_and_stream_hash_match_fixture(sf, monkeypatch):
+def test_confirm_and_stream_hash_match_fixture(sf, monkeypatch):
     metadata, raw = entry('2026-08'); metadata['url_download'] += '&confirm=t'
     requests = []; streams = []; temporary = []; actual = caged.tempfile.TemporaryFile
     def temp():
@@ -124,16 +124,38 @@ def test_redirect_confirm_and_stream_hash_match_fixture(sf, monkeypatch):
     def handler(request):
         requests.append(request)
         assert request.url.params['confirm'] == 't'
-        if len(requests) == 1:
-            return httpx.Response(302, headers={'Location': str(request.url) + '&resolved=1'})
         stream = TimedStream(request, [(0, raw[:100]), (0, raw[100:])]); streams.append(stream)
         return httpx.Response(200, stream=stream)
     result = run(sf, handler, metadata)
-    assert len(requests) == 2 and all(s.closed for s in streams) and all(s.closed for s in temporary)
+    assert len(requests) == 1 and all(s.closed for s in streams) and all(s.closed for s in temporary)
     with sf() as session:
         row = session.get(Coleta, result['coleta_id'])
         assert row.valida and row.hash_sha256 == metadata['sha256'] == hashlib.sha256(raw).hexdigest()
         assert row.tamanho_bytes == len(raw) and row.resposta_bruta is None
+
+
+@pytest.mark.parametrize('location', [
+    'https://drive.usercontent.google.com/download?id=fixture&confirm=t',
+    'https://fora-da-lista.example/arquivo.xlsx',
+    'http://drive.usercontent.google.com/download?id=fixture&confirm=t',
+])
+def test_302_is_invalid_without_following_location(sf, location):
+    requests = []; metadata, raw = entry('2026-08')
+    def handler(request):
+        requests.append(request)
+        if len(requests) == 1:
+            return httpx.Response(302, headers={'Location': location})
+        return httpx.Response(200, content=raw)
+    with pytest.raises(SourceFailure, match='http_fonte'):
+        run(sf, handler, metadata)
+    assert len(requests) == 1
+    with sf() as session:
+        rows = session.scalars(select(Coleta)).all()
+        assert len(rows) == 1
+        row = rows[0]
+        assert row.codigo_http == 302 and row.valida is False and row.erro == 'http_fonte'
+        assert row.hash_sha256 is None
+        assert session.scalar(select(func.count()).select_from(Observacao)) == 0
 
 
 def test_revised_month_keeps_previous_version_linked_to_collection(sf):
