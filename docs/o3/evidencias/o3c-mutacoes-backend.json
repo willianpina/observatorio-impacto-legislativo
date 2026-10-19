@@ -1,0 +1,419 @@
+{
+  "head": "3b0cfc01bdb4842419f2bf438bcc11567c3d70e7",
+  "isolamento": "worktree descartável e PostgreSQL em porta aleatória de loopback",
+  "resultados": [
+    {
+      "id": "BA1",
+      "nome": "Isolamento de coletas legislativas",
+      "arquivo": "backend/oil/legislation.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3_law::test_o3_law_test_data_not_exposed_in_normal_mode"
+      ],
+      "pytest_resumo": [
+        "1 failed, 125 passed, 2 skipped, 1 warning in 51.56s",
+        "39 passed, 1 warning in 4.16s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "BA2",
+      "nome": "Isolamento da leitura do Caged",
+      "arquivo": "backend/oil/caged.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3_caged::test_o3_caged_no_collection_unavailable_and_simulation_isolated"
+      ],
+      "pytest_resumo": [
+        "1 failed, 111 passed, 2 skipped, 1 warning in 68.45s (0:01:08)",
+        "39 passed, 1 warning in 4.37s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "BA3",
+      "nome": "Trava de modo de teste",
+      "arquivo": "backend/oil/legislation.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3_regressions::test_simulation_requires_explicit_test_mode"
+      ],
+      "pytest_resumo": [
+        "1 failed, 142 passed, 2 skipped, 1 warning in 67.22s (0:01:07)",
+        "39 passed, 1 warning in 4.27s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "BA4",
+      "nome": "Trava de recorte",
+      "arquivo": "backend/oil/caged.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3r_qa::test_cutout_cannot_bypass_explicit_test_mode[False-1]"
+      ],
+      "pytest_resumo": [
+        "1 failed, 166 passed, 2 skipped, 1 warning in 68.53s (0:01:08)",
+        "39 passed, 1 warning in 4.43s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "BB",
+      "nome": "Desempate entre casas",
+      "arquivo": "backend/oil/legislation.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3_law::test_o3_law_convergence_literal_status_tie_and_lineage"
+      ],
+      "pytest_resumo": [
+        "1 failed, 115 passed, 2 skipped, 1 warning in 68.40s (0:01:08)",
+        "39 passed, 1 warning in 4.29s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "BC",
+      "nome": "Divergência de estágios",
+      "arquivo": "backend/oil/legislation.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3_law::test_o3_law_divergence_preserves_source_text"
+      ],
+      "pytest_resumo": [
+        "1 failed, 116 passed, 2 skipped, 1 warning in 56.79s",
+        "39 passed, 1 warning in 4.22s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "BD",
+      "nome": "Previsão do marco",
+      "arquivo": "backend/oil/legislation.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3_law::test_o3_law_convergence_literal_status_tie_and_lineage"
+      ],
+      "pytest_resumo": [
+        "1 failed, 115 passed, 2 skipped, 1 warning in 57.16s",
+        "39 passed, 1 warning in 4.76s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "BD2",
+      "nome": "Origem do marco",
+      "arquivo": "backend/oil/legislation.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3_law::test_o3_law_convergence_literal_status_tie_and_lineage"
+      ],
+      "pytest_resumo": [
+        "1 failed, 115 passed, 2 skipped, 1 warning in 50.60s",
+        "39 passed, 1 warning in 4.08s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "BE",
+      "nome": "Norma fixa sintética",
+      "arquivo": "backend/oil/legislation.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3_law::test_o3_law_convergence_literal_status_tie_and_lineage"
+      ],
+      "pytest_resumo": [
+        "1 failed, 115 passed, 2 skipped, 1 warning in 39.76s",
+        "39 passed, 1 warning in 4.03s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "BF",
+      "nome": "Reconstrução pela ordem de chegada",
+      "arquivo": "backend/oil/caged.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3_caged::test_o3_caged_reconstruct_each_file_even_out_of_order[order1]"
+      ],
+      "pytest_resumo": [
+        "1 failed, 99 passed, 2 skipped, 1 warning in 54.14s",
+        "39 passed, 1 warning in 4.29s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "BG",
+      "nome": "Comparação com versão antiga",
+      "arquivo": "backend/oil/caged.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3_caged::test_o3_caged_repeated_file_does_not_create_version"
+      ],
+      "pytest_resumo": [
+        "1 failed, 100 passed, 2 skipped, 1 warning in 65.51s (0:01:05)",
+        "39 passed, 1 warning in 4.25s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "BH",
+      "nome": "Sinal da comparação anual",
+      "arquivo": "backend/oil/caged.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3_caged::test_o3_caged_real_values_attribution_and_annual_difference"
+      ],
+      "pytest_resumo": [
+        "1 failed, 97 passed, 2 skipped, 1 warning in 60.46s (0:01:00)",
+        "39 passed, 1 warning in 4.29s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "BI",
+      "nome": "Horário do calendário",
+      "arquivo": "backend/oil/caged.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3_caged::test_o3_caged_calendar_uses_end_of_day_brt"
+      ],
+      "pytest_resumo": [
+        "1 failed, 113 passed, 2 skipped, 1 warning in 66.25s (0:01:06)",
+        "39 passed, 1 warning in 4.21s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "BJ",
+      "nome": "Referência do partido",
+      "arquivo": "backend/oil/legislation.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3_law::test_o3_law_authorship_principal_and_party_reference"
+      ],
+      "pytest_resumo": [
+        "1 failed, 126 passed, 2 skipped, 1 warning in 72.88s (0:01:12)",
+        "39 passed, 1 warning in 4.10s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "BK",
+      "nome": "Validação de ajustes",
+      "arquivo": "backend/oil/caged.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3r_qa::test_adjusted_table_title_is_required"
+      ],
+      "pytest_resumo": [
+        "1 failed, 168 passed, 2 skipped, 1 warning in 67.42s (0:01:07)",
+        "39 passed, 1 warning in 4.12s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "BL",
+      "nome": "Aba sem ajuste aceita",
+      "arquivo": "backend/oil/caged.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3_caged::test_o3_caged_bad_layout_not_persisted_and_last_good_served[sheet]"
+      ],
+      "pytest_resumo": [
+        "1 failed, 106 passed, 2 skipped, 1 warning in 52.66s",
+        "39 passed, 1 warning in 4.11s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "BM",
+      "nome": "Filtro redundante de validade",
+      "arquivo": "backend/oil/caged.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3c_qa::test_o3c_invalid_collection_observation_is_ignored"
+      ],
+      "pytest_resumo": [
+        "1 failed, 163 passed, 2 skipped, 1 warning in 64.25s (0:01:04)",
+        "39 passed, 1 warning in 4.07s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "BN",
+      "nome": "Saldo absoluto",
+      "arquivo": "backend/oil/caged.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3_caged::test_o3_caged_real_values_attribution_and_annual_difference"
+      ],
+      "pytest_resumo": [
+        "1 failed, 97 passed, 2 skipped, 1 warning in 48.16s",
+        "39 passed, 1 warning in 4.30s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "BO",
+      "nome": "Tipo monetário no saldo",
+      "arquivo": "backend/oil/caged.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3_caged::test_o3_caged_real_values_attribution_and_annual_difference"
+      ],
+      "pytest_resumo": [
+        "1 failed, 97 passed, 2 skipped, 1 warning in 53.20s",
+        "39 passed, 1 warning in 4.09s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "BP",
+      "nome": "Atribuição sem indicação de ajuste",
+      "arquivo": "backend/oil/caged.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3_caged::test_o3_caged_real_values_attribution_and_annual_difference"
+      ],
+      "pytest_resumo": [
+        "1 failed, 97 passed, 2 skipped, 1 warning in 51.96s",
+        "39 passed, 1 warning in 4.15s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "BQ",
+      "nome": "Data fixa no marco",
+      "arquivo": "backend/oil/legislation.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3r_qa::test_marker_dates_and_labels_are_literal_source_fields"
+      ],
+      "pytest_resumo": [
+        "1 failed, 165 passed, 2 skipped, 1 warning in 61.93s (0:01:01)",
+        "39 passed, 1 warning in 4.14s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "BR",
+      "nome": "Rótulo fixo no marco",
+      "arquivo": "backend/oil/legislation.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3r_qa::test_marker_dates_and_labels_are_literal_source_fields"
+      ],
+      "pytest_resumo": [
+        "1 failed, 165 passed, 2 skipped, 1 warning in 59.44s",
+        "39 passed, 1 warning in 4.05s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "S1",
+      "nome": "Manifesto sem hash aceito",
+      "arquivo": "backend/oil/caged.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3r_security::test_manifest_hash_required_before_download[None]"
+      ],
+      "pytest_resumo": [
+        "1 failed, 174 passed, 2 skipped, 1 warning in 58.90s",
+        "39 passed, 1 warning in 4.22s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "S3",
+      "nome": "Corpo completo de deputado armazenado",
+      "arquivo": "backend/oil/legislation.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3r_security::test_deputy_storage_is_minimized_but_hash_tracks_original"
+      ],
+      "pytest_resumo": [
+        "1 failed, 188 passed, 2 skipped, 1 warning in 62.64s (0:01:02)",
+        "39 passed, 1 warning in 4.12s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "S5",
+      "nome": "Teto de resposta removido",
+      "arquivo": "backend/oil/legislation.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3r_security::test_law_response_limit_is_502_without_retry_or_snapshot[True]"
+      ],
+      "pytest_resumo": [
+        "1 failed, 189 passed, 2 skipped, 1 warning in 62.84s (0:01:02)",
+        "39 passed, 1 warning in 4.11s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "S6",
+      "nome": "Link de norma sem validação de origem",
+      "arquivo": "backend/oil/legislation.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3r_security::test_generated_norm_requires_official_https_source[javascript:alert(1)-False]"
+      ],
+      "pytest_resumo": [
+        "1 failed, 191 passed, 2 skipped, 1 warning in 59.97s",
+        "39 passed, 1 warning in 4.08s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    },
+    {
+      "id": "S7",
+      "nome": "Candidatos sem snapshot",
+      "arquivo": "backend/oil/legislation.py",
+      "resultado": "DETECTADA",
+      "teste": [
+        "tests.test_o3r_security::test_valid_collection_without_snapshot_never_returns_500[missing1]"
+      ],
+      "pytest_resumo": [
+        "1 failed, 197 passed, 2 skipped, 1 warning in 61.47s (0:01:01)",
+        "39 passed, 1 warning in 4.30s"
+      ],
+      "codigo_saida": 1,
+      "restauracao_git_exit_code": 0
+    }
+  ],
+  "baseline": [
+    "236 passed, 2 skipped, 1 warning in 89.69s (0:01:29)",
+    "39 passed, 1 warning in 4.22s"
+  ],
+  "total": 27,
+  "detectadas": 27,
+  "sobreviventes": [],
+  "restauracao_repo_principal_exit_code": 0
+}

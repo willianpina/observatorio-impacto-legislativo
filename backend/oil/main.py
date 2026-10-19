@@ -33,7 +33,7 @@ async def lifespan(app):
         engine.dispose()
 
 
-app = FastAPI(title='OIL — indicadores e legislação', version='1.4', lifespan=lifespan)
+app = FastAPI(title='OIL — indicadores e legislação', version='1.4.1', lifespan=lifespan)
 # Mesmo código, caminho e tratamento de erros; nenhuma mudança em poc/.
 app.add_exception_handler(legacy.SourceError, legacy.source_error)
 for route in legacy.app.routes:

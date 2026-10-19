@@ -13,7 +13,7 @@ test.beforeEach(async ({page}) => {await intercept(page);await page.clock.setFix
 test('resumo do Caged separa valor oficial e cálculo, como o card',async({page})=>{
   await page.unroute('**/api/oil/indicadores/**');await intercept(page,'caged');await page.goto('/');
   const summary=page.getByTestId('resumo-caged-saldo');
-  await expect(summary.getByTestId('resumo-caged-valor-oficial')).toContainText('-10 vínculos');
+  await expect(summary.getByTestId('resumo-caged-valor-oficial')).toContainText('-10 postos de trabalho');
   await expect(summary.getByTestId('resumo-caged-valor-oficial')).not.toContainText('Cálculo');
   await expect(summary.getByTestId('resumo-caged-comparacao')).toHaveText(await page.getByTestId('card-caged-saldo').getByTestId('caged-comparacao').textContent()||'');
   await expect(summary.getByText('Saldo com ajustes',{exact:true})).toBeVisible();
@@ -23,7 +23,7 @@ test('resumo do Caged separa valor oficial e cálculo, como o card',async({page}
 for(const code of ['desocupacao','rendimento-real','caged-saldo'])test(`card ${code}: valor único, fonte, horário e selo`,async({page})=>{
   await page.unroute('**/api/oil/indicadores/**');await intercept(page,'caged');await page.goto('/');
   const card=page.getByTestId(`card-${code}`),value=card.getByTestId(`valor-atual-${code}`);
-  await expect(value).toHaveCount(1);await expect(value).toHaveText(code==='desocupacao'?'5,3 %':code==='rendimento-real'?'R$ 3.777':'-10 vínculos');
+  await expect(value).toHaveCount(1);await expect(value).toHaveText(code==='desocupacao'?'5,3 %':code==='rendimento-real'?'R$ 3.777':'-10 postos de trabalho');
   await expect(card.locator('.source').first()).toContainText('Fonte:');
   await expect(card.locator('.source').first()).toContainText(/Coletado em \d{2}\/\d{2}\/\d{4}, \d{2}:\d{2} \(BRT\)/);
   await expect(card.getByText('Descritivo',{exact:true})).toBeVisible();
@@ -43,7 +43,7 @@ test('cabeçalhos de segurança preservam hidratação e consultas',async({page}
 });
 
 for(const bad of ['javascript:alert(1)','https://estranho.example/roubo'])test(`links inválidos viram texto: ${bad}`,async({page})=>{
-  await page.route('**/api/oil/lei',async route=>{const body=await(await route.fetch()).json();body.dados.link=bad;body.dados.situacao_norma.link=bad;for(const item of [...body.dados.situacao,...body.dados.marcos,...body.dados.votacoes,...body.dados.tramitacoes])item.link=bad;await route.fulfill({json:body});});
+  for(const endpoint of ['lei','exemplo'])await page.route(`**/api/oil/${endpoint}`,async route=>{const body=await(await route.fetch()).json();const data=body.dados||body;data.link=bad;if(data.situacao_norma)data.situacao_norma.link=bad;if(data.norma_gerada)data.norma_gerada.link=bad;for(const item of [...(data.situacao||[]),...(data.marcos||[]),...(data.votacoes||[]),...(data.tramitacoes||[]),...(data.fontes_norma||[])])item.link=bad;await route.fulfill({json:body});});
   await page.route('**/api/oil/indicadores/**',route=>{const code=new URL(route.request().url()).pathname.split('/')[4];return route.fulfill({json:{...fixture(code),link:bad}});});
   await page.goto('/');await expect(page.getByTestId('card-desocupacao')).toContainText('Último dado');
   await expect(page.locator('a[href]').filter({hasText:'Ver texto da lei completo'})).toHaveCount(0);
@@ -53,7 +53,7 @@ for(const bad of ['javascript:alert(1)','https://estranho.example/roubo'])test(`
 });
 
 test('marco dentro da série desenha linha vertical cinza e tracejada',async({page})=>{
-  await page.route('**/api/oil/lei',async route=>{const body=await(await route.fetch()).json();body.dados.marcos=[{...body.dados.marcos[0],data:'2024-01-15',prevista:true}];await route.fulfill({json:body});});
+  await page.route('**/api/oil/exemplo',async route=>{const body=await(await route.fetch()).json();body.dados.marcos=[{...body.dados.marcos[0],data:'2024-01-15',prevista:true}];await route.fulfill({json:body});});
   await page.goto('/');const line=page.getByTestId('card-desocupacao').locator('.recharts-reference-line line');
   await expect(line).toHaveCount(1);await expect(line).toHaveAttribute('stroke','#64748b');await expect(line).toHaveAttribute('stroke-dasharray','4 4');
   expect(await line.getAttribute('x1')).toBe(await line.getAttribute('x2'));
@@ -144,7 +144,11 @@ test('Caged com ajustes, atribuição e cálculo separados, sem misturar séries
   await page.unroute('**/api/oil/indicadores/**'); await intercept(page,'caged'); await page.goto('/');
   const card=page.getByTestId('card-caged-saldo');
   await expect(card.getByText('Saldo com ajustes',{exact:true})).toBeVisible();
-  await expect(card).toContainText('arquivo 08/2026, licença CC BY-ND 3.0');
+  await expect(card).toContainText('Fonte: Novo Caged – MTE, Tabela 5.1 (com ajustes), arquivo agosto/2026, coletado em');
+  await card.getByText('Saiba mais',{exact:true}).click();
+  await expect(card).toContainText('Uso livre e gratuito, com citação da fonte');
+  await expect(card.getByRole('link',{name:/Decreto nº 8.777/})).toHaveAttribute('href','https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2016/decreto/d8777.htm');
+  await card.getByText('Saiba mais',{exact:true}).click();
   await expect(card.getByTestId('caged-comparacao')).toContainText('Cálculo do Observatório a partir de dados do MTE');
   await expect(card.getByTestId('caged-valor-oficial')).not.toContainText('Variação');
   await expect(card.locator('.recharts-bar-rectangle')).toHaveCount(1);
@@ -191,7 +195,7 @@ test('votação simbólica fica sem números', async ({page}) => {
 });
 
 test('inconsistência entre partidos e placar não exibe aprovação', async ({page}) => {
-  await page.route('**/api/oil/lei',async route=>{
+  await page.route('**/api/oil/exemplo',async route=>{
     const response=await route.fetch();const body=await response.json();
     body.dados.votacoes[0].votos_por_partido=[{partido:'TESTE',sim:471,nao:23,abstencao:0,presentes:494,percentual_sim:95.34,base_percentual:'presentes'}];
     await route.fulfill({json:body});
@@ -206,12 +210,10 @@ test('inconsistência entre partidos e placar não exibe aprovação', async ({p
 test('frases proibidas em todo texto, dicas, tabelas e rótulos', async ({page}) => {
   await page.unroute('**/api/oil/indicadores/**');await intercept(page,'caged');
   await page.goto('/'); await expect(page.getByTestId('card-desocupacao')).toContainText('Último dado');
-  const text=await page.locator('body').evaluate(el=>{const copy=el.cloneNode(true) as HTMLElement;copy.querySelectorAll('script,style').forEach(node=>node.remove());return copy.textContent||'';});
+  const text=await page.locator('body').innerText();
   const attributes=await page.locator('[aria-label],[title],[alt]').evaluateAll(els=>els.map(e=>[e.getAttribute('aria-label'),e.getAttribute('title'),e.getAttribute('alt')].join(' ')).join(' '));
   const corpus=(text.split(legend).join('')+' '+attributes).toLocaleLowerCase('pt-BR');
-  // O corpus concatena blocos independentes sem separadores de frase. Nele,
-  // verifica literais; relações entre datas e variação são verificadas por bloco abaixo.
-  expect(languageViolations(text+' '+attributes,[],false)).toEqual([]);
+  expect(languageViolations(text+'\n'+attributes)).toEqual([]);
   const markers=lei.marcos.flatMap(m=>[m.rotulo,m.data]);
   expect(await scanLanguageBlocks(page,markers)).toEqual([]);
 });

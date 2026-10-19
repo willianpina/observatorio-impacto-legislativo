@@ -1,0 +1,134 @@
+{
+  "simulada": true,
+  "origem": "https://dadosabertos.camara.leg.br/api/v2/deputados/74161/historico",
+  "coletado_em_origem": "2026-10-18T18:55:02.322696+00:00",
+  "sha256_corpo_original": "5322cd4d24fc21c61d56a0975dbf54f0ff68ae30eff46ad0c06bc4826f4190a4",
+  "dados": [
+    {
+      "id": 74161,
+      "nome": "Reginaldo Lopes",
+      "siglaPartido": "PT",
+      "siglaUf": "MG",
+      "dataHora": "2023-02-01T00:00"
+    },
+    {
+      "id": 74161,
+      "nome": "Reginaldo Lopes",
+      "siglaPartido": "PT",
+      "siglaUf": "MG",
+      "dataHora": "2023-02-01T00:00"
+    },
+    {
+      "id": 74161,
+      "nome": "Reginaldo Lopes",
+      "siglaPartido": "PT",
+      "siglaUf": "MG",
+      "dataHora": "2023-02-01T12:05"
+    },
+    {
+      "id": 74161,
+      "nome": "Reginaldo Lopes ",
+      "siglaPartido": "PT",
+      "siglaUf": "MG",
+      "dataHora": "2019-02-01T11:45"
+    },
+    {
+      "id": 74161,
+      "nome": "Reginaldo Lopes ",
+      "siglaPartido": "PT",
+      "siglaUf": "MG",
+      "dataHora": "2023-01-31T23:59"
+    },
+    {
+      "id": 74161,
+      "nome": "Reginaldo Lopes ",
+      "siglaPartido": "PT",
+      "siglaUf": "MG",
+      "dataHora": "2023-02-01T00:00"
+    },
+    {
+      "id": 74161,
+      "nome": "REGINALDO LOPES",
+      "siglaPartido": "PT",
+      "siglaUf": "MG",
+      "dataHora": "2015-02-01T10:00"
+    },
+    {
+      "id": 74161,
+      "nome": "REGINALDO LOPES",
+      "siglaPartido": "PT",
+      "siglaUf": "MG",
+      "dataHora": "2019-01-31T23:59"
+    },
+    {
+      "id": 74161,
+      "nome": "REGINALDO LOPES",
+      "siglaPartido": "PT",
+      "siglaUf": "MG",
+      "dataHora": "2023-02-01T00:00"
+    },
+    {
+      "id": 74161,
+      "nome": "REGINALDO LOPES",
+      "siglaPartido": "PT",
+      "siglaUf": "MG",
+      "dataHora": "2011-02-01T00:00"
+    },
+    {
+      "id": 74161,
+      "nome": "REGINALDO LOPES",
+      "siglaPartido": "PT",
+      "siglaUf": "MG",
+      "dataHora": "2015-01-31T23:59"
+    },
+    {
+      "id": 74161,
+      "nome": "REGINALDO LOPES",
+      "siglaPartido": "PT",
+      "siglaUf": "MG",
+      "dataHora": "2023-02-01T00:00"
+    },
+    {
+      "id": 74161,
+      "nome": "REGINALDO LOPES",
+      "siglaPartido": "PT",
+      "siglaUf": "MG",
+      "dataHora": "2007-02-01T00:00"
+    },
+    {
+      "id": 74161,
+      "nome": "REGINALDO LOPES",
+      "siglaPartido": "PT",
+      "siglaUf": "MG",
+      "dataHora": "2011-01-31T23:59"
+    },
+    {
+      "id": 74161,
+      "nome": "REGINALDO LOPES",
+      "siglaPartido": "PT",
+      "siglaUf": "MG",
+      "dataHora": "2023-02-01T00:00"
+    },
+    {
+      "id": 74161,
+      "nome": "REGINALDO LOPES",
+      "siglaPartido": "PT",
+      "siglaUf": "MG",
+      "dataHora": "2003-02-01T00:00"
+    },
+    {
+      "id": 74161,
+      "nome": "REGINALDO LOPES",
+      "siglaPartido": "PT",
+      "siglaUf": "MG",
+      "dataHora": "2007-01-31T00:00"
+    },
+    {
+      "id": 74161,
+      "nome": "REGINALDO LOPES",
+      "siglaPartido": "PT",
+      "siglaUf": "MG",
+      "dataHora": "2023-02-01T00:00"
+    }
+  ]
+}

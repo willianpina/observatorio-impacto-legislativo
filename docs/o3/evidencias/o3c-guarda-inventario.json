@@ -1,0 +1,11 @@
+{
+  "exclusoes_aprovadas": [
+    "frontend/package-lock.json",
+    "frontend/referencias/o3/missao-o3c-codex.md"
+  ],
+  "arquivos_com_ocorrencias": [
+    "frontend/referencias/o3/missao-o3c-codex.md"
+  ],
+  "fora_das_exclusoes": [],
+  "ids_tecnicos_preservados": 2
+}

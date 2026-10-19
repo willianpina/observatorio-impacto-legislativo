@@ -63,3 +63,12 @@ A conferência opt-in de mutações executa `node tests/check-mutations.mjs`, de
 ## Evidências e limites
 
 Consulte `VALIDACAO.md` e `evidencias/`. Axe automatizado complementa a conferência visual e por teclado; não representa certificação integral de acessibilidade. As capturas simuladas têm faixa de teste. As capturas `real-*` usam coletas reais da API local e não apresentam dados legislativos de teste.
+
+## Navegador e evidência de mutações
+No Windows, use `$env:OIL_BROWSER_CHANNEL='msedge'`; no Linux, `OIL_BROWSER_CHANNEL=chromium`. O Playwright principal usa Chromium quando a variável não é definida; `check-mutations.mjs` e `capture-real.mjs` usam msedge como fallback. Defina a variável explicitamente para manter as execuções consistentes.
+As mutações gravam por padrão somente fora do Git e exigem checkout limpo. `--publicar-evidencia` copia o resultado para a evidência versionada, somente no passo explícito de documentação.
+
+## Tela O3-C
+A tela normal consulta a API local pelo proxy de indicadores e pelo proxy legislativo com id fixo 2233802. Configure `OIL_API_URL` no ambiente do processo. O contrato legislativo é v1.4.1: ementa literal, autoria, situações e linhagem. Ele não fornece resumo, vigência ou votos. Os exemplos de vigência e votação são servidos por `/api/oil/exemplo` somente quando `OIL_TEST_MODE=1`; no modo normal, esse caminho retorna 404.
+
+A evidência da coleta manual única está em `docs/o3/evidencias/o3c-coleta-real.json`. Não há fallback simulado em coleta real. O verificador opt-in `node tests/capture-real.mjs`, executado dentro de `frontend/` com os serviços locais em 8766 e 3100, grava artefatos `o3c-` e retorna erro se alguma fonte estiver indisponível. Nesta rodada, o Caged foi recusado pelo validador e o resultado é parcial; o verificador não muda os hashes do manifesto.

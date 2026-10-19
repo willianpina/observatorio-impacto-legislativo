@@ -1,0 +1,4 @@
+python -m pytest -c backend/pytest.ini --collect-only -q
+Resumo literal da saída:
+238 tests collected in 3.01s
+Itens de poc/: 0

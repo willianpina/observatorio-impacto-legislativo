@@ -18,7 +18,7 @@ test('R2-1 modo normal recusa série simulada: sem valor nem gráfico',async({pa
 
 test('R2-2 CSV conserva -10 numérico e neutraliza =1+1 e -x textuais',async({page})=>{
   await page.unroute('**/api/oil/indicadores/**');await intercept(page,'csv');
-  await page.goto('/');const card=page.getByTestId('card-caged-saldo');await expect(card).toContainText('-10 vínculos');
+  await page.goto('/');const card=page.getByTestId('card-caged-saldo');await expect(card).toContainText('-10 postos de trabalho');
   await card.getByText('Saiba mais',{exact:true}).click();
   const downloading=page.waitForEvent('download');await card.getByRole('button',{name:'Baixar CSV'}).click();
   const csv=await fs.readFile((await(await downloading).path())!,'utf8');
@@ -41,7 +41,7 @@ test('R2-3 vigência sem prevista após a data e no dia exato',async({page})=>{
 });
 
 test('R2-3 mudar vigência no dado muda a tela; publicação nunca é prevista',async({page})=>{
-  await page.route('**/api/oil/lei',async route=>{
+  await page.route('**/api/oil/exemplo',async route=>{
     const body=await(await route.fetch()).json();const v=body.dados.vigencia;
     v.data_publicacao='2026-11-01';v.etapas[0].data_inicio='2027-01-01';v.etapas[0].descricao='etapa alterada';v.etapas[1].data_tipo='expressa';
     await route.fulfill({json:body});

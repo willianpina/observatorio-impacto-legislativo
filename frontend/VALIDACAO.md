@@ -141,3 +141,7 @@ Resumos literais das execuções:
 Evidências: `evidencias/o3r-pytest.txt`, `evidencias/o3r-testes.json`, `evidencias/o3r-tdd.json` e `frontend/evidencias/o3r-resumo-testes.json`.
 
 Relatório de Segurança, TDD e pendências P1–P3 em `../docs/o3/VALIDACAO.md`. PoC e textos dos artigos 3º e 9º preservados.
+
+## O3-C
+
+Contrato legislativo v1.4.1, atribuição aninhada e base legal, selo condicionado à resposta simulada, estados de erro/indisponibilidade e linhagem. 126 testes Playwright aprovados, zero falhas/pulados/instáveis, 26 cenários axe sem violações graves/críticas; typecheck e build aprovados. Mutações frontend 17/17 e backend 27/27 detectadas. Backend: 236 aprovados e 2 pulados; PoC separada: 39 aprovados. Validação real parcial: IBGE e lei exibidos; Caged indisponível, registrado como falha, sem substituição por fixture. API e bancos próprios encerrados. Arquivos de vigência e mock legislativo preservados. Relatório completo em `../docs/o3/VALIDACAO.md`; evidências com prefixo `o3c-`.

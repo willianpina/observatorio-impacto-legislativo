@@ -15,7 +15,7 @@ Origem: verificação do Engenheiro de Dados (17/10/2026, 11h22–11h31, horári
 
 - Agosto/2026 foi publicado em 29/09/2026. O MTE não publica hash; o sha256 é o que medimos.
 - **Fora do escopo:** microdados do FTP do PDET (sem conexão, formato não confirmado), Painel Power BI, Base dos Dados.
-- **Licença:** rodapé do portal gov.br do MTE: CC BY-ND 3.0 (Atribuição-SemDerivações). O arquivo do Drive não traz licença própria.
+- **Base legal:** Decreto nº 8.777/2016, art. 4º e §1º, com redação do Decreto nº 9.903/2019; uso livre e gratuito com citação da fonte. O rodapé do portal cobre o site, não os dados. O MTE não publica licença própria para estes dados.
 
 ## 2. Qual tabela usar (regra do Cientista de Dados)
 - **Só a aba `Tabela 5.1` (COM AJUSTES), em todos os meses.** Nunca a `Tabela 5` (sem ajustes). O número oficial divulgado pelo MTE é o com ajustes (ago/2026 = 165.827 bate com o sumário executivo e a notícia de 29/09/2026; ago/2025 = 154.683 é o com ajustes).
@@ -53,7 +53,7 @@ Calendário oficial de 2026 (página `.../estatisticas-trabalho/o-pdet/calendari
 - Série: `medida=saldo`, `tipo_valor=null`, `tipo_periodo=mensal`, `unidade="postos de trabalho"`, `cv=null`, `classificacao=null` sempre, `nivel_evidencia="descritivo"`.
 - Cada ponto: `periodo`, `valor` (o saldo **exatamente como na Tabela 5.1**), `lacuna`, `ajuste="com_ajuste"`, `competencia_coleta` (AAAA-MM do arquivo que gerou a versão servida), `coleta_id`.
 - **Valores do MTE intactos e separados de qualquer cálculo.** `variacao_anual` (se vier) = saldo do mês − saldo do mesmo mês do ano anterior, **os dois do mesmo arquivo**, em `postos de trabalho`, com `variacao_anual_origem="calculo_observatorio"` e o rótulo «cálculo do Observatório a partir de dados do MTE». Null se faltar um dos dois.
-- `atribuicao`: `{texto: "Fonte: Novo Caged – MTE, Tabela 5.1 (com ajustes), arquivo agosto/2026, licença CC BY-ND 3.0", link: "{BASE}/2026/agosto/pagina-inicial", licenca: "CC BY-ND 3.0"}`. O mês/ano vem do manifesto da coleta servida, nunca fixo no código.
+- **`atribuicao`**: `{texto, link, licenca: null, base_legal: {texto, link}}`, corrigido na v1.4.1. Texto: «Fonte: Novo Caged – MTE, Tabela 5.1 (com ajustes), arquivo <mês/ano>, coletado em DD/MM/AAAA. Elaboração: OIL.» Base legal e link do decreto em `contrato-api-v1.4.1-delta.md`; mês do manifesto e data da coleta servida, convertida para America/Sao_Paulo.
 - `nota_revisao`: «Série revisada mensalmente pelo MTE: os meses anteriores podem mudar a cada novo arquivo.»
 - Sem coleta válida → **200** com `disponivel=false`, `motivo`, `pontos=[]` (nunca 404, nunca número inventado).
 - Janela `?janela=2a|5a|desde_2020` como as outras séries.
@@ -74,7 +74,7 @@ Fixtures exclusivamente em `backend/tests/fixtures/o3/` (recortes reais e pequen
 4. Layout diferente (variações sintéticas feitas no teste a partir do recorte e rotuladas `simulada=true`: cabeçalho na linha 6, `Saldos` renomeado, só a aba `Tabela 5`, mês fora do formato, sha256 errado) → `valida=false`, nenhuma observação, a API segue com a última coleta boa e `desatualizado=true`.
 5. Nunca lê a `Tabela 5`: com uma planilha que só tem `Tabela 5` → `valida=false`.
 6. Sem coleta válida → 200, `disponivel=false`, `motivo`, `pontos=[]`.
-7. Resposta: `tipo_valor=null`, `medida=saldo`, `tipo_periodo=mensal`, `unidade="postos de trabalho"`, `classificacao=null`, `cv=null`, `atribuicao.texto` com «Tabela 5.1 (com ajustes)», «arquivo agosto/2026» e «CC BY-ND 3.0», `atribuicao.link` da página oficial, `nota_revisao` presente.
+7. Resposta: `tipo_valor=null`, `medida=saldo`, `tipo_periodo=mensal`, `unidade="postos de trabalho"`, `classificacao=null`, `cv=null`; atribuição com mês do arquivo e data da coleta em BRT, `licenca=null`, `base_legal={texto, link}`, link oficial e `nota_revisao`.
 8. Calendário: 29/10/2026, 30/11/2026, 30/12/2026; `atrasado_calendario` true depois de 29/10 23:59 -03:00 sem a competência 2026-09.
 9. Gatilho: valor negativo na 6381/6390 é recusado; no `caged-saldo` é aceito. Migração 0004 sobe, desce e sobe.
 10. Download: 429/503 com `Retry-After` (teto 60 s), arquivo > 100 MB recusado (com `httpx.MockTransport`, sem rede).

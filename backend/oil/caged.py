@@ -2,11 +2,13 @@
 import asyncio
 import hashlib
 import io
+import logging
 import os
 import re
 import tempfile
 from urllib.parse import urlsplit, parse_qs
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 from zipfile import BadZipFile, ZipFile
 from xml.etree.ElementTree import ParseError
 from defusedxml.common import DefusedXmlException
@@ -23,9 +25,37 @@ from .schemas import SeriesResponse
 MTE='https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/acoes-e-programas/programas-projetos-acoes-obras-e-atividades/estatisticas-trabalho'
 MONTHS=('Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro')
 MAX_BYTES=100*1024*1024
-MAX_EXPANDED_BYTES=200*1024*1024
+MAX_EXPANDED_BYTES=512*1024*1024
 MAX_COMPRESSION_RATIO=100
 MAX_DATA_ROWS=1000
+LOG=logging.getLogger(__name__)
+_SUBCODES={
+    'Conteúdo descompactado acima do limite.':'zip_total',
+    'Razão de compactação acima do limite.':'zip_razao',
+    'Aba esperada ausente.':'aba',
+    'Cabeçalho inesperado.':'cabecalho',
+    'Título inesperado.':'titulo',
+    'Rodapé inesperado.':'rodape',
+    'Série deve iniciar em janeiro de 2020.':'inicio',
+    'Tabela acima do limite de linhas.':'linhas',
+    'Mês inválido.':'mes',
+    'Saldo não inteiro.':'saldo',
+    'Meses descontínuos.':'continuidade',
+    'Último mês divergente.':'competencia',
+    'Competência inválida.':'competencia',
+    'Hash divergente do manifesto.':'hash',
+    'Arquivo acima do limite.':'download',
+    'Arquivo acima do limite ou tamanho inválido.':'download',
+}
+
+
+def failure_subcode(exc):
+    if isinstance(exc,BadZipFile):return 'zip'
+    if isinstance(exc,(ParseError,DefusedXmlException)):return 'xml'
+    if isinstance(exc,openpyxl.utils.exceptions.InvalidFileException):return 'arquivo'
+    if isinstance(exc,KeyError):return 'chave'
+    if isinstance(exc,TypeError):return 'tipo'
+    return _SUBCODES.get(str(exc),'parser')
 
 
 def parse_workbook(source, competencia, *, allow_recorte=False):
@@ -162,11 +192,13 @@ class CagedCollector:
                 except httpx.TransportError:
                     failure=SourceFailure('erro_conexao',503)
                     self.record(entry,error=failure.code)
-                except (ValueError,KeyError,TypeError,BadZipFile,ParseError,DefusedXmlException,openpyxl.utils.exceptions.InvalidFileException):
+                except (ValueError,KeyError,TypeError,BadZipFile,ParseError,DefusedXmlException,openpyxl.utils.exceptions.InvalidFileException) as exc:
+                    subcode=failure_subcode(exc)
+                    LOG.warning('caged arquivo_invalido subcodigo=%s',subcode)
                     if cid is None: cid=self.record(entry,status=response.status_code if response is not None else None,
-                        error='arquivo_invalido',digest=digest.hexdigest() if size else None,size=size)
+                        error=subcode,digest=digest.hexdigest() if size else None,size=size)
                     else:
-                        with self.sessions.begin() as session: session.get(Coleta,cid).erro='arquivo_invalido'
+                        with self.sessions.begin() as session: session.get(Coleta,cid).erro=subcode
                     raise SourceFailure('arquivo_invalido') from None
             if attempt<2: await self.sleep(retry_delay(response,attempt))
         raise failure
@@ -249,8 +281,10 @@ def read_caged(session,janela,*,test_mode=False,now=None):
         fonte='MTE / Novo Caged',tabela_ou_arquivo=metadata['arquivo'],link=metadata['pagina_oficial'],
         cv=None,classificacao=None,classificacao_origem=None,variacao_anual_unidade='postos de trabalho',
         variacao_anual_origem='calculo_observatorio',ajuste='com_ajuste',competencia_coleta=good.mes_referencia,
-        atribuicao=dict(texto=f'Fonte: Novo Caged – MTE, Tabela 5.1 (com ajustes), arquivo {month}, licença CC BY-ND 3.0',
-            link=metadata['pagina_oficial'],licenca='CC BY-ND 3.0'),
+        atribuicao=dict(texto=f'Fonte: Novo Caged – MTE, Tabela 5.1 (com ajustes), arquivo {month}, coletado em {good.coletado_em.astimezone(ZoneInfo("America/Sao_Paulo")).strftime("%d/%m/%Y")}. Elaboração: OIL.',
+            link=metadata['pagina_oficial'],licenca=None,base_legal=dict(
+                texto='Uso livre e gratuito, com citação da fonte (Decreto nº 8.777/2016, art. 4º e §1º, com a redação do Decreto nº 9.903/2019). O MTE não publica licença própria para estes dados.',
+                link='https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2016/decreto/d8777.htm')),
         nota_revisao='Série revisada mensalmente pelo MTE: os meses anteriores podem mudar a cada novo arquivo.',
         desatualizado=failed is not None and failed.id>good.id,atrasado_calendario=delayed,simulada=test_mode,
         variaveis={},disponivel=True,motivo=None)

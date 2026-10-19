@@ -28,7 +28,9 @@ def versioned_docs():
     if result.returncode!=0:raise RuntimeError('Inventário Git indisponível.')
     names=set(filter(None,result.stdout.decode('utf-8').split('\0')))
     required={'docs/o3/VALIDACAO.md','docs/o3/spec-b2-proposicao.md',
-              'docs/o3/spec-b4-caged.md','docs/o3/contrato-api-v1.4-delta.md'}
+              'docs/o3/spec-b4-caged.md','docs/o3/contrato-api-v1.4-delta.md',
+              'docs/README.md','docs/contrato-api-v1.3-indicadores.md','docs/metodologia-o2.md',
+              'docs/o3/contrato-api-v1.4.1-delta.md'}
     assert required<=names,'Documentos conhecidos ausentes do inventário Git.'
     return [ROOT/name for name in sorted(names)]
 

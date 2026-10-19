@@ -126,6 +126,8 @@ def test_o3_law_authorship_principal_and_party_reference(sf,client):
             return httpx.Response(200,json={'dados':[{'nome':'Autor simulado','ordemAssinatura':1,'uri':'https://dadosabertos.camara.leg.br/api/v2/deputados/1'},{'nome':'Coautor simulado','ordemAssinatura':2}]})
         if str(request.url)=='https://dadosabertos.camara.leg.br/api/v2/deputados/1':
             return httpx.Response(200,json={'dados':{'ultimoStatus':{'siglaPartido':'TESTE','siglaUf':'DF'}}})
+        if str(request.url)=='https://dadosabertos.camara.leg.br/api/v2/deputados/1/historico':
+            return httpx.Response(404,json={'dados':[]})
         return replay_law()(request)
     ingest_law(sf,handler);data=client.get('/api/v1/proposicoes/2233802').json()
     assert data['autor']=='Autor simulado' and data['coautores']==1

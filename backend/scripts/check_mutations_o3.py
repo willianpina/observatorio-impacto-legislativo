@@ -7,6 +7,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import stat
 import xml.etree.ElementTree as ET
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -57,6 +58,7 @@ MUTATIONS=[
     ('BQ',LAW,'Data fixa no marco',replace_once("deliberation['tipoDeliberacao'],deliberation['data']","deliberation['tipoDeliberacao'],'2026-10-15'")),
     ('BR',LAW,'Rótulo fixo no marco',replace_once("deliberation['tipoDeliberacao'],deliberation['data']","'Aprovação',deliberation['data']")),
     ('S1',CAGED,'Manifesto sem hash aceito',replace_once("if not isinstance(expected_hash,str) or re.fullmatch(r'[0-9a-fA-F]{64}',expected_hash) is None:",'if False:')),
+    ('S8',CAGED,'Teto expandido revertido a 200 MiB',replace_once('MAX_EXPANDED_BYTES=512*1024*1024','MAX_EXPANDED_BYTES=200*1024*1024')),
     ('S3',LAW,'Corpo completo de deputado armazenado',replace_once('raw=minimized_deputy(raw)','raw=raw')),
     ('S5',LAW,'Teto de resposta removido',remove_law_limit),
     ('S6',LAW,'Link de norma sem validação de origem',replace_once("if not official_norm_link(norm['link']):",'if False:')),
@@ -73,6 +75,16 @@ def git(root,*arguments):
 def clean(root):
     git(root,'diff','--quiet','--exit-code')
     git(root,'diff','--cached','--quiet','--exit-code')
+
+
+def prepare_own_metadata_removal(checkout):
+    # OneDrive marca diretórios como ReadOnly; só altera o registro deste checkout.
+    metadata=git(checkout,'rev-parse','--absolute-git-dir')
+    if not metadata:return  # O teste de orquestração usa Git simulado.
+    common=Path(git(ROOT,'rev-parse','--path-format=absolute','--git-common-dir'))
+    target=Path(metadata)
+    if target.parent.resolve()!=(common/'worktrees').resolve():raise RuntimeError('Registro temporário fora do diretório esperado.')
+    for path in [*target.rglob('*'),target]:path.chmod(path.stat().st_mode|stat.S_IWRITE|stat.S_IREAD)
 
 
 def run_suite(checkout,output,label):
@@ -94,12 +106,12 @@ def run_suite(checkout,output,label):
         pytest_resumo=summaries,codigo_saida=result.returncode)
 
 
-def execute(only=None):
+def execute(only=None,publicar_evidencia=False):
     clean(ROOT)
     revision=git(ROOT,'rev-parse','HEAD')
     scratch=Path(tempfile.mkdtemp(prefix='oil-o3r-backend-'))
     checkout=scratch/'checkout'
-    output=ROOT.parent/'work-o3r'/('backend-mutacoes-'+revision[:8])
+    output=ROOT.parent/'work-o3c'/('backend-mutacoes-'+revision[:8])
     output.mkdir(parents=True,exist_ok=True)
     report=dict(head=revision,isolamento='worktree descartável e PostgreSQL em porta aleatória de loopback',resultados=[])
     git(ROOT,'worktree','add','--detach',str(checkout),'HEAD')
@@ -126,15 +138,18 @@ def execute(only=None):
     finally:
         clean(checkout)
         clean(ROOT)
+        prepare_own_metadata_removal(checkout)
         git(ROOT,'worktree','remove',str(checkout))
         scratch.rmdir()  # A pasta é a que este processo criou; nunca há remoção recursiva manual.
     report['total']=len(report['resultados'])
     report['detectadas']=sum(r['resultado']=='DETECTADA' for r in report['resultados'])
     report['sobreviventes']=[r['id'] for r in report['resultados'] if r['resultado']=='SOBREVIVENTE']
     report['restauracao_repo_principal_exit_code']=0
-    target=ROOT/'docs/o3/evidencias/o3r-mutacoes-backend.json'
+    if git(ROOT,'status','--porcelain'):raise RuntimeError('O checkout principal deve terminar limpo.')
+    target=(ROOT/'docs/o3/evidencias/o3c-mutacoes-backend.json') if publicar_evidencia else output/'resultado.json'
     target.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-    if set(report['sobreviventes'])-{'BM'}:raise RuntimeError('Sobrevivente não autorizado; consulte o relatório.')
+    if report['sobreviventes']:raise RuntimeError('Nenhum sobrevivente é aceito; consulte o relatório.')
+    print('Evidência: '+os.path.relpath(target,ROOT))
     print(json.dumps({key:report[key] for key in ('total','detectadas','sobreviventes')},ensure_ascii=False))
 
 
@@ -143,14 +158,15 @@ def main():
     parser.add_argument('--list',action='store_true')
     parser.add_argument('--check',action='store_true',help='Confere alvos e sintaxe sem executar Docker.')
     parser.add_argument('--only',nargs='+')
+    parser.add_argument('--publicar-evidencia',action='store_true',help='Copia explicitamente o resultado para a documentação versionada.')
     args=parser.parse_args()
     if args.list:
         print(json.dumps([dict(id=i,arquivo=f,nome=n) for i,f,n,t in MUTATIONS],ensure_ascii=False));return
     if args.check:
         for identifier,file,name,transform in MUTATIONS:
             source=(ROOT/file).read_text(encoding='utf-8');compile(transform(source),file,'exec')
-        print('27 alvos válidos, sintaxe conferida.');return
-    execute(set(args.only) if args.only else None)
+        print(str(len(MUTATIONS))+' alvos válidos, sintaxe conferida.');return
+    execute(set(args.only) if args.only else None,args.publicar_evidencia)
 
 
 if __name__=='__main__':main()

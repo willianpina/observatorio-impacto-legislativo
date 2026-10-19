@@ -7,10 +7,17 @@ import {spawnSync} from 'node:child_process';
 const root=process.cwd();
 if(!fs.existsSync(path.join(root,'components/indicator.tsx')))throw Error('Execute dentro de frontend/.');
 const repo=path.resolve(root,'..');
-const prefix=process.env.OIL_MUTATION_EVIDENCE_PREFIX||'o3r';
+const prefix=process.env.OIL_MUTATION_EVIDENCE_PREFIX||'o3c';
 if(!/^[a-z0-9-]+$/.test(prefix))throw Error('Prefixo de evidência inválido.');
 function git(cwd,args){const result=spawnSync('git',['-C',cwd,...args],{encoding:'utf8',windowsHide:true});if(result.status!==0)throw Error('Verificação Git falhou: '+args.join(' '));return result.stdout.trim();}
 function clean(cwd){git(cwd,['diff','--quiet','--exit-code']);git(cwd,['diff','--cached','--quiet','--exit-code']);}
+function prepareOwnMetadataRemoval(checkout){
+  const target=git(checkout,['rev-parse','--absolute-git-dir']);
+  const common=git(repo,['rev-parse','--path-format=absolute','--git-common-dir']);
+  if(path.resolve(path.dirname(target))!==path.resolve(common,'worktrees'))throw Error('Registro temporário fora do diretório esperado.');
+  function writable(directory){for(const entry of fs.readdirSync(directory,{withFileTypes:true})){const item=path.join(directory,entry.name);if(entry.isDirectory())writable(item);else fs.chmodSync(item,0o600);}fs.chmodSync(directory,0o700);}
+  writable(checkout);writable(target);
+}
 if(!process.argv.includes('--isolated')) {
   clean(repo);
   const head=git(repo,['rev-parse','HEAD']);
@@ -33,11 +40,13 @@ if(!process.argv.includes('--isolated')) {
   } finally {
     clean(checkout);clean(repo);
     if(fs.existsSync(dependencyLink)&&fs.lstatSync(dependencyLink).isSymbolicLink())fs.unlinkSync(dependencyLink);
-    git(repo,['worktree','remove',checkout]);
+    prepareOwnMetadataRemoval(checkout);git(repo,['worktree','remove',checkout]);
     fs.rmdirSync(scratch);
   }
   // Primeiro prova a integridade do repo principal; só depois copia os relatórios.
-  for(const name of fs.readdirSync(output).filter(name=>name.startsWith(prefix+'-')&&name.endsWith('.json')))fs.copyFileSync(path.join(output,name),path.join(root,'evidencias',name));
+  if(git(repo,['status','--porcelain']))throw Error('O checkout principal deve terminar limpo.');
+  if(process.argv.includes('--publicar-evidencia'))for(const name of fs.readdirSync(output).filter(name=>name.startsWith(prefix+'-')&&name.endsWith('.json')))fs.copyFileSync(path.join(output,name),path.join(root,'evidencias',name));
+  console.log('Evidência: '+path.relative(repo,output));
   console.log('Worktree removido; git diff --exit-code retornou zero no repo principal.');
   process.exit(status);
 }
@@ -81,12 +90,21 @@ try {
     },'R2-8'],
     ['FC4: evento genérico não é verificado','tests/linguagem.ts',s=>s.replace('a partir d[ao]','início d[ao]'),'O3R FC4'],
     ['FC5: data sem ano não é verificada','tests/linguagem.ts',s=>s.replace(String.raw`(?:\/\d{4})?`,String.raw`\/\d{4}`),'O3R FC5'],
-    ['FD3: comparação com data não é verificada','tests/linguagem.ts',s=>s.replace('d[aoe]','d[ao]'),'O3R FD3']
+    ['FD3: comparação com data não é verificada','tests/linguagem.ts',s=>s.replace('d[aoe]','d[ao]'),'O3R FD3'],
+    ['B1: div próprio deixa de ser verificado','tests/linguagem.ts',s=>s.replace('[...blocks,...ownDivText]','blocks'),'O3C div próprio']
   ];
   for(const [name,file,replace,grep] of units){
     try{patch(file,replace);record(name,testResult(run(['node_modules/@playwright/test/cli.js','test','-c','playwright.unit.config.ts','--grep',grep])));}
     finally{restore();}
   }
+
+  // A injeção no div é conferida isoladamente, sem a sonda do summary.
+  try {
+    patch('components/dashboard.tsx',s=>s.replace('const law=<Law','const law=<><div>Em 14/10/2026, a desocupação caiu.</div><Law').replace('onData={onLawData}/>;','onData={onLawData}/></>;'));
+    const build=run(['node_modules/next/dist/bin/next','build','--webpack']);
+    if(build.status!==0)throw Error('Build da sonda do div falhou; não conta como detecção.');
+    record('B1: data e variação no div do dashboard',testResult(run(['node_modules/@playwright/test/cli.js','test','--grep','frases proibidas','--reporter=json','--output=test-results/mutation-div'])));
+  }finally{restore();}
 
   // Uma compilação com mutações independentes; cada asserção indicada deve falhar.
   patch('components/indicator.tsx',s=>s.replace('if(body.simulada&&!testMode)','if(false)').replace('<summary>Saiba mais</summary>','<summary>Saiba mais</summary><svg className="mutation-a11y" role="img" width="12" height="12"><rect width="12" height="12"/></svg>'));
