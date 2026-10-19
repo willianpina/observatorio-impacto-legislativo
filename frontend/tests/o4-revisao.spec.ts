@@ -43,10 +43,10 @@ test('O4 revisão fontes distingue falha de conexão de ausência de dados',asyn
 });
 
 test('O4 revisão rodapé usa a coleta mais recente mesmo se índice for antigo',async({page})=>{
-  await intercept(page,'caged',false,(data,code)=>{if(code==='caged-saldo')data.coletado_em='2026-10-18T15:00:00-03:00';});
+  await intercept(page,'caged',false,(data,code)=>{if(code==='caged-saldo')data.coletado_em='2026-10-18T20:00:00-03:00';});
   await page.route('**/api/oil/indicadores?*',route=>route.fulfill({json:{indicadores:[],coletado_em:'2026-10-16T15:00:00-03:00',simulada:true}}));
   await page.goto('/');await expect(page.getByTestId('card-caged-saldo')).toContainText('18/10/2026');
-  await expect(page.locator('footer')).toContainText('Última coleta: 18/10/2026, 15:00 (BRT)');
+  await expect(page.locator('footer')).toContainText('Última coleta: 18/10/2026, 20:00 (BRT)');
 });
 
 for(const width of [360,1280])for(const state of ['normal','gap','unavailable','stale','test'])test(`O4 revisão captura fixture ${width} ${state}`,async({page})=>{
