@@ -2,17 +2,17 @@
 
 ## Timeout exclusivo do download do Caged
 
-`OIL_CAGED_READ_TIMEOUT` configura em segundos o prazo de leitura de cada operação de rede do job Caged: padrão 120, máximo 300. Valores positivos fracionários são aceitos; zero, negativos, valores não numéricos e não finitos são rejeitados antes do download. No job `python -m backend.oil.o3_cli caged`, um valor inválido encerra o processo com código diferente de zero e uma linha JSON `{"erro":"configuracao_invalida","mensagem":"..."}`, sem traceback, sem gravar coleta e sem abrir a requisição. No PowerShell, configure apenas o ambiente do processo:
+`OIL_CAGED_READ_TIMEOUT` configura em segundos o prazo de leitura de cada operação de rede do job Caged: padrão 120, máximo 300. `OIL_CAGED_ATTEMPT_TIMEOUT` limita o tempo de parede de cada tentativa de download: padrão 300, teto 300. Ele se soma aos prazos do httpx e não os substitui. Valores positivos fracionários são aceitos; zero, negativos, valores não numéricos e não finitos são rejeitados antes do download. No job `python -m backend.oil.o3_cli caged`, um valor inválido de qualquer uma das duas variáveis encerra o processo com código diferente de zero e uma linha JSON `{"erro":"configuracao_invalida","mensagem":"..."}`, sem traceback, sem gravar coleta e sem abrir a requisição. No PowerShell, configure apenas o ambiente do processo:
 
 ```powershell
 $env:OIL_CAGED_READ_TIMEOUT='120'
 ```
 
-O job usa `connect=5`, `write=10` e `pool=10`, com `follow_redirects=False` e `confirm=t` no endereço do Drive. Um 302 registra a coleta com `valida=false`, sem consultar o endereço de `Location`. Não altera o cliente compartilhado, outras fontes ou as rotas. O timeout de leitura é por espera de dados, não um limite total da duração do arquivo.
+O job usa `connect=5`, `write=10` e `pool=10`, com `follow_redirects=False` e `confirm=t` no endereço do Drive. Um 302 registra a coleta com `valida=false`, sem consultar o endereço de `Location`. Não altera o cliente compartilhado, outras fontes ou as rotas. O timeout de leitura é por espera de dados. O prazo de parede corta a tentativa inteira: a coleta fica `valida=false`, `Coleta.erro` recebe `timeout_total` e não há retentativa automática.
 
 O download é em streaming para arquivo temporário, com contagem de bytes e SHA-256 incremental. O teto existente permanece em `100 * 1024 * 1024` bytes (100 MiB); excedê-lo interrompe o fluxo e mantém a coleta inválida. O teto de descompactação também permanece inalterado. Arquivo temporário e resposta são fechados mesmo em erro.
 
-`Coleta.erro` distingue `timeout_conexao` (conexão ou espera pelo pool), `timeout_escrita` (envio da requisição, prazo fixo de 10 s), `timeout_primeiro_byte` (antes do primeiro byte do corpo, incluindo espera pelos cabeçalhos) e `timeout_leitura` (após receber bytes do corpo). Quando disponíveis, preserva status HTTP, quantidade recebida e hash parcial; esse hash não valida um arquivo incompleto. O erro público continua `timeout_fonte`/504 e as tentativas continuam limitadas a três. Revisões mantêm as versões anteriores e a ligação de cada observação com sua coleta.
+`Coleta.erro` distingue `timeout_conexao` (conexão ou espera pelo pool), `timeout_escrita` (envio da requisição, prazo fixo de 10 s), `timeout_primeiro_byte` (antes do primeiro byte do corpo, incluindo espera pelos cabeçalhos), `timeout_leitura` (após receber bytes do corpo) e `timeout_total` (tempo de parede da tentativa). Quando disponíveis, preserva status HTTP, quantidade recebida e hash parcial; esse hash não valida um arquivo incompleto. O erro público continua `timeout_fonte`/504. Os timeouts de fase continuam limitados a três tentativas; o prazo de parede encerra na tentativa em que estoura. Revisões mantêm as versões anteriores e a ligação de cada observação com sua coleta.
 
 Os testes de timeout usam `httpx.MockTransport` e atrasos virtuais: não dormem 30 segundos nem fazem requisições reais. O transporte falso compara o atraso ao timeout enviado na requisição, pois o MockTransport não aplica deadlines de socket. A suíte usa banco descartável e não autoriza baixar arquivos reais:
 
