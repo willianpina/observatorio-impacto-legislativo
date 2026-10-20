@@ -1,0 +1,122 @@
+{
+  "valor": 165827.0,
+  "variacao_anual": 11144.0,
+  "periodo": "202608",
+  "tipo_valor": null,
+  "medida": "saldo",
+  "unidade": "postos de trabalho",
+  "classificacao": null,
+  "nota_revisao": "Série revisada mensalmente pelo MTE: os meses anteriores podem mudar a cada novo arquivo.",
+  "tipo_periodo": "mensal",
+  "cv": null,
+  "variacao_anual_origem": "calculo_observatorio",
+  "ajuste": "com_ajuste",
+  "competencia_coleta": "2026-08",
+  "pontos": [
+    {
+      "periodo": "202506",
+      "valor": 161940.0,
+      "variacao_anual": null,
+      "lacuna": false,
+      "versao": 1
+    },
+    {
+      "periodo": "202507",
+      "valor": 133784.0,
+      "variacao_anual": null,
+      "lacuna": false,
+      "versao": 1
+    },
+    {
+      "periodo": "202508",
+      "valor": 154683.0,
+      "variacao_anual": null,
+      "lacuna": false,
+      "versao": 1
+    },
+    {
+      "periodo": "202509",
+      "valor": 214688.0,
+      "variacao_anual": null,
+      "lacuna": false,
+      "versao": 1
+    },
+    {
+      "periodo": "202510",
+      "valor": 92597.0,
+      "variacao_anual": null,
+      "lacuna": false,
+      "versao": 1
+    },
+    {
+      "periodo": "202511",
+      "valor": 81468.0,
+      "variacao_anual": null,
+      "lacuna": false,
+      "versao": 1
+    },
+    {
+      "periodo": "202512",
+      "valor": -635078.0,
+      "variacao_anual": null,
+      "lacuna": false,
+      "versao": 1
+    },
+    {
+      "periodo": "202601",
+      "valor": 117787.0,
+      "variacao_anual": null,
+      "lacuna": false,
+      "versao": 1
+    },
+    {
+      "periodo": "202602",
+      "valor": 268156.0,
+      "variacao_anual": null,
+      "lacuna": false,
+      "versao": 1
+    },
+    {
+      "periodo": "202603",
+      "valor": 228133.0,
+      "variacao_anual": null,
+      "lacuna": false,
+      "versao": 1
+    },
+    {
+      "periodo": "202604",
+      "valor": 79608.0,
+      "variacao_anual": null,
+      "lacuna": false,
+      "versao": 1
+    },
+    {
+      "periodo": "202605",
+      "valor": 81648.0,
+      "variacao_anual": null,
+      "lacuna": false,
+      "versao": 1
+    },
+    {
+      "periodo": "202606",
+      "valor": 136959.0,
+      "variacao_anual": -24981.0,
+      "lacuna": false,
+      "versao": 1
+    },
+    {
+      "periodo": "202607",
+      "valor": 55915.0,
+      "variacao_anual": -77869.0,
+      "lacuna": false,
+      "versao": 1
+    },
+    {
+      "periodo": "202608",
+      "valor": 165827.0,
+      "variacao_anual": 11144.0,
+      "lacuna": false,
+      "versao": 1
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 # O3 · B4 — Saldo do Novo Caged (Brasil, mensal) — especificação para o Codex
-Status: 17/10/2026, sem implementação. Base: main 0e14fa69 (contrato v1.3.1, migrações 0001 e 0002). Contrato alvo: v1.4 (ver `contrato-api-v1.4-delta.md`).
+Status: atribuição atualizada no contrato v1.5.0 (ver `contrato-api-v1.5.0-delta.md`). Base original: main 0e14fa69 (contrato v1.3.1, migrações 0001 e 0002). O restante da série permanece o contrato v1.4, corrigido na v1.4.1.
 Origem: verificação do Engenheiro de Dados (17/10/2026, 11h22–11h31, horário de Brasília) + regras do Cientista de Dados (17/10/2026). Este arquivo é autossuficiente.
 
 ## 1. Fonte confirmada
@@ -53,7 +53,7 @@ Calendário oficial de 2026 (página `.../estatisticas-trabalho/o-pdet/calendari
 - Série: `medida=saldo`, `tipo_valor=null`, `tipo_periodo=mensal`, `unidade="postos de trabalho"`, `cv=null`, `classificacao=null` sempre, `nivel_evidencia="descritivo"`.
 - Cada ponto: `periodo`, `valor` (o saldo **exatamente como na Tabela 5.1**), `lacuna`, `ajuste="com_ajuste"`, `competencia_coleta` (AAAA-MM do arquivo que gerou a versão servida), `coleta_id`.
 - **Valores do MTE intactos e separados de qualquer cálculo.** `variacao_anual` (se vier) = saldo do mês − saldo do mesmo mês do ano anterior, **os dois do mesmo arquivo**, em `postos de trabalho`, com `variacao_anual_origem="calculo_observatorio"` e o rótulo «cálculo do Observatório a partir de dados do MTE». Null se faltar um dos dois.
-- **`atribuicao`**: `{texto, link, licenca: null, base_legal: {texto, link}}`, corrigido na v1.4.1. Texto: «Fonte: Novo Caged – MTE, Tabela 5.1 (com ajustes), arquivo <mês/ano>, coletado em DD/MM/AAAA. Elaboração: OIL.» Base legal e link do decreto em `contrato-api-v1.4.1-delta.md`; mês do manifesto e data da coleta servida, convertida para America/Sao_Paulo.
+- **`atribuicao`** (contrato v1.5.0): `{texto, link, base_legal, arquivo_referencia, coletado_em}`. Não há chave `licenca`. `texto` é fixo: «Fonte: Novo Caged – MTE, Tabela 5.1 (com ajustes). Série revisada mensalmente. Elaboração: OIL.» Sem data, sem mês e sem licença. `base_legal` é «Decreto 8.777/2016, art. 4º». `link`, com coleta válida, continua a `pagina_oficial` do manifesto da coleta servida; sem coleta válida, é a página oficial do Novo Caged. `arquivo_referencia` é a competência `AAAA-MM` do arquivo da coleta servida, lida de `caged_arquivo` (preenchida pelo manifesto), nunca a data de hoje. `coletado_em`, dentro de `atribuicao`, é o instante da coleta servida em ISO 8601, UTC, com zona explícita. Sem coleta válida, `arquivo_referencia` e `coletado_em` são `null` e a rota responde 200.
 - `nota_revisao`: «Série revisada mensalmente pelo MTE: os meses anteriores podem mudar a cada novo arquivo.»
 - Sem coleta válida → **200** com `disponivel=false`, `motivo`, `pontos=[]` (nunca 404, nunca número inventado).
 - Janela `?janela=2a|5a|desde_2020` como as outras séries.
@@ -74,7 +74,7 @@ Fixtures exclusivamente em `backend/tests/fixtures/o3/` (recortes reais e pequen
 4. Layout diferente (variações sintéticas feitas no teste a partir do recorte e rotuladas `simulada=true`: cabeçalho na linha 6, `Saldos` renomeado, só a aba `Tabela 5`, mês fora do formato, sha256 errado) → `valida=false`, nenhuma observação, a API segue com a última coleta boa e `desatualizado=true`.
 5. Nunca lê a `Tabela 5`: com uma planilha que só tem `Tabela 5` → `valida=false`.
 6. Sem coleta válida → 200, `disponivel=false`, `motivo`, `pontos=[]`.
-7. Resposta: `tipo_valor=null`, `medida=saldo`, `tipo_periodo=mensal`, `unidade="postos de trabalho"`, `classificacao=null`, `cv=null`; atribuição com mês do arquivo e data da coleta em BRT, `licenca=null`, `base_legal={texto, link}`, link oficial e `nota_revisao`.
+7. Resposta: `tipo_valor=null`, `medida=saldo`, `tipo_periodo=mensal`, `unidade="postos de trabalho"`, `classificacao=null`, `cv=null`; atribuição v1.5.0 com texto fixo, `base_legal` «Decreto 8.777/2016, art. 4º», sem chave `licenca`, `arquivo_referencia` no formato `AAAA-MM` vindo de `caged_arquivo` e `coletado_em` em UTC; link oficial e `nota_revisao`.
 8. Calendário: 29/10/2026, 30/11/2026, 30/12/2026; `atrasado_calendario` true depois de 29/10 23:59 -03:00 sem a competência 2026-09.
 9. Gatilho: valor negativo na 6381/6390 é recusado; no `caged-saldo` é aceito. Migração 0004 sobe, desce e sobe.
 10. Download: 429/503 com `Retry-After` (teto 60 s), arquivo > 100 MB recusado (com `httpx.MockTransport`, sem rede).
