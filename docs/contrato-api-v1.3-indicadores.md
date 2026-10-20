@@ -1,5 +1,7 @@
 # Contrato v1.3.1 — recorte de indicadores para O2-R
 
+O contrato vigente da API é o v1.5.0 (`contrato-api-v1.5.0.md`). Este arquivo permanece o recorte v1.3.1.
+
 Especificação fornecida por Willian em 16/10/2026, com as correções explícitas da tarefa O2-R para v1.3.1. Este arquivo registra somente o recorte de indicadores; os demais blocos do contrato não foram implementados nesta tarefa.
 
 Rotas: `GET /api/v1/indicadores` e `GET /api/v1/indicadores/{codigo}/serie`. Códigos: `desocupacao`, `rendimento-real` e `caged-saldo`. O alias genérico sem `/serie` foi removido. A única exceção explícita é `GET /api/v1/indicadores/caged-saldo`: HTTP 200, série cadastrada como indisponível, motivo e `pontos=[]`.
