@@ -379,7 +379,21 @@ def test_attempt_budget_is_capped_at_300(sf, monkeypatch):
     assert result['novas_versoes'] > 0 and seen == [300]
 
 
-def test_stalled_stream_is_cancelled_without_retry(sf, monkeypatch, tmp_path):
+def test_stalled_stream_is_cancelled_without_retry(sf, client, monkeypatch, tmp_path):
+    julho = ingest_caged(sf, '2026-07')
+    antes = client.get('/api/v1/indicadores/caged-saldo')
+    assert antes.status_code == 200
+    antes = antes.json()
+    assert antes['disponivel'] is True and antes['coleta_id'] == julho['coleta_id']
+    assert antes['pontos'] and antes['atribuicao']
+    with sf() as session:
+        observacoes_antes = [
+            (o.periodo, o.versao, int(o.valor), o.coleta_id)
+            for o in session.scalars(select(Observacao).order_by(Observacao.periodo, Observacao.versao))
+        ]
+    assert observacoes_antes
+    assert all(coleta_id == julho['coleta_id'] for _, _, _, coleta_id in observacoes_antes)
+
     monkeypatch.setenv('OIL_CAGED_ATTEMPT_TIMEOUT', '0.05')
     monkeypatch.setattr(caged.tempfile, 'tempdir', str(tmp_path))
     opened = []
@@ -406,7 +420,7 @@ def test_stalled_stream_is_cancelled_without_retry(sf, monkeypatch, tmp_path):
 
     started = time.monotonic()
     with pytest.raises(SourceFailure, match='timeout_fonte') as falha:
-        run(sf, handler, sleep=spy_sleep, limit=1)
+        run(sf, handler, metadata=entry('2026-08')[0], sleep=spy_sleep, limit=1)
     elapsed = time.monotonic() - started
     assert falha.value.code == 'timeout_fonte' and falha.value.status == 504
     assert elapsed < 0.8
@@ -414,11 +428,37 @@ def test_stalled_stream_is_cancelled_without_retry(sf, monkeypatch, tmp_path):
     assert streams[0].started.is_set() and streams[0].closed
     assert_temporary_released(tmp_path, opened)
     with sf() as session:
-        rows = session.scalars(select(Coleta)).all()
-        assert len(rows) == 1
-        row = rows[0]
-        assert row.erro == 'timeout_total' and row.valida is False
-        assert session.scalar(select(func.count()).select_from(Observacao)) == 0
+        rows = session.scalars(select(Coleta).order_by(Coleta.id)).all()
+        assert len(rows) == 2
+        valida, cortada = rows
+        assert valida.id == julho['coleta_id'] and valida.valida is True and valida.erro is None
+        assert cortada.valida is False and cortada.erro == 'timeout_total'
+        observacoes_depois = [
+            (o.periodo, o.versao, int(o.valor), o.coleta_id)
+            for o in session.scalars(select(Observacao).order_by(Observacao.periodo, Observacao.versao))
+        ]
+        assert observacoes_depois == observacoes_antes
+        assert session.scalar(select(func.count()).select_from(Observacao).where(Observacao.coleta_id == cortada.id)) == 0
+        cortada_id = cortada.id
+    depois = client.get('/api/v1/indicadores/caged-saldo')
+    assert depois.status_code == 200
+    depois = depois.json()
+    assert depois['atribuicao'] == antes['atribuicao']
+    assert depois['coleta_id'] == antes['coleta_id'] == julho['coleta_id']
+    assert depois['coletado_em'] == antes['coletado_em']
+    assert antes['desatualizado'] is False and depois['desatualizado'] is True
+    assert len(depois['pontos']) == len(antes['pontos']) > 0
+    for anterior, atual in zip(antes['pontos'], depois['pontos']):
+        assert set(atual) == set(anterior)
+        # A falha posterior marca a série; o ponto servido continua o da coleta válida.
+        assert {chave for chave in anterior if anterior[chave] != atual[chave]} == {'desatualizado'}
+        assert atual['desatualizado'] is True
+        assert atual['atribuicao'] == antes['atribuicao']
+        assert atual['valor'] == anterior['valor']
+        assert atual['versao'] == anterior['versao']
+        assert atual['coleta_id'] == anterior['coleta_id'] == julho['coleta_id']
+        assert atual['coletado_em'] == anterior['coletado_em'] == antes['coletado_em']
+        assert atual['coleta_id'] != cortada_id
 
 
 @pytest.mark.parametrize('setting', ['0', '-1', 'nan', 'inf', 'abc', ''])
