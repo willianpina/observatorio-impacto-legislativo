@@ -1,5 +1,7 @@
 # Correção do contrato v1.4.1
 
+A atribuição descrita abaixo foi substituída no contrato v1.5.0 (`contrato-api-v1.5.0-delta.md`). Este arquivo registra o que a v1.4.1 entregou.
+
 A v1.4 atribuía aos dados do Novo Caged uma licença do site que não se aplica a esses dados.
 
 - `atribuicao.licenca` é sempre `null` no Caged.

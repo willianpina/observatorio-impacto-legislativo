@@ -9,7 +9,6 @@ import re
 import tempfile
 from urllib.parse import urlsplit, parse_qs
 from datetime import datetime, timezone
-from zoneinfo import ZoneInfo
 from zipfile import BadZipFile, ZipFile
 from xml.etree.ElementTree import ParseError
 from defusedxml.common import DefusedXmlException
@@ -21,9 +20,11 @@ from sqlalchemy.dialects.postgresql import insert
 
 from .ingest import SourceFailure, ensure_unavailable_catalog, retry_delay
 from .models import CagedArquivo, Coleta, Divulgacao, Fonte, Observacao, Serie
-from .schemas import SeriesResponse
+from .schemas import Atribuicao, SeriesResponse
 
 MTE='https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/acoes-e-programas/programas-projetos-acoes-obras-e-atividades/estatisticas-trabalho'
+TEXTO_ATRIBUICAO='Fonte: Novo Caged – MTE, Tabela 5.1 (com ajustes). Série revisada mensalmente. Elaboração: OIL.'
+BASE_LEGAL_ATRIBUICAO='Decreto 8.777/2016, art. 4º'
 MONTHS=('Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro')
 MAX_BYTES=100*1024*1024
 MAX_EXPANDED_BYTES=512*1024*1024
@@ -281,6 +282,17 @@ def register_calendar(sessions):
             session.execute(insert(Divulgacao).values(**values).on_conflict_do_nothing(constraint='uq_divulgacao_periodo'))
 
 
+def atribuicao_caged(session, good):
+    """Atribuição da coleta servida. A competência vem de caged_arquivo, não do relógio."""
+    if good is None:
+        return dict(texto=TEXTO_ATRIBUICAO,link=MTE+'/novo-caged',base_legal=BASE_LEGAL_ATRIBUICAO,
+            arquivo_referencia=None,coletado_em=None)
+    arquivo=session.scalar(select(CagedArquivo).where(CagedArquivo.coleta_id==good.id))
+    return dict(texto=TEXTO_ATRIBUICAO,link=good.manifesto_json['pagina_oficial'],base_legal=BASE_LEGAL_ATRIBUICAO,
+        arquivo_referencia=None if arquivo is None else arquivo.competencia,
+        coletado_em=good.coletado_em.astimezone(timezone.utc))
+
+
 def read_caged(session,janela,*,test_mode=False,now=None):
     from .read import read_unavailable,window_start,periods_between
     now=now or datetime.now(timezone.utc)
@@ -293,19 +305,16 @@ def read_caged(session,janela,*,test_mode=False,now=None):
         result=read_unavailable(session,janela)
         result.atrasado_calendario=delayed
         result.motivo='Nenhuma coleta válida do Novo Caged disponível.'
+        result.atribuicao=Atribuicao(**atribuicao_caged(session,None))
         return result
     metadata=good.manifesto_json
     failed=session.scalar(select(Coleta).where(Coleta.serie_codigo=='caged-saldo',Coleta.simulada==test_mode,
         Coleta.erro.is_not(None)).order_by(Coleta.id.desc()).limit(1))
-    month=MONTHS[int(good.mes_referencia[5:])-1].lower()+'/'+good.mes_referencia[:4]
     common=dict(tipo_valor=None,tipo_periodo='mensal',medida='saldo',unidade='postos de trabalho',
         fonte='MTE / Novo Caged',tabela_ou_arquivo=metadata['arquivo'],link=metadata['pagina_oficial'],
         cv=None,classificacao=None,classificacao_origem=None,variacao_anual_unidade='postos de trabalho',
         variacao_anual_origem='calculo_observatorio',ajuste='com_ajuste',competencia_coleta=good.mes_referencia,
-        atribuicao=dict(texto=f'Fonte: Novo Caged – MTE, Tabela 5.1 (com ajustes), arquivo {month}, coletado em {good.coletado_em.astimezone(ZoneInfo("America/Sao_Paulo")).strftime("%d/%m/%Y")}. Elaboração: OIL.',
-            link=metadata['pagina_oficial'],licenca=None,base_legal=dict(
-                texto='Uso livre e gratuito, com citação da fonte (Decreto nº 8.777/2016, art. 4º e §1º, com a redação do Decreto nº 9.903/2019). O MTE não publica licença própria para estes dados.',
-                link='https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2016/decreto/d8777.htm')),
+        atribuicao=atribuicao_caged(session,good),
         nota_revisao='Série revisada mensalmente pelo MTE: os meses anteriores podem mudar a cada novo arquivo.',
         desatualizado=failed is not None and failed.id>good.id,atrasado_calendario=delayed,simulada=test_mode,
         variaveis={},disponivel=True,motivo=None)

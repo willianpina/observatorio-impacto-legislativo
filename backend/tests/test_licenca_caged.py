@@ -31,9 +31,12 @@ def test_o3c_no_inapplicable_license_in_versioned_text():
 def test_o3c_api_patch_and_explicit_attribution_schema():
     from backend.oil.main import app
     schema=app.openapi()
-    assert schema['info']['version']=='1.4.1'
+    assert schema['info']['version']=='1.5.0'
     models=schema['components']['schemas']
     assert models['Atribuicao']['additionalProperties'] is False
-    assert models['BaseLegal']['additionalProperties'] is False
+    assert 'licenca' not in models['Atribuicao']['properties']
+    assert 'BaseLegal' not in models
     assert (ROOT/'docs/o3/contrato-api-v1.4.1-delta.md').exists()
     assert (ROOT/'docs/o3/openapi-v1.4.1.json').exists()
+    assert (ROOT/'docs/o3/contrato-api-v1.5.0-delta.md').exists()
+    assert (ROOT/'docs/o3/openapi-v1.5.0.json').exists()

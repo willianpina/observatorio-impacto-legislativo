@@ -54,7 +54,7 @@ MUTATIONS=[
     ('BM',CAGED,'Filtro redundante de validade',replace_once('Coleta.simulada==test_mode,Coleta.valida.is_(True),Coleta.mes_referencia<=competencia,','Coleta.simulada==test_mode,Coleta.mes_referencia<=competencia,')),
     ('BN',CAGED,'Saldo absoluto',replace_once('points[period]=int(value)','points[period]=abs(int(value))')),
     ('BO',CAGED,'Tipo monetário no saldo',replace_once("common=dict(tipo_valor=None,tipo_periodo='mensal'","common=dict(tipo_valor='nominal',tipo_periodo='mensal'")),
-    ('BP',CAGED,'Atribuição sem indicação de ajuste',replace_once('Tabela 5.1 (com ajustes), arquivo','Tabela 5.1, arquivo')),
+    ('BP',CAGED,'Atribuição sem indicação de ajuste',replace_once('Tabela 5.1 (com ajustes). Série','Tabela 5.1. Série')),
     ('BQ',LAW,'Data fixa no marco',replace_once("deliberation['tipoDeliberacao'],deliberation['data']","deliberation['tipoDeliberacao'],'2026-10-15'")),
     ('BR',LAW,'Rótulo fixo no marco',replace_once("deliberation['tipoDeliberacao'],deliberation['data']","'Aprovação',deliberation['data']")),
     ('S1',CAGED,'Manifesto sem hash aceito',replace_once("if not isinstance(expected_hash,str) or re.fullmatch(r'[0-9a-fA-F]{64}',expected_hash) is None:",'if False:')),

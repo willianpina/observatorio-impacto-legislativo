@@ -4,18 +4,13 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict
 
 
-class BaseLegal(BaseModel):
-    model_config = ConfigDict(extra='forbid')
-    texto: str
-    link: str
-
-
 class Atribuicao(BaseModel):
     model_config = ConfigDict(extra='forbid')
     texto: str
     link: str
-    licenca: None = None
-    base_legal: BaseLegal
+    base_legal: str
+    arquivo_referencia: str | None
+    coletado_em: datetime | None
 
 
 class Common(BaseModel):
