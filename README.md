@@ -6,6 +6,8 @@ O OIL acompanha uma lei e mostra, numa só página, **o que mudou na lei**, **o 
 
 O piloto atual é o tema **Trabalho**: a redução da jornada de trabalho (escala 6x1), com a PEC 221/2019 (Câmara, id 2233802), que virou a EC 141/2026.
 
+> **Contribua com novos temas.** Hoje a plataforma tem **um único tema com conteúdo: Trabalho** (escala 6x1). A barra de temas da tela já mostra as abas **Saúde, Educação, Segurança Pública, Economia, Meio Ambiente e Outros**. Elas existem só como **placeholders desabilitados («Em breve»)**, sem página, dados ou rotas por trás. Essas abas estão **abertas para contribuição**. Veja [Como adicionar um novo tema](#como-adicionar-um-novo-tema).
+
 ![Topo da página do piloto Trabalho — escala 6x1](docs/img/trabalho-6x1-topo.png)
 
 > As imagens deste README são da tela do piloto Trabalho, capturadas em 1280 px com dados reais coletados das fontes oficiais em 20/10/2026. Os valores mudam a cada divulgação.
@@ -22,7 +24,7 @@ O piloto atual é o tema **Trabalho**: a redução da jornada de trabalho (escal
 8. [Como rodar localmente](#como-rodar-localmente)
 9. [Como carregar os dados](#como-carregar-os-dados)
 10. [Como rodar os testes](#como-rodar-os-testes)
-11. [Guia de contribuição](#guia-de-contribuição)
+11. [Guia de contribuição](#guia-de-contribuição) · [Como adicionar um novo tema](#como-adicionar-um-novo-tema)
 12. [Roteiro](#roteiro)
 13. [Documentação complementar](#documentação-complementar)
 
@@ -293,6 +295,24 @@ Contribuições são bem-vindas. Leia a [metodologia](docs/metodologia-o2.md) an
    - mudanças de schema exigem uma migração Alembic reversível e segura.
 8. **Linguagem:** a tela é descritiva. Não atribua efeito à lei nem use termos causais.
 
+### Como adicionar um novo tema
+
+Hoje o código atende **uma lei e um tema**: a lista de leis, os indicadores e a página são fixos no código. Adicionar um tema exige mexer no backend, no contrato e no frontend. Faça isso em PRs pequenos, em rascunho:
+
+1. **Proponha antes.** Abra uma issue com a lei (id na Câmara e no Senado), os indicadores oficiais (fonte, tabela/variável e periodicidade) e a base legal de uso dos dados. Escopo, contrato e schema precisam de aprovação de quem mantém o projeto.
+2. **Lei acompanhada.** Adicione a proposição em `PROPOSICOES` (`backend/oil/catalog.py`), com o vínculo Câmara→Senado conferido à mão. Inclua as fontes da norma (Planalto, DOU) em `backend/data/fontes_norma.json`.
+3. **Indicadores.** Séries do IBGE/SIDRA entram em `SPECS` (`backend/oil/catalog.py`), coletadas por `backend/oil/sidra.py` e `python -m backend.oil.cli <codigo>`. Uma fonte nova precisa de:
+   - um coletor próprio, no modelo de `backend/oil/caged.py` (HTTPS, hash, limites, linhagem);
+   - uma migração Alembic em `backend/alembic/versions/`, se precisar de tabela.
+4. **Contrato.** Documente rotas e campos novos num delta de versão em `docs/`, como os `docs/o3/contrato-api-v*.md`, e atualize os tipos em `frontend/lib/types.ts`.
+5. **Proxy do frontend.** Hoje `frontend/app/api/oil/lei/route.ts` usa o id fixo `2233802`, e o proxy de indicadores em `frontend/app/api/oil/indicadores/` aceita só os códigos atuais. Generalize mantendo a validação de entrada e o limite de consultas.
+6. **Tela.** A barra de temas e a página ficam em `frontend/components/dashboard.tsx`: o array `['Saúde','Educação',…]` gera os botões «Em breve», e o cabeçalho, o breadcrumb e os textos são do tema Trabalho. Ative a aba do novo tema e crie a página dele. Reaproveite `indicator.tsx`, `chart.tsx`, `law.tsx` e `evidence-sources.tsx`, e libere os links oficiais novos em `frontend/lib/safe-href.ts`.
+7. **Testes e metodologia.** Faça isto antes de abrir o PR:
+   - grave fixtures da fonte real (replay sempre marcado como simulado);
+   - escreva testes Pytest e Playwright;
+   - documente a metodologia do novo indicador;
+   - rode tudo no Docker local.
+
 ## Roteiro
 
 Itens que já constam nos documentos do repositório e nos PRs em andamento:
@@ -305,7 +325,7 @@ Itens que já constam nos documentos do repositório e nos PRs em andamento:
   - P2: fonte direta do marco de promulgação;
   - `base_precos` da tabela 6390.
 - **Robustez do job Caged:** prazo total do job e evidência do gitleaks em JSON.
-- **Próximos temas:** a navegação já prevê Saúde, Educação, Segurança Pública, Economia e Meio Ambiente. Hoje só o tema Trabalho tem conteúdo.
+- **Novos temas, abertos a colaboradores:** hoje só Trabalho tem conteúdo. As abas **Saúde, Educação, Segurança Pública, Economia, Meio Ambiente e Outros** já aparecem na tela como placeholders «Em breve», sem página nem dados. Siga [Como adicionar um novo tema](#como-adicionar-um-novo-tema).
 - **Antes de uso público:**
   - definir a licença do código;
   - decidir hospedagem e autenticação;
