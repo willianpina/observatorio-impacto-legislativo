@@ -377,3 +377,33 @@ def test_caged_classificacao_nao_nula_falha():
     assert "subiu" in ruim["detalhes"]["caged_nao_nulos"]
     bom = check.avaliar_classificacao(fixture=fixture, produto=[], pontos=[ponto], caged=[None, None], banco_disponivel=True)
     assert bom["status"] == "ok"
+
+
+def test_limite_inclusivo_e_estavel():
+    base = (Decimal("100"), Decimal("1"), Decimal("100"), Decimal("0"))
+    limite = check.limite_classificacao(*base)
+    assert limite == Decimal("1.96")
+    assert check.classificar_variacao(*base, limite) == "estavel"
+    assert check.classificar_variacao(*base, -limite) == "estavel"
+    assert check.classificar_variacao(*base, limite + Decimal("0.000001")) == "subiu"
+    assert check.classificar_variacao(*base, -(limite + Decimal("0.000001"))) == "caiu"
+    assert classify(*base, limite) == "estavel"
+    assert classify(*base, -limite) == "estavel"
+    borda = check.conferir_limite_inclusivo()
+    assert borda["ok"] is True
+    assert borda["limite"] == "1.96"
+    etapa = check.etapa_classificacao(None)
+    assert etapa["detalhes"]["bordas"]["inclusivo"]["ok"] is True
+
+
+def test_primeiro_ponto_e_apos_lacuna_sao_null():
+    pontos = check.serie_de_borda()
+    assert check.classificar_ponto_da_serie(pontos, "202201") is None
+    assert check.classificar_ponto_da_serie(pontos, "202203") is None
+    assert check.classificar_ponto_da_serie(pontos, "202302") is None
+    assert check.classificar_ponto_da_serie(pontos, "202402") == "estavel"
+    assert classify(Decimal("10"), Decimal("1"), None, None, Decimal("0")) is None
+    assert check.conferir_serie_sem_anterior()["ok"] is True
+    etapa = check.etapa_classificacao(None)
+    assert etapa["detalhes"]["bordas"]["serie"]["ok"] is True
+    assert etapa["status"] == "falhou"

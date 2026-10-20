@@ -617,6 +617,103 @@ def conferir_fixture():
     }
 
 
+def conferir_limite_inclusivo():
+    """|diferença| igual ao limite é estável. Acima, subiu ou caiu."""
+    from backend.oil.classification import classify
+
+    base = (Decimal("100"), Decimal("1"), Decimal("100"), Decimal("0"))
+    limite = limite_classificacao(*base)
+    casos = []
+    ok = True
+    for diferenca, esperado in (
+        (limite, "estavel"),
+        (-limite, "estavel"),
+        (limite + Decimal("0.000001"), "subiu"),
+        (-(limite + Decimal("0.000001")), "caiu"),
+    ):
+        obtido = classificar_variacao(*base, diferenca)
+        produto = classify(*base, diferenca)
+        casos.append({
+            "diferenca": format(diferenca, "f"),
+            "esperado": esperado,
+            "obtido": obtido,
+            "produto": produto,
+        })
+        ok = ok and obtido == esperado and produto == esperado
+    return {"ok": ok, "limite": format(limite, "f"), "casos": casos}
+
+
+def _anterior_observado(pontos, periodo):
+    """Anterior é o mesmo período do ano anterior. Lacuna não conta como anterior."""
+    anterior = pontos.get(_ano_anterior(periodo))
+    if anterior is None or anterior.get("valor") is None or anterior.get("cv") is None:
+        return None
+    return anterior
+
+
+def classificar_ponto_da_serie(pontos, periodo):
+    atual = pontos.get(periodo)
+    if atual is None:
+        return None
+    anterior = _anterior_observado(pontos, periodo)
+    if anterior is None:
+        return None
+    return classificar_variacao(
+        atual.get("valor"), atual.get("cv"), anterior.get("valor"), anterior.get("cv"), atual.get("diferenca"),
+    )
+
+
+def serie_de_borda():
+    """Série sintética: primeiro ponto, lacuna e o ponto que a toma como ano anterior."""
+    return {
+        "202201": {"valor": Decimal("10"), "cv": Decimal("1"), "diferenca": None},
+        "202202": {"valor": None, "cv": None, "diferenca": None},
+        "202203": {"valor": Decimal("10"), "cv": Decimal("1"), "diferenca": Decimal("0")},
+        "202302": {"valor": Decimal("10"), "cv": Decimal("1"), "diferenca": Decimal("0")},
+        "202402": {"valor": Decimal("10"), "cv": Decimal("1"), "diferenca": Decimal("0")},
+    }
+
+
+def conferir_serie_sem_anterior():
+    pontos = serie_de_borda()
+    esperados = {
+        "202201": None,
+        "202202": None,
+        "202203": None,
+        "202302": None,
+        "202402": "estavel",
+    }
+    casos = []
+    ok = True
+    for periodo, esperado in esperados.items():
+        obtido = classificar_ponto_da_serie(pontos, periodo)
+        casos.append({"periodo": periodo, "esperado": esperado, "obtido": obtido})
+        ok = ok and obtido == esperado
+    return {
+        "ok": ok,
+        "rotulo": "fixture sintética, não é dado medido",
+        "casos": casos,
+    }
+
+
+def conferir_bordas():
+    inclusivo = conferir_limite_inclusivo()
+    serie = conferir_serie_sem_anterior()
+    return {"ok": inclusivo["ok"] and serie["ok"], "inclusivo": inclusivo, "serie": serie}
+
+
+def _anexar_bordas(etapa, bordas):
+    etapa["detalhes"] = dict(etapa.get("detalhes") or {})
+    etapa["detalhes"]["bordas"] = bordas
+    if not bordas["ok"]:
+        etapa["status"] = "falhou"
+        problemas = list(etapa["detalhes"].get("problemas") or [])
+        if "borda" not in problemas:
+            problemas.append("borda")
+        etapa["detalhes"]["problemas"] = problemas
+    return etapa
+
+
 def comparar_fixture_com_produto():
     """A fixture sintética também passa pelo classify do produto, à parte do recálculo das séries."""
     from backend.oil.classification import classify
@@ -828,20 +925,21 @@ def carregar_classificacao(database_url):
 
 def etapa_classificacao(database_url):
     fixture = conferir_fixture()
+    bordas = conferir_bordas()
     try:
         produto = comparar_fixture_com_produto()
     except Exception as exc:
-        return nova_etapa("classificacao", "falhou", comando="classificar_variacao", detalhes={"fixture": fixture, "erro": redigir(str(exc))[:400]})
+        return _anexar_bordas(nova_etapa("classificacao", "falhou", comando="classificar_variacao", detalhes={"fixture": fixture, "erro": redigir(str(exc))[:400]}), bordas)
     if not database_url:
-        return avaliar_classificacao(fixture=fixture, produto=produto, pontos=[], caged=[], banco_disponivel=False)
+        return _anexar_bordas(avaliar_classificacao(fixture=fixture, produto=produto, pontos=[], caged=[], banco_disponivel=False), bordas)
     try:
         pontos, caged = carregar_classificacao(database_url)
     except Exception as exc:
-        return nova_etapa(
+        return _anexar_bordas(nova_etapa(
             "classificacao", "falhou", comando="DATABASE_URL=<omitido> OIL_TEST_MODE=1",
             detalhes={"fixture": fixture, "produto": produto, "erro": redigir(str(exc))[:400]},
-        )
-    return avaliar_classificacao(fixture=fixture, produto=produto, pontos=pontos, caged=caged, banco_disponivel=True)
+        ), bordas)
+    return _anexar_bordas(avaliar_classificacao(fixture=fixture, produto=produto, pontos=pontos, caged=caged, banco_disponivel=True), bordas)
 
 
 def avaliar_limpeza(*, conteineres, processos, porcelain_inicio, porcelain_fim, temporarios):
