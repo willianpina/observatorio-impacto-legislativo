@@ -1,9 +1,12 @@
 """Suíte do verificador com executores falsos: sem pytest real, Docker, navegador ou rede."""
 import importlib.util
 import json
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
+
+from backend.oil.classification import classify
 
 RAIZ = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location("oil_check", RAIZ / "scripts" / "check.py")
@@ -330,3 +333,47 @@ def test_trecho_ausente_pulo_e_falha_a_etapa():
     )
     assert item["status"] == "pulado"
     assert item["motivo_pulo"] == "trecho não encontrado (n=0)"
+
+
+def _ponto_estavel(**extras):
+    ponto = {
+        "serie": "desocupacao", "periodo": "202401",
+        "valor": Decimal("10"), "cv": Decimal("1"),
+        "valor_anterior": Decimal("10"), "cv_anterior": Decimal("1"),
+        "diferenca": Decimal("0.2"), "classificacao": "estavel", "classificacao_api": "estavel",
+    }
+    ponto.update(extras)
+    return ponto
+
+
+def test_classificacao_fixture():
+    casos = ((Decimal("0.2"), "estavel"), (Decimal("0.3"), "subiu"), (Decimal("-0.3"), "caiu"))
+    for diferenca, esperado in casos:
+        assert check.classificar_variacao(Decimal("10"), Decimal("1"), Decimal("10"), Decimal("1"), diferenca) == esperado
+        assert classify(Decimal("10"), Decimal("1"), Decimal("10"), Decimal("1"), diferenca) == esperado
+    assert check.classificar_variacao(Decimal("10"), Decimal("1"), Decimal("10"), Decimal("1"), None) is None
+    fixture = check.conferir_fixture()
+    assert fixture["sintetica"] is True
+    assert fixture["ok"] is True
+    assert check.comparar_fixture_com_produto() == []
+
+
+def test_classificacao_divergente_falha():
+    ponto = _ponto_estavel(classificacao="subiu")
+    assert check.classificar_variacao(ponto["valor"], ponto["cv"], ponto["valor_anterior"], ponto["cv_anterior"], ponto["diferenca"]) == "estavel"
+    etapa = check.avaliar_classificacao(
+        fixture=check.conferir_fixture(), produto=[], pontos=[ponto], caged=[None], banco_disponivel=True,
+    )
+    assert etapa["nome"] == "classificacao"
+    assert etapa["status"] == "falhou"
+    assert any(item["onde"] == "banco" and item["gravada"] == "subiu" and item["esperado"] == "estavel" for item in etapa["detalhes"]["divergencias"])
+
+
+def test_caged_classificacao_nao_nula_falha():
+    fixture = check.conferir_fixture()
+    ponto = _ponto_estavel()
+    ruim = check.avaliar_classificacao(fixture=fixture, produto=[], pontos=[ponto], caged=["subiu"], banco_disponivel=True)
+    assert ruim["status"] == "falhou"
+    assert "subiu" in ruim["detalhes"]["caged_nao_nulos"]
+    bom = check.avaliar_classificacao(fixture=fixture, produto=[], pontos=[ponto], caged=[None, None], banco_disponivel=True)
+    assert bom["status"] == "ok"

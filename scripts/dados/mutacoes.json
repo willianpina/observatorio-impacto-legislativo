@@ -37,6 +37,13 @@
       "de": "with tempfile.TemporaryFile() as stream:",
       "para": "with tempfile.NamedTemporaryFile(delete=False) as stream:",
       "nota": "Sobrevive na bateria atual; a etapa falha até o PR de backlog. Não está em mutacoes_toleradas."
+    },
+    {
+      "id": "B-Z196",
+      "arquivo": "backend/oil/classification.py",
+      "de": "Decimal('1.96')",
+      "para": "Decimal('1.0')",
+      "nota": "Morta pela etapa classificacao e por scripts/tests/test_check.py::test_classificacao_fixture."
     }
   ],
   "frontend": [

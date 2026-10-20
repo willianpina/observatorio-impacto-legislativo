@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import asyncio
 import hashlib
 import json
 import os
@@ -20,6 +21,7 @@ import time
 import unicodedata
 import uuid
 from datetime import datetime
+from decimal import Decimal, localcontext
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -553,6 +555,293 @@ def concluir_mutacao(*, identificador, arquivo, ocorrencias, sha_antes, sha_depo
         "contagens": contagens, "testes_falhos": testes_falhos, "parar": False,
         "detalhe": motivo,
     }
+
+
+# Contrato v1.3. O recálculo abaixo não importa classify.
+FATOR_CLASSIFICACAO = Decimal("1.96")
+FIXTURE_CLASSIFICACAO = (
+    (Decimal("0.2"), "estavel"),
+    (Decimal("0.3"), "subiu"),
+    (Decimal("-0.3"), "caiu"),
+)
+
+
+def classificar_variacao(valor, cv, valor_anterior, cv_anterior, diferenca, fator=None):
+    valores = (valor, cv, valor_anterior, cv_anterior, diferenca)
+    if any(item is None for item in valores):
+        return None
+    nivel, coef, anterior, coef_anterior, diff = map(Decimal, valores)
+    if not all(item.is_finite() for item in (nivel, coef, anterior, coef_anterior, diff)):
+        raise ValueError("A fórmula exige valores finitos.")
+    if min(nivel, coef, anterior, coef_anterior) < 0:
+        raise ValueError("Nível e CV devem ser não negativos.")
+    usado = FATOR_CLASSIFICACAO if fator is None else Decimal(fator)
+    with localcontext() as ctx:
+        ctx.prec = 40
+        erro = ((coef * nivel / Decimal(100)) ** 2 + (coef_anterior * anterior / Decimal(100)) ** 2).sqrt()
+        if abs(diff) <= usado * erro:
+            return "estavel"
+    return "subiu" if diff > 0 else "caiu"
+
+
+def limite_classificacao(valor, cv, valor_anterior, cv_anterior, fator=None):
+    nivel, coef, anterior, coef_anterior = map(Decimal, (valor, cv, valor_anterior, cv_anterior))
+    usado = FATOR_CLASSIFICACAO if fator is None else Decimal(fator)
+    with localcontext() as ctx:
+        ctx.prec = 40
+        erro = ((coef * nivel / Decimal(100)) ** 2 + (coef_anterior * anterior / Decimal(100)) ** 2).sqrt()
+        return usado * erro
+
+
+def conferir_fixture():
+    casos = []
+    ok = True
+    for diferenca, esperado in FIXTURE_CLASSIFICACAO:
+        obtido = classificar_variacao(Decimal("10"), Decimal("1"), Decimal("10"), Decimal("1"), diferenca)
+        casos.append({"diferenca": format(diferenca, "f"), "esperado": esperado, "obtido": obtido})
+        ok = ok and obtido == esperado
+    com_um = classificar_variacao(Decimal("10"), Decimal("1"), Decimal("10"), Decimal("1"), Decimal("0.2"), fator=Decimal("1"))
+    ok = ok and com_um == "subiu"
+    return {
+        "ok": ok,
+        "sintetica": True,
+        "rotulo": "fixture sintética, não é dado medido",
+        "valor": "10",
+        "cv": "1",
+        "valor_anterior": "10",
+        "cv_anterior": "1",
+        "limite": format(limite_classificacao(Decimal("10"), Decimal("1"), Decimal("10"), Decimal("1")), "f"),
+        "limite_z_1": format(limite_classificacao(Decimal("10"), Decimal("1"), Decimal("10"), Decimal("1"), fator=Decimal("1")), "f"),
+        "casos": casos,
+        "z_1_diferenca_0_2": com_um,
+    }
+
+
+def comparar_fixture_com_produto():
+    """A fixture sintética também passa pelo classify do produto, à parte do recálculo das séries."""
+    from backend.oil.classification import classify
+
+    divergencias = []
+    for diferenca, esperado in FIXTURE_CLASSIFICACAO:
+        independente = classificar_variacao(Decimal("10"), Decimal("1"), Decimal("10"), Decimal("1"), diferenca)
+        produto = classify(Decimal("10"), Decimal("1"), Decimal("10"), Decimal("1"), diferenca)
+        if independente != esperado or produto != esperado:
+            divergencias.append({
+                "diferenca": format(diferenca, "f"),
+                "esperado": esperado,
+                "independente": independente,
+                "produto": produto,
+            })
+    return divergencias
+
+
+def divergencias_sidra(pontos):
+    achados = []
+    for ponto in pontos:
+        try:
+            esperado = classificar_variacao(
+                ponto.get("valor"), ponto.get("cv"), ponto.get("valor_anterior"),
+                ponto.get("cv_anterior"), ponto.get("diferenca"),
+            )
+        except ValueError as exc:
+            achados.append({"serie": ponto.get("serie"), "periodo": ponto.get("periodo"), "erro": str(exc)[:120]})
+            continue
+        if ponto.get("classificacao") != esperado:
+            achados.append({
+                "serie": ponto.get("serie"), "periodo": ponto.get("periodo"), "onde": "banco",
+                "esperado": esperado, "gravada": ponto.get("classificacao"),
+            })
+        if "classificacao_api" in ponto and ponto.get("classificacao_api") != esperado:
+            achados.append({
+                "serie": ponto.get("serie"), "periodo": ponto.get("periodo"), "onde": "api",
+                "esperado": esperado, "gravada": ponto.get("classificacao_api"),
+            })
+        if "classificacao_serie_api" in ponto and ponto.get("classificacao_serie_api") != esperado:
+            achados.append({
+                "serie": ponto.get("serie"), "periodo": ponto.get("periodo"), "onde": "api_serie",
+                "esperado": esperado, "gravada": ponto.get("classificacao_serie_api"),
+            })
+    return achados
+
+
+def avaliar_classificacao(*, fixture, produto, pontos, caged, banco_disponivel):
+    divergencias = divergencias_sidra(pontos) if banco_disponivel else []
+    nao_nulos = [valor for valor in caged if valor is not None]
+    problemas = []
+    if not fixture["ok"]:
+        problemas.append("fixture")
+    if produto:
+        problemas.append("produto")
+    if not banco_disponivel:
+        problemas.append("banco de teste indisponível")
+    elif not pontos:
+        problemas.append("nenhum ponto SIDRA")
+    if divergencias:
+        problemas.append("sidra")
+    if banco_disponivel and nao_nulos:
+        problemas.append("caged")
+    return nova_etapa(
+        "classificacao",
+        "falhou" if problemas else "ok",
+        comando="DATABASE_URL=<omitido> OIL_TEST_MODE=1" if banco_disponivel else "classificar_variacao",
+        detalhes={
+            "fixture": fixture,
+            "produto": produto,
+            "pontos_sidra": len(pontos) if banco_disponivel else 0,
+            "divergencias": divergencias[:20],
+            "divergencias_total": len(divergencias),
+            "caged_nao_nulos": nao_nulos,
+            "problemas": problemas,
+        },
+    )
+
+
+def _ano_anterior(periodo):
+    return f"{int(periodo[:4]) - 1:04d}{periodo[4:]}"
+
+
+def _ambiente_banco(database_url):
+    chaves = ("DATABASE_URL", "OIL_TEST_MODE", "OIL_DISPOSABLE_DATABASE")
+    anterior = {chave: os.environ.get(chave) for chave in chaves}
+    os.environ["DATABASE_URL"] = database_url
+    os.environ["OIL_TEST_MODE"] = "1"
+    os.environ["OIL_DISPOSABLE_DATABASE"] = "1"
+    return anterior
+
+
+def _restaurar_ambiente(anterior):
+    for chave, valor in anterior.items():
+        if valor is None:
+            os.environ.pop(chave, None)
+        else:
+            os.environ[chave] = valor
+
+
+async def _sem_espera(_atraso):
+    return None
+
+
+def carregar_classificacao(database_url):
+    """Grava as fixtures SIDRA no banco de teste, sem rede, e lê banco e API."""
+    import httpx
+    from fastapi.testclient import TestClient
+    from sqlalchemy import select
+
+    from backend.oil.catalog import SPECS
+    from backend.oil.db import make_engine, sessions
+    from backend.oil.ingest import Collector, ensure_unavailable_catalog
+    from backend.oil.main import app
+    from backend.oil.models import Coleta, Observacao, Serie
+
+    anterior = _ambiente_banco(database_url)
+    engine = None
+    fixtures = RAIZ / "backend" / "tests" / "fixtures"
+
+    def responder(request):
+        for spec in SPECS.values():
+            if str(request.url) == spec.url:
+                return httpx.Response(200, content=(fixtures / f"sidra-{spec.tabela}.json").read_bytes())
+            if str(request.url) == spec.metadata_url:
+                return httpx.Response(200, content=(fixtures / f"metadados-{spec.tabela}.json").read_bytes())
+        raise RuntimeError("url fora das fixtures locais")
+
+    async def popular(factory):
+        async with httpx.AsyncClient(transport=httpx.MockTransport(responder)) as client:
+            coletor = Collector(factory, client, simulada=True, sleep=_sem_espera)
+            for codigo in SPECS:
+                await coletor.collect(codigo)
+
+    try:
+        engine = make_engine()
+        factory = sessions(engine)
+        with factory.begin() as session:
+            ensure_unavailable_catalog(session)
+        asyncio.run(popular(factory))
+        with factory() as session:
+            linhas = session.execute(
+                select(Serie.codigo, Observacao)
+                .join(Observacao, Observacao.serie_id == Serie.id)
+                .join(Coleta, Observacao.coleta_id == Coleta.id)
+                .where(Serie.codigo.in_(tuple(SPECS)), Coleta.valida.is_(True), Coleta.simulada.is_(True))
+            ).all()
+            caged = list(session.scalars(
+                select(Observacao.classificacao)
+                .join(Serie, Observacao.serie_id == Serie.id)
+                .where(Serie.codigo == "caged-saldo")
+            ))
+            ultimas = {}
+            for codigo, obs in linhas:
+                chave = (codigo, obs.periodo)
+                atual = ultimas.get(chave)
+                if atual is None or obs.versao > atual.versao:
+                    ultimas[chave] = obs
+            por_serie = {}
+            for (codigo, periodo), obs in ultimas.items():
+                por_serie.setdefault(codigo, {})[periodo] = obs
+            pontos = []
+            for codigo, periodos in por_serie.items():
+                for periodo, obs in periodos.items():
+                    anterior_obs = periodos.get(_ano_anterior(periodo))
+                    pontos.append({
+                        "serie": codigo,
+                        "periodo": periodo,
+                        "valor": obs.valor,
+                        "cv": obs.cv,
+                        "valor_anterior": anterior_obs.valor if anterior_obs else None,
+                        "cv_anterior": anterior_obs.cv if anterior_obs else None,
+                        "diferenca": obs.diferenca_anual,
+                        "classificacao": obs.classificacao,
+                    })
+        with TestClient(app) as client:
+            for codigo in (*SPECS, "caged-saldo"):
+                resposta = client.get(f"/api/v1/indicadores/{codigo}/serie", params={"janela": "desde_2020"})
+                if resposta.status_code != 200:
+                    raise RuntimeError(f"API {codigo} status {resposta.status_code}")
+                corpo = resposta.json()
+                if codigo == "caged-saldo":
+                    caged.append(corpo.get("classificacao"))
+                    caged.extend(ponto.get("classificacao") for ponto in corpo.get("pontos") or [])
+                    continue
+                indice = {(ponto["serie"], ponto["periodo"]): ponto for ponto in pontos}
+                for item in corpo.get("pontos") or []:
+                    alvo = indice.get((codigo, item.get("periodo")))
+                    if alvo is None:
+                        alvo = {
+                            "serie": codigo, "periodo": item.get("periodo"),
+                            "valor": None, "cv": None, "valor_anterior": None, "cv_anterior": None,
+                            "diferenca": None, "classificacao": None,
+                        }
+                        pontos.append(alvo)
+                        indice[(codigo, item.get("periodo"))] = alvo
+                    alvo["classificacao_api"] = item.get("classificacao")
+                if corpo.get("pontos"):
+                    ultimo = corpo["pontos"][-1]["periodo"]
+                    alvo = indice.get((codigo, ultimo))
+                    if alvo is not None:
+                        alvo["classificacao_serie_api"] = corpo.get("classificacao")
+        return pontos, caged
+    finally:
+        if engine is not None:
+            engine.dispose()
+        _restaurar_ambiente(anterior)
+
+
+def etapa_classificacao(database_url):
+    fixture = conferir_fixture()
+    try:
+        produto = comparar_fixture_com_produto()
+    except Exception as exc:
+        return nova_etapa("classificacao", "falhou", comando="classificar_variacao", detalhes={"fixture": fixture, "erro": redigir(str(exc))[:400]})
+    if not database_url:
+        return avaliar_classificacao(fixture=fixture, produto=produto, pontos=[], caged=[], banco_disponivel=False)
+    try:
+        pontos, caged = carregar_classificacao(database_url)
+    except Exception as exc:
+        return nova_etapa(
+            "classificacao", "falhou", comando="DATABASE_URL=<omitido> OIL_TEST_MODE=1",
+            detalhes={"fixture": fixture, "produto": produto, "erro": redigir(str(exc))[:400]},
+        )
+    return avaliar_classificacao(fixture=fixture, produto=produto, pontos=pontos, caged=caged, banco_disponivel=True)
 
 
 def avaliar_limpeza(*, conteineres, processos, porcelain_inicio, porcelain_fim, temporarios):
@@ -1646,6 +1935,7 @@ def executar(opcoes):
             etapas.append(proteger("testes_ao_vivo", lambda: preparar_testes_ao_vivo(True, os.environ, ao_vivo)))
         else:
             etapas.append(preparar_testes_ao_vivo(False, os.environ, lambda: None))
+        etapas.append(proteger("classificacao", lambda: etapa_classificacao(postgres.url if postgres else None)))
     except KeyboardInterrupt:
         etapas.append(nova_etapa("interrompido", "falhou", detalhes={"erro": "interrompido"}))
     finally:
