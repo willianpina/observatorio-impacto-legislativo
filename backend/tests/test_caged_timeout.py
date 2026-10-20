@@ -32,14 +32,46 @@ class TimedStream(httpx.AsyncByteStream):
         self.closed = True
 
 
-def run(sf, handler, metadata=None):
+def run(sf, handler, metadata=None, *, clock=None, sleep=no_sleep):
     async def collect():
+        kwargs = {}
+        if clock is not None:
+            kwargs['clock'] = clock
         async with httpx.AsyncClient(transport=httpx.MockTransport(handler), timeout=2, follow_redirects=False) as client:
             try:
-                return await caged.CagedCollector(sf, client, simulada=True, sleep=no_sleep).collect(metadata or entry('2026-08')[0])
+                return await caged.CagedCollector(sf, client, simulada=True, sleep=sleep, **kwargs).collect(metadata or entry('2026-08')[0])
             finally:
                 assert client.timeout.read == 2 and not client.follow_redirects
     return asyncio.run(collect())
+
+
+class VirtualClock:
+    """Relógio monotônico falso: os testes avançam o tempo, sem espera real."""
+    def __init__(self):
+        self.now = 0.0
+
+    def __call__(self):
+        return self.now
+
+    def advance(self, seconds):
+        self.now += seconds
+
+
+class BudgetStream(httpx.AsyncByteStream):
+    """Cada bloco avança o relógio da tentativa. ReadTimeout só se o bloco isolado passar do prazo de leitura."""
+    def __init__(self, request, clock, chunks):
+        self.request, self.clock, self.chunks = request, clock, chunks
+        self.closed = False
+
+    async def __aiter__(self):
+        for delay, content in self.chunks:
+            self.clock.advance(delay)
+            if delay > self.request.extensions['timeout']['read']:
+                raise httpx.ReadTimeout('Atraso virtual de teste', request=self.request)
+            yield content
+
+    async def aclose(self):
+        self.closed = True
 
 
 @pytest.mark.parametrize('setting,passes', [(None, True), ('120', True), ('20', False)])
@@ -256,6 +288,110 @@ def test_invalid_timeout_job_prints_config_error(sf, monkeypatch, capsys, settin
     payload = json.loads(captured.out)
     assert payload['erro'] == 'configuracao_invalida'
     assert 'OIL_CAGED_READ_TIMEOUT' in payload['mensagem']
+    assert requests == []
+    with sf() as session:
+        assert session.scalar(select(func.count()).select_from(Coleta)) == 0
+        assert session.scalar(select(func.count()).select_from(Observacao)) == 0
+
+
+def test_attempt_budget_allows_transfer_inside_the_limit(sf, monkeypatch):
+    monkeypatch.delenv('OIL_CAGED_ATTEMPT_TIMEOUT', raising=False)
+    monkeypatch.setenv('OIL_CAGED_READ_TIMEOUT', '300')
+    raw = entry('2026-08')[1]
+    clock = VirtualClock()
+    requests = []
+
+    def handler(request):
+        requests.append(request)
+        return httpx.Response(200, stream=BudgetStream(request, clock, [(100, raw)]))
+
+    result = run(sf, handler, clock=clock)
+    assert result['novas_versoes'] > 0 and len(requests) == 1 and clock.now == 100
+
+
+def test_attempt_budget_stops_without_retry(sf, monkeypatch):
+    monkeypatch.setenv('OIL_CAGED_READ_TIMEOUT', '120')
+    monkeypatch.setenv('OIL_CAGED_ATTEMPT_TIMEOUT', '20')
+    raw = entry('2026-08')[1]
+    clock = VirtualClock()
+    requests = []
+    delays = []
+    streams = []
+
+    async def spy_sleep(delay):
+        delays.append(delay)
+
+    def handler(request):
+        requests.append(request)
+        stream = BudgetStream(request, clock, [(10, raw[:80]), (15, raw[80:])])
+        streams.append(stream)
+        return httpx.Response(200, stream=stream)
+
+    with pytest.raises(SourceFailure, match='timeout_fonte') as falha:
+        run(sf, handler, clock=clock, sleep=spy_sleep)
+    assert falha.value.code == 'timeout_fonte' and falha.value.status == 504
+    assert len(requests) == 1 and delays == [] and all(stream.closed for stream in streams)
+    with sf() as session:
+        rows = session.scalars(select(Coleta)).all()
+        assert len(rows) == 1
+        row = rows[0]
+        assert row.erro == 'timeout_total' and row.valida is False and row.codigo_http == 200
+        assert row.tamanho_bytes == 80 and row.hash_sha256 == hashlib.sha256(raw[:80]).hexdigest()
+        assert session.scalar(select(func.count()).select_from(Observacao)) == 0
+
+
+def test_attempt_budget_is_capped_and_does_not_retry(sf, monkeypatch):
+    monkeypatch.setenv('OIL_CAGED_READ_TIMEOUT', '300')
+    monkeypatch.setenv('OIL_CAGED_ATTEMPT_TIMEOUT', '999')
+    clock = VirtualClock()
+    requests = []
+
+    def handler(request):
+        requests.append(request)
+        return httpx.Response(200, stream=BudgetStream(request, clock, [(301, b'x')]))
+
+    with pytest.raises(SourceFailure, match='timeout_fonte') as falha:
+        run(sf, handler, clock=clock)
+    assert falha.value.code == 'timeout_fonte' and falha.value.status == 504
+    assert len(requests) == 1 and clock.now == 301
+    with sf() as session:
+        rows = session.scalars(select(Coleta)).all()
+        assert len(rows) == 1 and rows[0].erro == 'timeout_total' and rows[0].valida is False
+        assert rows[0].hash_sha256 is None
+        assert session.scalar(select(func.count()).select_from(Observacao)) == 0
+
+
+@pytest.mark.parametrize('setting', ['0', '-1', 'nan', 'inf', 'abc', ''])
+def test_invalid_attempt_budget_never_disables_deadline(sf, monkeypatch, setting):
+    monkeypatch.setenv('OIL_CAGED_ATTEMPT_TIMEOUT', setting)
+
+    def handler(request):
+        raise AssertionError('prazo total inválido não deve chegar ao transporte')
+
+    with pytest.raises(ValueError, match='OIL_CAGED_ATTEMPT_TIMEOUT'):
+        run(sf, handler)
+
+
+@pytest.mark.parametrize('setting', ['0', 'abc'])
+def test_invalid_attempt_budget_job_prints_config_error(sf, monkeypatch, capsys, setting):
+    monkeypatch.setenv('OIL_CAGED_ATTEMPT_TIMEOUT', setting)
+    monkeypatch.setattr(sys, 'argv', ['o3_cli', 'caged', '2026-08'])
+    requests = []
+
+    def handler(request):
+        requests.append(request)
+        raise AssertionError('prazo total inválido não deve gerar requisição')
+
+    monkeypatch.setattr(o3_cli, 'make_client', lambda: httpx.AsyncClient(
+        transport=httpx.MockTransport(handler), timeout=1, follow_redirects=False))
+    with pytest.raises(SystemExit) as caught:
+        o3_cli.main()
+    assert caught.value.code not in (0, None)
+    captured = capsys.readouterr()
+    assert 'Traceback' not in captured.err and 'Traceback' not in captured.out
+    payload = json.loads(captured.out)
+    assert payload['erro'] == 'configuracao_invalida'
+    assert 'OIL_CAGED_ATTEMPT_TIMEOUT' in payload['mensagem']
     assert requests == []
     with sf() as session:
         assert session.scalar(select(func.count()).select_from(Coleta)) == 0
