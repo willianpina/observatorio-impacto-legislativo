@@ -40,7 +40,7 @@ Referências recebidas preservadas em `referencias/`. O adendo 1 substitui os po
 
 `lib/contrato-lei-provisorio.ts` concentra os tipos legislativos. A O3 ainda precisa fornecer a integração real. Em modo normal, lei, marcos e votações ficam indisponíveis; o mock não é fallback. A paginação da demonstração recorta listas simuladas; será conectada à paginação do contrato O3 quando existir.
 
-O Caged normal continua indisponível. O adaptador visual já aceita `ajuste`, `arquivo_origem`, `licenca` e `competencia_coleta`: a O3 deve fornecer esses metadados a partir do arquivo, além da comparação anual. A tela não calcula o saldo nem presume mês de origem. Meses de outro ajuste ficam fora do gráfico, mas permanecem na tabela.
+O Caged normal continua indisponível. A tela monta a frase da fonte com `arquivo_referencia` e `coletado_em` do contrato v1.5.0. `base_legal` é texto e aparece no Saiba mais. Não há licença fixa no código. A tela não calcula o saldo nem presume o mês: o mês vem do arquivo da coleta. Meses de outro ajuste ficam fora do gráfico, mas permanecem na tabela.
 
 ## Proteções da O4-R
 

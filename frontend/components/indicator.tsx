@@ -4,11 +4,16 @@ import { useEffect,useState } from 'react';
 import { CircleHelp, Download, ExternalLink, RefreshCw } from 'lucide-react';
 import type { Marco } from '../lib/contrato-lei-provisorio';
 import type { DataState, Series, Window } from '../lib/types';
-import { date,  number, period, periodType, valueLabel, TITLES } from '../lib/types';
+import { date, fraseFonteCaged, number, period, periodType, valueLabel, TITLES } from '../lib/types';
 import { Chart } from './chart';
 import { csvCell } from '../lib/csv';
 
-export function Source({data}:{data:Series}){ const text=data.atribuicao?.texto||`Fonte: ${data.fonte} · ${data.tabela_ou_arquivo??'Arquivo não informado'}`;return <p className="source"><SourceLink href={data.atribuicao?.link||data.link}>{text}</SourceLink><br/>Coletado em {date(data.coletado_em,true)} {data.coletado_em?'(BRT)':''}</p>; }
+export function Source({data}:{data:Series}){
+  const text=data.codigo==='caged-saldo'&&data.atribuicao
+    ? fraseFonteCaged(data.atribuicao.arquivo_referencia, data.atribuicao.coletado_em)
+    : data.atribuicao?.texto||`Fonte: ${data.fonte} · ${data.tabela_ou_arquivo??'Arquivo não informado'}`;
+  return <p className="source"><SourceLink href={data.atribuicao?.link||data.link}>{text}</SourceLink><br/>Coletado em {date(data.coletado_em,true)} {data.coletado_em?'(BRT)':''}</p>;
+}
 
 export function Classification({data}:{data:Series}){ return data.classificacao?<span className="classification"><span aria-hidden="true">{data.classificacao==='subiu'?'▲':data.classificacao==='caiu'?'▼':'='}</span> {data.classificacao==='estavel'?'estável':data.classificacao}<small>{data.classificacao_origem==='ibge'?'classificação publicada pelo IBGE':'calculado pelo Observatório com a margem de erro do IBGE'}</small></span>:null; }
 
@@ -64,7 +69,7 @@ export function Indicator({code,window,testMode,marcos,onState,onInvalidWindow}:
       <Chart series={data} marcos={marcos}/><Source data={data}/>
       <details className="more"><summary>Saiba mais</summary><p>Comparação: mesmo período do ano anterior. CV: {number(data.cv)}%. Coleta: {data.coleta_id ?? 'Não informado'}.</p><a href="#metodologia">Consultar metodologia</a>
         {data.pontos.some(p=>p.valor===null)&&<p>Há períodos sem dado na fonte.</p>}
-        {data.medida==='saldo'&&<><p>As séries do Novo Caged são revisadas mensalmente. O número de um mês pode mudar nas divulgações seguintes.</p><p>Meses com outro tipo de ajuste não entram no gráfico.</p>{data.nota_revisao&&<p>{data.nota_revisao}</p>}{data.atribuicao?.base_legal&&<p>{data.atribuicao.base_legal.texto} <SourceLink href={data.atribuicao.base_legal.link}>Decreto nº 8.777/2016</SourceLink></p>}</>}
+        {data.medida==='saldo'&&<><p>As séries do Novo Caged são revisadas mensalmente. O número de um mês pode mudar nas divulgações seguintes.</p><p>Meses com outro tipo de ajuste não entram no gráfico.</p>{data.nota_revisao&&<p>{data.nota_revisao}</p>}{data.atribuicao?.base_legal&&<p data-testid="caged-base-legal">{data.atribuicao.base_legal}</p>}</>}
         <div className="table-scroll" tabIndex={0} role="region" aria-label={`Tabela de ${TITLES[code]}`}><table><caption>Dados de {TITLES[code]}</caption><thead><tr>{['Período','Valor','Unidade','CV (%)','Variação anual','Lacuna','Ajuste / competência','Marco'].map(h=><th key={h} scope="col">{h}</th>)}</tr></thead><tbody>{data.pontos.map(p=><tr key={p.periodo}><th scope="row">{period(p.periodo,data.tipo_periodo)}</th><td>{number(p.valor)}</td><td>{p.unidade}</td><td>{number(p.cv)}</td><td>{number(p.variacao_anual)} {data.variacao_anual_unidade}</td><td>{p.valor===null?'sim':'não'}</td><td>{p.ajuste?`saldo ${p.ajuste==='sem_ajuste'?'sem ajuste':'com ajuste'}, competência ${p.competencia_coleta?.slice(4)}/${p.competencia_coleta?.slice(0,4)}`:'Não se aplica'}</td><td>{marcos.filter(m=>m.data.slice(0,7).replace('-','')===p.periodo).map(m=>m.rotulo).join('; ')||'—'}</td></tr>)}</tbody></table></div>
         <button onClick={csv}><Download size={15}/> Baixar CSV</button>
       </details>

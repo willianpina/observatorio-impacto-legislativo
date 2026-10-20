@@ -6,7 +6,11 @@ import type { Page } from '@playwright/test';
 
 export function fixture(code: string, janela = '5a') {
   if (code === 'caged-saldo') return { codigo: code, nome: 'Saldo de empregos formais', disponivel: false,
-    motivo: 'Fonte oficial do Novo Caged em verificação.', pontos: [], fonte: 'MTE / Novo Caged', simulada: true };
+    motivo: 'Fonte oficial do Novo Caged em verificação.', pontos: [], fonte: 'MTE / Novo Caged', simulada: true,
+    link: 'https://www.gov.br/trabalho-e-emprego/pt-br',
+    atribuicao: { texto: 'Fonte: Novo Caged – MTE, Tabela 5.1 (com ajustes). Série revisada mensalmente. Elaboração: OIL.',
+      link: 'https://www.gov.br/trabalho-e-emprego/pt-br', base_legal: 'Decreto 8.777/2016, art. 4º',
+      arquivo_referencia: null, coletado_em: null } };
   const income = code === 'rendimento-real';
   const table = income ? '6390' : '6381';
   const rows = JSON.parse(fs.readFileSync(path.join(process.cwd(), '../backend/tests/fixtures', `sidra-${table}.json`), 'utf8')) as Record<string,string>[];
@@ -44,7 +48,7 @@ export async function intercept(page: Page, state = 'normal', normalMode = false
     }
     if (code === 'caged-saldo' && ['caged','csv'].includes(state)) {
       const reference = fixture('desocupacao');
-      Object.assign(data, { ...reference, codigo: code, nome: 'Saldo de empregos formais', valor:-10, cv:null, classificacao:null, variacao_anual:2, variacao_anual_unidade:'postos de trabalho', unidade:'postos de trabalho',fonte:'Novo Caged – MTE',link:'https://www.gov.br/trabalho-e-emprego/pt-br',tabela_ou_arquivo:'Tabela 5.1 (com ajustes)',atribuicao:{texto:'Fonte: Novo Caged – MTE, Tabela 5.1 (com ajustes), arquivo agosto/2026, coletado em 17/10/2026. Elaboração: OIL.',link:'https://www.gov.br/trabalho-e-emprego/pt-br',licenca:null,base_legal:{texto:'Uso livre e gratuito, com citação da fonte (Decreto nº 8.777/2016, art. 4º e §1º, com a redação do Decreto nº 9.903/2019). O MTE não publica licença própria para estes dados.',link:'https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2016/decreto/d8777.htm'}},nota_revisao:'Série revisada mensalmente pelo MTE: os meses anteriores podem mudar a cada novo arquivo.',variacao_anual_origem:'calculo_observatorio' , medida: 'saldo', tipo_periodo: 'mensal', ajuste: 'com_ajuste',
+      Object.assign(data, { ...reference, codigo: code, nome: 'Saldo de empregos formais', valor:-10, cv:null, classificacao:null, variacao_anual:2, variacao_anual_unidade:'postos de trabalho', unidade:'postos de trabalho',fonte:'Novo Caged – MTE',link:'https://www.gov.br/trabalho-e-emprego/pt-br',tabela_ou_arquivo:'Tabela 5.1 (com ajustes)',atribuicao:{texto:'Fonte: Novo Caged – MTE, Tabela 5.1 (com ajustes). Série revisada mensalmente. Elaboração: OIL.',link:'https://www.gov.br/trabalho-e-emprego/pt-br',base_legal:'Decreto 8.777/2016, art. 4º',arquivo_referencia:'2026-08',coletado_em:'2026-10-17T14:22:00Z'},nota_revisao:'Série revisada mensalmente pelo MTE: os meses anteriores podem mudar a cada novo arquivo.',variacao_anual_origem:'calculo_observatorio' , medida: 'saldo', tipo_periodo: 'mensal', ajuste: 'com_ajuste',
         pontos: reference.pontos.slice(-3).map((p,i) => ({ ...p, codigo:code, medida:'saldo', tipo_periodo:'mensal', tipo_valor:null, cv:null, classificacao:null, classificacao_origem:null, variacao_anual:2, variacao_anual_unidade:'postos de trabalho', variacao_anual_origem:'calculo_observatorio', fonte:'Novo Caged – MTE', link:'https://www.gov.br/trabalho-e-emprego/pt-br', tabela_ou_arquivo:'Tabela 5.1 (com ajustes)', valor: i === 1 ? -10 : 20, unidade: 'postos de trabalho', ajuste: i === 1 ? 'com_ajuste' : 'sem_ajuste', competencia_coleta: '202608' })) });
     }
     if(code==='caged-saldo'&&state==='csv') {data.pontos[0].unidade='=1+1';data.pontos[1].unidade='-x';}

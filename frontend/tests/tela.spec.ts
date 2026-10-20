@@ -146,8 +146,8 @@ test('Caged com ajustes, atribuição e cálculo separados, sem misturar séries
   await expect(card.getByText('Saldo com ajustes',{exact:true})).toBeVisible();
   await expect(card).toContainText('Fonte: Novo Caged – MTE, Tabela 5.1 (com ajustes), arquivo agosto/2026, coletado em');
   await card.getByText('Saiba mais',{exact:true}).click();
-  await expect(card).toContainText('Uso livre e gratuito, com citação da fonte');
-  await expect(card.getByRole('link',{name:/Decreto nº 8.777/})).toHaveAttribute('href','https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2016/decreto/d8777.htm');
+  await expect(card.getByTestId('caged-base-legal')).toHaveText('Decreto 8.777/2016, art. 4º');
+  await expect(card.locator('.source a')).toHaveAttribute('href','https://www.gov.br/trabalho-e-emprego/pt-br');
   await card.getByText('Saiba mais',{exact:true}).click();
   await expect(card.getByTestId('caged-comparacao')).toContainText('Cálculo do Observatório a partir de dados do MTE');
   await expect(card.getByTestId('caged-valor-oficial')).not.toContainText('Variação');
