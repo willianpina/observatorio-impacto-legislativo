@@ -1,6 +1,6 @@
 # PR #6 — correção de redirecionamento, 19/10/2026
 
-Achado Médio corrigido na mesma branch codex/caged-timeout-leitura, base 23ea09f. A única alteração funcional em caged.py é follow_redirects=True para follow_redirects=False. Não há implementação de seguimento seletivo, allowlist ou limite futuro de saltos nesta rodada.
+Achado Alto corrigido na mesma branch codex/caged-timeout-leitura, base 23ea09f. A única alteração funcional em caged.py é follow_redirects=True para follow_redirects=False. Não há implementação de seguimento seletivo, allowlist ou limite futuro de saltos nesta rodada.
 
 302 gera uma única requisição, Coleta.codigo_http=302, valida=false e erro=http_fonte, sem hash nem observações. Location não é consultado, mesmo quando usa o próprio host HTTPS. Os outros testes cobrem host fora da lista e HTTP. O teste de hash da fixture continua com resposta direta 200, streaming, confirm=t e fechamento do temporário.
 

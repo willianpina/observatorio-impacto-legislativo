@@ -206,8 +206,11 @@ class CagedCollector:
                             return dict(coleta_id=cid,novas_versoes=count,simulada=self.simulada)
                 except httpx.TimeoutException as exc:
                     failure=SourceFailure('timeout_fonte',504)
-                    phase=('timeout_conexao' if isinstance(exc,(httpx.ConnectTimeout,httpx.PoolTimeout))
-                        else 'timeout_leitura' if size else 'timeout_primeiro_byte')
+                    # Escrita é o envio da requisição (write=10), não a conexão nem a espera do primeiro byte.
+                    if isinstance(exc,(httpx.ConnectTimeout,httpx.PoolTimeout)): phase='timeout_conexao'
+                    elif isinstance(exc,httpx.WriteTimeout): phase='timeout_escrita'
+                    elif size: phase='timeout_leitura'
+                    else: phase='timeout_primeiro_byte'
                     self.record(entry,status=response.status_code if response is not None else None,
                         error=phase,digest=digest.hexdigest() if size else None,size=size)
                 except httpx.TransportError:

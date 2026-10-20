@@ -2,7 +2,7 @@
 
 ## Timeout exclusivo do download do Caged
 
-`OIL_CAGED_READ_TIMEOUT` configura em segundos o prazo de leitura de cada operação de rede do job Caged: padrão 120, máximo 300. Valores positivos fracionários são aceitos; zero, negativos, valores não numéricos e não finitos são rejeitados antes do download. No PowerShell, configure apenas o ambiente do processo:
+`OIL_CAGED_READ_TIMEOUT` configura em segundos o prazo de leitura de cada operação de rede do job Caged: padrão 120, máximo 300. Valores positivos fracionários são aceitos; zero, negativos, valores não numéricos e não finitos são rejeitados antes do download. No job `python -m backend.oil.o3_cli caged`, um valor inválido encerra o processo com código diferente de zero e uma linha JSON `{"erro":"configuracao_invalida","mensagem":"..."}`, sem traceback, sem gravar coleta e sem abrir a requisição. No PowerShell, configure apenas o ambiente do processo:
 
 ```powershell
 $env:OIL_CAGED_READ_TIMEOUT='120'
@@ -12,7 +12,7 @@ O job usa `connect=5`, `write=10` e `pool=10`, com `follow_redirects=False` e `c
 
 O download é em streaming para arquivo temporário, com contagem de bytes e SHA-256 incremental. O teto existente permanece em `100 * 1024 * 1024` bytes (100 MiB); excedê-lo interrompe o fluxo e mantém a coleta inválida. O teto de descompactação também permanece inalterado. Arquivo temporário e resposta são fechados mesmo em erro.
 
-`Coleta.erro` distingue `timeout_conexao` (conexão ou espera pelo pool), `timeout_primeiro_byte` (antes do primeiro byte do corpo, incluindo espera pelos cabeçalhos) e `timeout_leitura` (após receber bytes do corpo). Quando disponíveis, preserva status HTTP, quantidade recebida e hash parcial; esse hash não valida um arquivo incompleto. O erro público continua `timeout_fonte`/504 e as tentativas continuam limitadas a três. Revisões mantêm as versões anteriores e a ligação de cada observação com sua coleta.
+`Coleta.erro` distingue `timeout_conexao` (conexão ou espera pelo pool), `timeout_escrita` (envio da requisição, prazo fixo de 10 s), `timeout_primeiro_byte` (antes do primeiro byte do corpo, incluindo espera pelos cabeçalhos) e `timeout_leitura` (após receber bytes do corpo). Quando disponíveis, preserva status HTTP, quantidade recebida e hash parcial; esse hash não valida um arquivo incompleto. O erro público continua `timeout_fonte`/504 e as tentativas continuam limitadas a três. Revisões mantêm as versões anteriores e a ligação de cada observação com sua coleta.
 
 Os testes de timeout usam `httpx.MockTransport` e atrasos virtuais: não dormem 30 segundos nem fazem requisições reais. O transporte falso compara o atraso ao timeout enviado na requisição, pois o MockTransport não aplica deadlines de socket. A suíte usa banco descartável e não autoriza baixar arquivos reais:
 
