@@ -27,6 +27,7 @@ O piloto atual é o tema **Trabalho**: a redução da jornada de trabalho (escal
 11. [Guia de contribuição](#guia-de-contribuição) · [Como adicionar um novo tema](#como-adicionar-um-novo-tema)
 12. [Roteiro](#roteiro)
 13. [Documentação complementar](#documentação-complementar)
+14. [Licença](#licença)
 
 ## O que é o projeto
 
@@ -327,7 +328,6 @@ Itens que já constam nos documentos do repositório e nos PRs em andamento:
 - **Robustez do job Caged:** prazo total do job e evidência do gitleaks em JSON.
 - **Novos temas, abertos a colaboradores:** hoje só Trabalho tem conteúdo. As abas **Saúde, Educação, Segurança Pública, Economia, Meio Ambiente e Outros** já aparecem na tela como placeholders «Em breve», sem página nem dados. Siga [Como adicionar um novo tema](#como-adicionar-um-novo-tema).
 - **Antes de uso público:**
-  - definir a licença do código;
   - decidir hospedagem e autenticação;
   - empacotar a API e o frontend em contêineres.
 
@@ -341,4 +341,8 @@ Itens que já constam nos documentos do repositório e nos PRs em andamento:
 
 ---
 
-**Licença:** ainda não definida.
+## Licença
+
+- **Código:** licença [MIT](LICENSE). Copyright (c) 2026 Willian Pina.
+- **Documentação:** [CC BY 4.0](LICENSE-docs). Vale para a pasta `docs/` (incluindo as imagens), a metodologia e os textos. Você pode reutilizar e adaptar, desde que cite a fonte. Texto legal oficial: https://creativecommons.org/licenses/by/4.0/legalcode.pt
+- **Dados de terceiros:** os dados do IBGE, da Câmara, do Senado e do MTE/Novo Caged **não** estão cobertos por essas licenças e seguem os termos de cada fonte. Veja [Fontes de dados](#fontes-de-dados). O Novo Caged, por exemplo, é de uso livre com citação da fonte (Decreto nº 8.777/2016). As fixtures de teste não devem ser redistribuídas.
