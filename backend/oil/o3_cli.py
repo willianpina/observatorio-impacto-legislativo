@@ -4,7 +4,7 @@ import asyncio
 import json
 from pathlib import Path
 
-from .caged import CagedCollector, register_calendar
+from .caged import CagedCollector, attempt_budget, download_timeout, register_calendar
 from .catalog import PROPOSICOES
 from .db import make_engine, sessions
 from .ingest import SourceFailure, make_client
@@ -12,6 +12,13 @@ from .legislation import LawCollector
 
 
 async def run(args):
+    if args.job=='caged':
+        try:
+            download_timeout()
+            attempt_budget()
+        except ValueError as exc:
+            print(json.dumps({'erro':'configuracao_invalida','mensagem':str(exc)},ensure_ascii=False))
+            return 1
     engine=make_engine();factory=sessions(engine)
     try:
         if args.job=='calendario-caged':
