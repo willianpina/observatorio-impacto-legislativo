@@ -93,6 +93,20 @@ def test_o3_caged_chronological_revision_versions(sf):
             assert [(o.versao,int(o.valor)) for o in rows]==list(enumerate(values,1))
 
 
+def test_junho_2026_mantem_v1_do_julho_e_rota_serve_v2(sf, client):
+    modulo=importlib.import_module('backend.oil.caged')
+    julho=modulo.parse_workbook(entry('2026-07')[1],'2026-07',allow_recorte=True)
+    agosto=modulo.parse_workbook(entry('2026-08')[1],'2026-08',allow_recorte=True)
+    assert julho['202606']==137044 and agosto['202606']==136959
+    coleta_julho=ingest_caged(sf,'2026-07');coleta_agosto=ingest_caged(sf,'2026-08')
+    with sf() as session:
+        linhas=session.scalars(select(Observacao).where(Observacao.periodo=='202606').order_by(Observacao.versao)).all()
+        assert [(o.versao,int(o.valor),o.coleta_id) for o in linhas]==[
+            (1,137044,coleta_julho['coleta_id']),(2,136959,coleta_agosto['coleta_id'])]
+    ponto=next(p for p in client.get('/api/v1/indicadores/caged-saldo').json()['pontos'] if p['periodo']=='202606')
+    assert ponto['valor']==136959 and ponto['versao']==2 and ponto['coleta_id']==coleta_agosto['coleta_id']
+
+
 @pytest.mark.parametrize('code',['desocupacao','rendimento-real'])
 def test_o3_negative_value_trigger_still_blocks_ibge(populated,code):
     from sqlalchemy.exc import IntegrityError

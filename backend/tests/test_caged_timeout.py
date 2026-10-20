@@ -1,12 +1,15 @@
 """Transporte falso: tempos virtuais, nenhum acesso ao Drive ou outra rede externa."""
 import asyncio
 import hashlib
+import json
+import os
+import sys
 
 import httpx
 import pytest
 from sqlalchemy import func, select
 
-from backend.oil import caged
+from backend.oil import caged, o3_cli
 from backend.oil.ingest import SourceFailure
 from backend.oil.models import Coleta, Observacao
 from .conftest import no_sleep
@@ -60,15 +63,18 @@ def test_first_byte_30_virtual_seconds(sf, monkeypatch, setting, passes):
     assert all(s.closed for s in streams)
 
 
-@pytest.mark.parametrize('phase', ['conexao', 'primeiro_byte', 'leitura'])
+@pytest.mark.parametrize('phase', ['conexao', 'primeiro_byte', 'leitura', 'escrita'])
 def test_timeout_phase_is_persisted(sf, monkeypatch, phase):
     monkeypatch.setenv('OIL_CAGED_READ_TIMEOUT', '20')
     raw = entry('2026-08')[1]
     def handler(request):
         if phase == 'conexao': raise httpx.ConnectTimeout('Conexão falsa', request=request)
         if phase == 'primeiro_byte': raise httpx.ReadTimeout('Cabeçalhos falsos', request=request)
+        if phase == 'escrita': raise httpx.WriteTimeout('Escrita falsa', request=request)
         return httpx.Response(200, stream=TimedStream(request, [(0, raw[:100]), (30, raw[100:])]))
-    with pytest.raises(SourceFailure, match='timeout_fonte'): run(sf, handler)
+    with pytest.raises(SourceFailure, match='timeout_fonte') as falha:
+        run(sf, handler)
+    assert falha.value.code == 'timeout_fonte' and falha.value.status == 504
     with sf() as session:
         rows = session.scalars(select(Coleta)).all()
         assert len(rows) == 3 and all(c.erro == 'timeout_' + phase and not c.valida for c in rows)
@@ -115,11 +121,12 @@ def test_streaming_limit_aborts_above_100_mib(sf):
         assert session.scalar(select(func.count()).select_from(Observacao)) == 0
 
 
-def test_confirm_and_stream_hash_match_fixture(sf, monkeypatch):
+def test_confirm_and_stream_hash_match_fixture(sf, monkeypatch, tmp_path):
     metadata, raw = entry('2026-08'); metadata['url_download'] += '&confirm=t'
     requests = []; streams = []; temporary = []; actual = caged.tempfile.TemporaryFile
-    def temp():
-        stream = actual(); temporary.append(stream); return stream
+    monkeypatch.setattr(caged.tempfile, 'tempdir', str(tmp_path))
+    def temp(*args, **kwargs):
+        stream = actual(*args, **kwargs); temporary.append(stream); return stream
     monkeypatch.setattr(caged.tempfile, 'TemporaryFile', temp)
     def handler(request):
         requests.append(request)
@@ -127,34 +134,131 @@ def test_confirm_and_stream_hash_match_fixture(sf, monkeypatch):
         stream = TimedStream(request, [(0, raw[:100]), (0, raw[100:])]); streams.append(stream)
         return httpx.Response(200, stream=stream)
     result = run(sf, handler, metadata)
-    assert len(requests) == 1 and all(s.closed for s in streams) and all(s.closed for s in temporary)
+    assert len(requests) == 1 and all(s.closed for s in streams) and temporary
+    assert_temporary_released(tmp_path, temporary)
     with sf() as session:
         row = session.get(Coleta, result['coleta_id'])
         assert row.valida and row.hash_sha256 == metadata['sha256'] == hashlib.sha256(raw).hexdigest()
         assert row.tamanho_bytes == len(raw) and row.resposta_bruta is None
 
 
+@pytest.mark.parametrize('status', [301, 302, 303, 307, 308])
 @pytest.mark.parametrize('location', [
-    'https://drive.usercontent.google.com/download?id=fixture&confirm=t',
-    'https://fora-da-lista.example/arquivo.xlsx',
     'http://drive.usercontent.google.com/download?id=fixture&confirm=t',
+    'https://evil.example/arquivo.xlsx',
+    'http://127.0.0.1/latest/meta-data',
+    'http://169.254.169.254/latest/meta-data',
 ])
-def test_302_is_invalid_without_following_location(sf, location):
+def test_302_is_invalid_without_following_location(sf, status, location):
     requests = []; metadata, raw = entry('2026-08')
     def handler(request):
         requests.append(request)
         if len(requests) == 1:
-            return httpx.Response(302, headers={'Location': location})
+            return httpx.Response(status, headers={'Location': location})
         return httpx.Response(200, content=raw)
     with pytest.raises(SourceFailure, match='http_fonte'):
         run(sf, handler, metadata)
     assert len(requests) == 1
+    assert requests[0].url.scheme == 'https' and requests[0].url.host == 'drive.usercontent.google.com'
     with sf() as session:
         rows = session.scalars(select(Coleta)).all()
         assert len(rows) == 1
         row = rows[0]
-        assert row.codigo_http == 302 and row.valida is False and row.erro == 'http_fonte'
+        assert row.codigo_http == status and row.valida is False and row.erro == 'http_fonte'
         assert row.hash_sha256 is None
+        assert session.scalar(select(func.count()).select_from(Observacao)) == 0
+
+
+def assert_temporary_released(directory, opened):
+    """O temporário deixa de existir e o descritor é solto. Só `closed` deixa passar arquivo nomeado que foi fechado e ficou no disco."""
+    assert opened
+    assert all(stream.closed for stream in opened)
+    for stream in opened:
+        name = getattr(stream, 'name', None)
+        if isinstance(name, str):
+            assert not os.path.exists(name)
+    assert list(directory.iterdir()) == []
+    if not os.path.isdir('/proc/self/fd'):
+        return
+    root = str(directory)
+    leaked = []
+    for item in os.scandir('/proc/self/fd'):
+        try:
+            target = os.readlink(item.path)
+        except OSError:
+            continue
+        if target.startswith(root + os.sep) or (root in target and target.endswith(' (deleted)')):
+            leaked.append(target)
+    assert leaked == []
+
+
+def test_temporary_file_is_released_after_success_and_failure(sf, monkeypatch, tmp_path):
+    monkeypatch.setattr(caged.tempfile, 'tempdir', str(tmp_path))
+    opened = []
+    paths = []
+    real = {
+        'TemporaryFile': caged.tempfile.TemporaryFile,
+        'NamedTemporaryFile': caged.tempfile.NamedTemporaryFile,
+        'SpooledTemporaryFile': caged.tempfile.SpooledTemporaryFile,
+    }
+    real_mkstemp = caged.tempfile.mkstemp
+
+    def spy(factory):
+        def wrapper(*args, **kwargs):
+            stream = factory(*args, **kwargs)
+            opened.append(stream)
+            return stream
+        return wrapper
+
+    for name, factory in real.items():
+        monkeypatch.setattr(caged.tempfile, name, spy(factory))
+
+    def spy_mkstemp(*args, **kwargs):
+        descriptor, path = real_mkstemp(*args, **kwargs)
+        paths.append(path)
+        return descriptor, path
+
+    monkeypatch.setattr(caged.tempfile, 'mkstemp', spy_mkstemp)
+    metadata, raw = entry('2026-08')
+
+    def released(since):
+        created = opened[since:]
+        assert_temporary_released(tmp_path, created)
+        assert all(not os.path.exists(path) for path in paths)
+
+    result = run(sf, lambda request: httpx.Response(200, content=raw), metadata)
+    assert result['novas_versoes'] > 0
+    released(0)
+    before = len(opened)
+    with pytest.raises(SourceFailure, match='arquivo_invalido'):
+        run(sf, lambda request: httpx.Response(200, content=b'conteudo-invalido'), metadata)
+    assert len(opened) > before
+    released(before)
+
+
+@pytest.mark.parametrize('setting', ['0', '-1', 'nan', 'inf', 'abc', ''])
+def test_invalid_timeout_job_prints_config_error(sf, monkeypatch, capsys, setting):
+    monkeypatch.setenv('OIL_CAGED_READ_TIMEOUT', setting)
+    monkeypatch.setattr(sys, 'argv', ['o3_cli', 'caged', '2026-08'])
+    requests = []
+
+    def handler(request):
+        requests.append(request)
+        raise AssertionError('configuração inválida não deve gerar requisição')
+
+    monkeypatch.setattr(o3_cli, 'make_client', lambda: httpx.AsyncClient(
+        transport=httpx.MockTransport(handler), timeout=1, follow_redirects=False))
+    with pytest.raises(SystemExit) as caught:
+        o3_cli.main()
+    assert caught.value.code not in (0, None)
+    captured = capsys.readouterr()
+    assert 'Traceback' not in captured.err and 'Traceback' not in captured.out
+    payload = json.loads(captured.out)
+    assert payload['erro'] == 'configuracao_invalida'
+    assert 'OIL_CAGED_READ_TIMEOUT' in payload['mensagem']
+    assert requests == []
+    with sf() as session:
+        assert session.scalar(select(func.count()).select_from(Coleta)) == 0
         assert session.scalar(select(func.count()).select_from(Observacao)) == 0
 
 
