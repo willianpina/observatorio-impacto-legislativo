@@ -199,30 +199,31 @@ class CagedCollector:
             def expired(): return self.clock()-started>=budget
             with tempfile.TemporaryFile() as stream:
                 try:
-                    async with self.client.stream('GET',url,timeout=timeout,follow_redirects=False,
-                        headers={'Accept':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}) as response:
-                        if expired(): raise _AttemptBudgetExceeded
-                        if response.status_code!=200:
-                            failure=SourceFailure('http_fonte',503 if response.status_code in {429,500,502,503,504} else 502)
-                            cid=self.record(entry,status=response.status_code,error=failure.code)
-                            if failure.status!=503: raise failure
-                        else:
-                            length=response.headers.get('Content-Length')
-                            if length and (not length.isdecimal() or int(length)>MAX_BYTES):
-                                raise ValueError('Arquivo acima do limite ou tamanho inválido.')
-                            async for chunk in response.aiter_bytes():
-                                if expired(): raise _AttemptBudgetExceeded
-                                size+=len(chunk)
-                                digest.update(chunk)
-                                if size>MAX_BYTES: raise ValueError('Arquivo acima do limite.')
-                                stream.write(chunk)
-                            cid=self.record(entry,status=200,digest=digest.hexdigest(),size=size)
-                            if digest.hexdigest()!=expected_hash.lower():
-                                raise ValueError('Hash divergente do manifesto.')
-                            stream.seek(0)
-                            points=parse_workbook(stream,entry['competencia'],allow_recorte=recorte)
-                            count=self.persist(entry,points,cid,digest.hexdigest())
-                            return dict(coleta_id=cid,novas_versoes=count,simulada=self.simulada)
+                    async with asyncio.timeout(budget):
+                        async with self.client.stream('GET',url,timeout=timeout,follow_redirects=False,
+                            headers={'Accept':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}) as response:
+                            if expired(): raise _AttemptBudgetExceeded
+                            if response.status_code!=200:
+                                failure=SourceFailure('http_fonte',503 if response.status_code in {429,500,502,503,504} else 502)
+                                cid=self.record(entry,status=response.status_code,error=failure.code)
+                                if failure.status!=503: raise failure
+                            else:
+                                length=response.headers.get('Content-Length')
+                                if length and (not length.isdecimal() or int(length)>MAX_BYTES):
+                                    raise ValueError('Arquivo acima do limite ou tamanho inválido.')
+                                async for chunk in response.aiter_bytes():
+                                    if expired(): raise _AttemptBudgetExceeded
+                                    size+=len(chunk)
+                                    digest.update(chunk)
+                                    if size>MAX_BYTES: raise ValueError('Arquivo acima do limite.')
+                                    stream.write(chunk)
+                                cid=self.record(entry,status=200,digest=digest.hexdigest(),size=size)
+                                if digest.hexdigest()!=expected_hash.lower():
+                                    raise ValueError('Hash divergente do manifesto.')
+                                stream.seek(0)
+                                points=parse_workbook(stream,entry['competencia'],allow_recorte=recorte)
+                                count=self.persist(entry,points,cid,digest.hexdigest())
+                                return dict(coleta_id=cid,novas_versoes=count,simulada=self.simulada)
                 except _AttemptBudgetExceeded:
                     self._record_attempt_budget(entry,response,digest,size)
                     raise SourceFailure('timeout_fonte',504) from None
@@ -238,6 +239,10 @@ class CagedCollector:
                     else: phase='timeout_primeiro_byte'
                     self.record(entry,status=response.status_code if response is not None else None,
                         error=phase,digest=digest.hexdigest() if size else None,size=size)
+                except TimeoutError:
+                    # asyncio.timeout cancela o stream preso. httpx.TimeoutException não herda de TimeoutError.
+                    self._record_attempt_budget(entry,response,digest,size)
+                    raise SourceFailure('timeout_fonte',504) from None
                 except httpx.TransportError:
                     failure=SourceFailure('erro_conexao',503)
                     self.record(entry,error=failure.code)

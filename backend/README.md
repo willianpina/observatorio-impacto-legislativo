@@ -8,7 +8,7 @@
 $env:OIL_CAGED_READ_TIMEOUT='120'
 ```
 
-O job usa `connect=5`, `write=10` e `pool=10`, com `follow_redirects=False` e `confirm=t` no endereço do Drive. Um 302 registra a coleta com `valida=false`, sem consultar o endereço de `Location`. Não altera o cliente compartilhado, outras fontes ou as rotas. O timeout de leitura é por espera de dados. O prazo de parede corta a tentativa inteira: a coleta fica `valida=false`, `Coleta.erro` recebe `timeout_total` e não há retentativa automática.
+O job usa `connect=5`, `write=10` e `pool=10`, com `follow_redirects=False` e `confirm=t` no endereço do Drive. Um 302 registra a coleta com `valida=false`, sem consultar o endereço de `Location`. Não altera o cliente compartilhado, outras fontes ou as rotas. O timeout de leitura é por espera de dados. O prazo de parede envolve cada tentativa em `asyncio.timeout`: um stream que deixa de entregar blocos é cancelado, a coleta fica `valida=false`, `Coleta.erro` recebe `timeout_total`, o temporário e a resposta são fechados e não há retentativa automática.
 
 O download é em streaming para arquivo temporário, com contagem de bytes e SHA-256 incremental. O teto existente permanece em `100 * 1024 * 1024` bytes (100 MiB); excedê-lo interrompe o fluxo e mantém a coleta inválida. O teto de descompactação também permanece inalterado. Arquivo temporário e resposta são fechados mesmo em erro.
 
