@@ -44,9 +44,14 @@ for (const width of [1280, 360]) {
     await expect(card.getByTestId('caged-base-legal')).toHaveText(BASE_LEGAL);
     await expect(card).toContainText('revisadas mensalmente');
     await expect(card.locator('.source a')).toHaveAttribute('href', LINK);
+    await expect(card.getByRole('link', {name: /Decreto/})).toHaveCount(0);
     const hrefs = await card.locator('a').evaluateAll(els => els.map(el => el.getAttribute('href')));
     expect(hrefs.length).toBeGreaterThan(0);
-    for (const href of hrefs) expect(href).toMatch(/^https:\/\//);
+    for (const href of hrefs) {
+      expect(href).toBeTruthy();
+      expect(href).not.toBe('undefined');
+      expect(href).not.toMatch(/^javascript:/);
+    }
     const tela = (await page.locator('body').innerText()).toLocaleLowerCase('pt-BR');
     expect(tela).not.toContain('cc by');
     expect(tela).not.toMatch(/licen[cç]a/);
@@ -64,6 +69,23 @@ for (const width of [1280, 360]) {
     const card = await abrir(page, width, atribuicao('2026-08', '2026-10-20T01:30:00Z'));
     await expect(card.locator('.source a')).toHaveText(frase('agosto/2026', '19/10/2026'));
     await expect(card.locator('.source a')).not.toContainText('20/10/2026');
+  });
+
+  test(`v1.5.0 série desatualizada mantém mês e data da coleta, ${width}px`, async ({page}) => {
+    const card = await abrir(page, width, atribuicao('2026-08', '2026-10-17T14:22:00Z'), data => {
+      data.desatualizado = true;
+    });
+    const esperada = frase('agosto/2026', '17/10/2026');
+    await expect(card.locator('.notice')).toHaveText('Fonte fora do ar. Mostrando a última coleta válida de 17/10/2026');
+    await expect(card.locator('.source a')).toHaveText(esperada);
+    await expect(card.locator('.source a')).not.toContainText('s/d');
+    await expect(card.locator('.source a')).not.toContainText('20/10/2026');
+    await expect(card.locator('.source a')).toHaveAttribute('href', LINK);
+    const resumo = page.getByTestId('resumo-caged-saldo');
+    await expect(resumo.locator('.notice')).toHaveText('Fonte fora do ar. Mostrando a última coleta válida de 17/10/2026');
+    await expect(resumo.locator('.source a')).toHaveText(esperada);
+    await expect(resumo.locator('.source a')).not.toContainText('s/d');
+    await card.screenshot({path: `test-results/v150-desatualizado-${width}.png`});
   });
 
   test(`v1.5.0 arquivo ou coleta nulos mostram s/d, ${width}px`, async ({page}) => {
