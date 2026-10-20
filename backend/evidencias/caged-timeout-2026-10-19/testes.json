@@ -1,0 +1,28 @@
+{
+  "base": "8de4af8",
+  "tdd": {
+    "falhas": 16,
+    "aprovados": 2
+  },
+  "hash_parcial_tdd": {
+    "falhas": 1,
+    "deselecionados": 17
+  },
+  "novos_testes": 18,
+  "backend": {
+    "aprovados": 261,
+    "pulados_ao_vivo": 2,
+    "falhas": 0
+  },
+  "poc": {
+    "aprovados": 39,
+    "falhas": 0
+  },
+  "transporte": "httpx.MockTransport",
+  "atraso_primeiro_byte_segundos_virtuais": 30,
+  "rede_externa": false,
+  "coletas_reais": 0,
+  "manifesto_alterado": false,
+  "limite_download_bytes": 104857600,
+  "limite_descompactado_bytes": 536870912
+}
