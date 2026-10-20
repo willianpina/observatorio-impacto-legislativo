@@ -1,0 +1,86 @@
+{
+  "mutacoes_toleradas": [],
+  "backend": [
+    {
+      "id": "B-REDIR",
+      "arquivo": "backend/oil/caged.py",
+      "de": "follow_redirects=False",
+      "para": "follow_redirects=True"
+    },
+    {
+      "id": "B-READ20",
+      "arquivo": "backend/oil/caged.py",
+      "de": "os.environ.get('OIL_CAGED_READ_TIMEOUT','120')",
+      "para": "os.environ.get('OIL_CAGED_READ_TIMEOUT','20')"
+    },
+    {
+      "id": "B-TETO300",
+      "arquivo": "backend/oil/caged.py",
+      "de": "read=min(read,300)",
+      "para": "read=read"
+    },
+    {
+      "id": "B-100MIB",
+      "arquivo": "backend/oil/caged.py",
+      "de": "if size>MAX_BYTES: raise ValueError('Arquivo acima do limite.')",
+      "para": "if False: raise ValueError('Arquivo acima do limite.')"
+    },
+    {
+      "id": "B-CONNECT",
+      "arquivo": "backend/oil/caged.py",
+      "de": "Timeout(connect=5,read=min(read,300),write=10,pool=10)",
+      "para": "Timeout(connect=60,read=min(read,300),write=10,pool=10)"
+    },
+    {
+      "id": "B-TEMP",
+      "arquivo": "backend/oil/caged.py",
+      "de": "with tempfile.TemporaryFile() as stream:",
+      "para": "with tempfile.NamedTemporaryFile(delete=False) as stream:",
+      "nota": "Sobrevive na bateria atual; a etapa falha até o PR de backlog. Não está em mutacoes_toleradas."
+    }
+  ],
+  "frontend": [
+    {
+      "id": "F-QUORUM",
+      "arquivo": "frontend/components/voting.tsx",
+      "de": "p.sim>=quorum",
+      "para": "p.sim>=quorum-1"
+    },
+    {
+      "id": "F-APROVAD",
+      "arquivo": "frontend/components/voting.tsx",
+      "de": "['aprovada','aprovado'].includes(result)",
+      "para": "result.includes('aprovad')"
+    },
+    {
+      "id": "F-QUORUM-API",
+      "arquivo": "frontend/components/voting.tsx",
+      "de": "const quorum=pec?(vote.casa==='camara'?308:49):vote.quorum_exigido;",
+      "para": "const quorum=vote.quorum_exigido;"
+    },
+    {
+      "id": "F-B8-ROTULO",
+      "arquivo": "frontend/components/evidence-sources.tsx",
+      "de": "<dt>O que fornece</dt><dd>{TITLES[code]}</dd>",
+      "para": "<dd>{TITLES[code]}</dd>"
+    },
+    {
+      "id": "F-FONTE",
+      "arquivo": "frontend/components/indicator.tsx",
+      "de": "<Chart series={data} marcos={marcos}/><Source data={data}/>",
+      "para": "<Chart series={data} marcos={marcos}/>"
+    },
+    {
+      "id": "F-LACUNA0",
+      "arquivo": "frontend/components/chart.tsx",
+      "de": "p.ajuste!==series.ajuste?null:p.valor",
+      "para": "p.ajuste!==series.ajuste?0:(p.valor??0)"
+    },
+    {
+      "id": "F-CONNECTNULLS",
+      "arquivo": "frontend/components/chart.tsx",
+      "de": "connectNulls={false}",
+      "para": "connectNulls={true}"
+    }
+  ]
+}
