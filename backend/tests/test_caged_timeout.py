@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import sys
+import time
 
 import httpx
 import pytest
@@ -32,14 +33,20 @@ class TimedStream(httpx.AsyncByteStream):
         self.closed = True
 
 
-def run(sf, handler, metadata=None, *, clock=None, sleep=no_sleep):
+def run(sf, handler, metadata=None, *, clock=None, sleep=no_sleep, limit=None):
     async def collect():
         kwargs = {}
         if clock is not None:
             kwargs['clock'] = clock
         async with httpx.AsyncClient(transport=httpx.MockTransport(handler), timeout=2, follow_redirects=False) as client:
             try:
-                return await caged.CagedCollector(sf, client, simulada=True, sleep=sleep, **kwargs).collect(metadata or entry('2026-08')[0])
+                job = caged.CagedCollector(sf, client, simulada=True, sleep=sleep, **kwargs).collect(metadata or entry('2026-08')[0])
+                if limit is None:
+                    return await job
+                try:
+                    return await asyncio.wait_for(job, limit)
+                except TimeoutError:
+                    pytest.fail('a tentativa presa não foi cancelada pelo prazo total')
             finally:
                 assert client.timeout.read == 2 and not client.follow_redirects
     return asyncio.run(collect())
@@ -69,6 +76,22 @@ class BudgetStream(httpx.AsyncByteStream):
             if delay > self.request.extensions['timeout']['read']:
                 raise httpx.ReadTimeout('Atraso virtual de teste', request=self.request)
             yield content
+
+    async def aclose(self):
+        self.closed = True
+
+
+class HungStream(httpx.AsyncByteStream):
+    """Nunca entrega o próximo bloco: o prazo tem de cancelar a espera."""
+    def __init__(self):
+        self.closed = False
+        self.started = asyncio.Event()
+        self.release = asyncio.Event()
+
+    async def __aiter__(self):
+        self.started.set()
+        await self.release.wait()
+        yield b''
 
     async def aclose(self):
         self.closed = True
@@ -340,24 +363,61 @@ def test_attempt_budget_stops_without_retry(sf, monkeypatch):
         assert session.scalar(select(func.count()).select_from(Observacao)) == 0
 
 
-def test_attempt_budget_is_capped_and_does_not_retry(sf, monkeypatch):
-    monkeypatch.setenv('OIL_CAGED_READ_TIMEOUT', '300')
+def test_attempt_budget_is_capped_at_300(sf, monkeypatch):
     monkeypatch.setenv('OIL_CAGED_ATTEMPT_TIMEOUT', '999')
-    clock = VirtualClock()
+    assert caged.attempt_budget() == 300
+    seen = []
+    real_timeout = caged.asyncio.timeout
+
+    def spy(delay):
+        seen.append(delay)
+        return real_timeout(delay)
+
+    monkeypatch.setattr(caged.asyncio, 'timeout', spy)
+    raw = entry('2026-08')[1]
+    result = run(sf, lambda request: httpx.Response(200, content=raw))
+    assert result['novas_versoes'] > 0 and seen == [300]
+
+
+def test_stalled_stream_is_cancelled_without_retry(sf, monkeypatch, tmp_path):
+    monkeypatch.setenv('OIL_CAGED_ATTEMPT_TIMEOUT', '0.05')
+    monkeypatch.setattr(caged.tempfile, 'tempdir', str(tmp_path))
+    opened = []
+    real_temp = caged.tempfile.TemporaryFile
+
+    def spy_temp(*args, **kwargs):
+        stream = real_temp(*args, **kwargs)
+        opened.append(stream)
+        return stream
+
+    monkeypatch.setattr(caged.tempfile, 'TemporaryFile', spy_temp)
     requests = []
+    delays = []
+    streams = []
+
+    async def spy_sleep(delay):
+        delays.append(delay)
 
     def handler(request):
         requests.append(request)
-        return httpx.Response(200, stream=BudgetStream(request, clock, [(301, b'x')]))
+        stream = HungStream()
+        streams.append(stream)
+        return httpx.Response(200, stream=stream)
 
+    started = time.monotonic()
     with pytest.raises(SourceFailure, match='timeout_fonte') as falha:
-        run(sf, handler, clock=clock)
+        run(sf, handler, sleep=spy_sleep, limit=1)
+    elapsed = time.monotonic() - started
     assert falha.value.code == 'timeout_fonte' and falha.value.status == 504
-    assert len(requests) == 1 and clock.now == 301
+    assert elapsed < 0.8
+    assert len(requests) == 1 and delays == [] and len(streams) == 1
+    assert streams[0].started.is_set() and streams[0].closed
+    assert_temporary_released(tmp_path, opened)
     with sf() as session:
         rows = session.scalars(select(Coleta)).all()
-        assert len(rows) == 1 and rows[0].erro == 'timeout_total' and rows[0].valida is False
-        assert rows[0].hash_sha256 is None
+        assert len(rows) == 1
+        row = rows[0]
+        assert row.erro == 'timeout_total' and row.valida is False
         assert session.scalar(select(func.count()).select_from(Observacao)) == 0
 
 
